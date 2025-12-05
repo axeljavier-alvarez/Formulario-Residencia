@@ -18,7 +18,7 @@
            {{ $type === 'danger' ? 'border-red-400 text-red-700' : '' }}
            {{ $type === 'warning' ? 'border-yellow-400 text-yellow-700' : '' }}"
 >
-    @if ($type === 'success')
+    @if ($type === 'null')
         <i class="fa-solid fa-circle-check text-green-600 text-xl"></i>
     @endif
 

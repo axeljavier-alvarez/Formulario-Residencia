@@ -24,33 +24,10 @@
 
 <body class="p-10">
 
-    @if (session('success'))
-        <x-toast type="success">
-            {{ session('success') }}
-        </x-toast>
-        
-    @endif
 
-    @if (session('error'))
-    <x-toast type="danger">
-        {{ session('eror') }}
-    </x-toast>
-        
-    @endif
+    
+                <livewire:solicitud-form />
 
-    <form action="{{ route('solicitudes.store') }}" method="POST" class="space-y-4" enctype="multipart/form-data">
-        @csrf
-    <input type="text" name="nombre" placeholder="Ingrese su nombre" class="border p-2 w-full" value="{{ old('nombre') }}">
-    <input type="text" name="apellido" placeholder="Ingrese su apellido" class="border p-2 w-full" value="{{ old('apellido') }}">
-    <input type="email" name="email" placeholder="Ingrese su email" class="border p-2 w-full" value="{{ old('email') }}">
-    <input type="text" name="telefono" placeholder="Ingrese su teléfono" class="border p-2 w-full" value="{{ old('telefono') }}">
-    <input type="text" name="cui" placeholder="Ingrese su cui" class="border p-2 w-full" value="{{ old('cui') }}">
-    <input type="text" name="domicilio" placeholder="Ingrese su domicilio" class="border p-2 w-full" value="{{ old('domicilio') }}">
-
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2">
-        Enviar
-    </button>
-    </form>
 
 
 

@@ -20,8 +20,8 @@ Route::get('solicitud', [SolicitudController::class, 'create'])
     // ->middleware(CheckCartItems::class)
     ->name('solicitudes.create');
 
-Route::post('solicitud', [SolicitudController::class, 'store'])
-->name('solicitudes.store');
+// Route::post('solicitud', [SolicitudController::class, 'store'])
+// ->name('solicitudes.store');
 
 // prueba de livewire
 Route::get('admin', function(){
