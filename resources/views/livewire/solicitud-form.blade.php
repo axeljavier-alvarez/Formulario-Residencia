@@ -39,7 +39,7 @@
 
         <div>
             <x-label class="mb-1">Teléfono</x-label>
-            <x-input type="text" wire:model.defer="telefono" class="border rounded px-3 py-2 w-full" />
+            <x-input type="number" wire:model.defer="telefono" class="border rounded px-3 py-2 w-full" />
         </div>
 
         <div>

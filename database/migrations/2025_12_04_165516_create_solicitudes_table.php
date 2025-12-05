@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('solicitudes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('zona_id')->constrained('zonas')->onDelete('cascade');
+            $table->foreignId('estado_id')->constrained('estados')->onDelete('cascade');
             $table->string('no_solicitud', 15)->nullable();
             $table->integer('anio')->length(4);
             $table->string('nombre', 60);
@@ -22,6 +24,8 @@ return new class extends Migration
             $table->string('cui', 13);
             $table->string('domicilio', 255);
             $table->string('observaciones', 255)->nullable(); 
+
+            
             $table->timestamps();
         });
     }

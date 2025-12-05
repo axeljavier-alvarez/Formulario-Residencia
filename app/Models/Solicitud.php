@@ -2,9 +2,12 @@
 
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Solicitud extends Model
 {
+
+        use HasFactory;
 
     protected $table = 'solicitudes';
 
@@ -20,5 +23,11 @@ class Solicitud extends Model
         'domicilio',
         'observaciones'
     ];
+
+    // una solicitud pertenece a una zona
+    public function zona()
+    {
+        return $this->belongsTo(Zona::class, 'zona_id');
+    }
 
 }
