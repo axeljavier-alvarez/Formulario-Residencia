@@ -21,13 +21,20 @@ class Solicitud extends Model
         'telefono',
         'cui',
         'domicilio',
-        'observaciones'
+        'observaciones',
+        'zona_id',
+        'estado_id'
     ];
 
     // una solicitud pertenece a una zona
     public function zona()
     {
         return $this->belongsTo(Zona::class, 'zona_id');
+    }
+
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class, 'estado_id');
     }
 
 }

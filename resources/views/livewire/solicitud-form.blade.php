@@ -48,6 +48,22 @@
         </div>
 
         <div>
+            <x-label class="mb-1">Zona</x-label>
+            <select wire:model.defer="zona_id" class="border rounded px-3 py-2 w-full">
+            <option value="">
+                Seleccione una zona
+            </option>
+
+            @foreach ($zonas as $zona )
+            <option value="{{ $zona->id }}">
+                {{ $zona->nombre }}
+            </option>
+                
+            @endforeach
+            </select>
+        </div>
+
+        <div>
             <x-label class="mb-1">Domicilio</x-label>
             <x-input type="text" wire:model.defer="domicilio" class="border rounded px-3 py-2 w-full" />
         </div>

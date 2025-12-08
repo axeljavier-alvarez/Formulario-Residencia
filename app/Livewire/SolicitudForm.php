@@ -5,6 +5,8 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Solicitud;
+use App\Models\Zona;
+use App\Models\Estado;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -24,8 +26,18 @@ class SolicitudForm extends Component
     public $domicilio;
     public $observaciones;
 
+    public $zonas;
+    public $zona_id;
     // luego mostrar toast de alpine
     public $toast = null;
+
+     public function mount()
+    {
+        $this->anio = now()->year;
+
+        $this->zonas = Zona::all();
+    }
+
     public function rules (){
 
         return [
@@ -47,7 +59,8 @@ class SolicitudForm extends Component
             Rule::unique('solicitudes', 'cui')
         ],
         'domicilio' => 'required|string|max:255',
-        'observaciones' => 'nullable|string|max:255'
+        'observaciones' => 'nullable|string|max:255',
+        'zona_id' => 'required|exists:zonas,id'
     ];
       
     }
@@ -61,10 +74,7 @@ class SolicitudForm extends Component
         'cui.unique' => 'Ya existe una solicitud con el cui :input'
     ];
 
-    public function mount()
-    {
-        $this->anio = now()->year;
-    }
+   
 
     // public function updated($propertyName)
     // {
@@ -77,6 +87,9 @@ class SolicitudForm extends Component
 
         $validated['anio'] = now()->year;
 
+        // campo estado
+        $validated['estado_id'] = 1;
+
         // dd($validated);
 
         DB::beginTransaction();
@@ -86,6 +99,9 @@ class SolicitudForm extends Component
             $solicitud->save();
             DB::commit();
             $this->resetExcept('anio');
+
+            // cargar zonas despues de reset
+            $this->zonas = Zona::all();
             $this->toast=[
                 'type' => 'success',
                 'message' => 'Solicitud enviada correctamente'

@@ -23,5 +23,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(ZonaSeeder::class);
+        $this->call(EstadoSeeder::class);
     }
 }
