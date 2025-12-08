@@ -10,6 +10,9 @@ use App\Models\Estado;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+
+use App\Models\Tramite;
 
 
 class SolicitudForm extends Component
@@ -45,11 +48,23 @@ class SolicitudForm extends Component
         '52' => 10, // mexico
         '1' => 10 // estados unidos
     ];
+
+
+    // tramite
+    public $tramites;
+    public $tramite_id;
+
+    // pasos
+    public $paso = 1;
+
      public function mount()
     {
         $this->anio = now()->year;
 
         $this->zonas = Zona::all();
+
+        // parte del tramite
+        $this->tramites = Tramite::all();
     }
 
     public function rules (){
@@ -75,7 +90,8 @@ class SolicitudForm extends Component
         ],
         'domicilio' => 'required|string|max:255',
         'observaciones' => 'nullable|string|max:255',
-        'zona_id' => 'required|exists:zonas,id'
+        'zona_id' => 'required|exists:zonas,id',
+        'tramite_id' => 'required|exists:tramites,id'
     ];
       
     }
@@ -152,6 +168,9 @@ class SolicitudForm extends Component
 
     public function render()
     {
+
+        $this->tramites = Tramite::all();
+        $this->zonas = Zona::all();
         return view('livewire.solicitud-form');
     }
 
@@ -181,4 +200,38 @@ class SolicitudForm extends Component
 
         $this->dispatch('abrir-modal-confirmacion');
     }
+
+    // validar paso
+                public function validarPaso($paso)
+        {
+            try {
+                if($paso == 1){
+                    $this->validate([
+                        'nombre' => 'required|string|max:60',
+                        'apellido' => 'required|string|max:60',
+                        'email' => 'required|email|max:45',
+                        'telefono' => 'required|string',
+                        'codigo_pais' => 'required',
+                        'cui' => 'required|string|size:13',
+                        'domicilio' => 'required|string|max:255',
+                        'zona_id' => 'required|exists:zonas,id',
+                    ]);
+                }
+                if($paso == 2){
+                    $this->validate([
+                        'tramite_id' => 'required|exists:tramites,id',
+                    ]);
+                }
+                if($paso == 3){
+                    $this->validate([
+                        'observaciones' => 'nullable|string|max:255',
+                    ]);
+                }
+
+                return true; // todo bien
+            } catch (ValidationException $e) {
+                $this->dispatch('validation-error'); 
+                return false; // hay errores
+            }
+        }
 }

@@ -10,6 +10,9 @@ SELECT * FROM requisitos;
 
 SELECT * FROM requisito_tramite;
 
+SELECT * FROM solicitudes_has_requisitos_tramites;
+
+SELECT * FROM detalle_solicitud;
 /* SHOW CREATE TABLE solicitudes;
 SHOW CREATE TABLE zonas; */
 
@@ -37,7 +40,7 @@ r.nombre AS requisito
 FROM requisito_tramite rt
 INNER JOIN tramites t ON t.id = rt.tramite_id
 INNER JOIN requisitos r ON r.id = rt.requisito_id
-WHERE t.nombre = 'Magisterio'; */
+WHERE lower(t.nombre) = lower('magisterio'); */
 /* ver los requisitos de cada tramite */
 SELECT
 t.id AS tramite_id,
