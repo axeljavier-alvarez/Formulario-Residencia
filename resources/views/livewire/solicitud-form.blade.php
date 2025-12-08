@@ -1,5 +1,30 @@
-<div x-data="{ toast: @entangle('toast') }" class="space-y-4">
+<div 
+x-data="{ 
+toast: @entangle('toast'),
+mostrarConfirmacion: false,
+confirmarEnvio() {
+   this.mostrarConfirmacion = true;
+}
+}" 
 
+x-on:abrir-modal-confirmacion.window="mostrarConfirmacion = true"
+
+class="max-w-2xl mx-auto my-20 bg-white border border-[#E4E4E4]
+rounded-lg p-6 space-y-4 border border-[#EAEAEA] shadow-[0_0_10px_#EAEAEA]
+p-8 rounded-xl">
+
+
+   <h1 class="text-3xl font-extrabold text-center text-[#03192B] mb-4">
+    Constancia de residencia
+    </h1>
+
+
+    <p class="text-[#03192B]  text-center mb-6">
+        Complete la información requerida para registrar su solicitud
+    </p>
+
+
+    
     <template x-if="toast">
         <div>
             <x-toast x-bind:type="toast.type">
@@ -10,45 +35,131 @@
         </div>
     </template>
 
-    <!-- FORM (wire:submit.prevent) -->
-    <form wire:submit.prevent="submit" class="space-y-4" enctype="multipart/form-data">
 
-            <x-validation-errors />
-        <div>
-            <x-label class="mb-1">Año</x-label>
-            <x-input type="text" wire:model="anio" class="border rounded px-3 py-2 w-full" readonly />
+            @if ($errors->any())
+            <div class="mb-4 p-4 rounded-md bg-[#F2DEDE] font-bold border border-[#A94442]">
+                <h3 class="font-bold text-[#A94442]">Error</h3>
+
+                <ul class="mt-2 list-disc list-inside text-[#A94442]">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+
+        <!-- Modal de Confirmacion -->
+
+        <div
+        x-show="mostrarConfirmacion"
+        class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+        s-transition
+        >
+
+        <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg space-y-4">
+            <h2 class="text-xl font-bold text-[#03192B]">
+                Confirmar envío
+            </h2>
+            <p class="text-[#03192B]"> ¿Estás seguro de que deseas enviar la solicitud?
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;Por favor revisa tus datos antes de continuar
+            </p>
+
+            
+            <div class="flex justify-end gap-3 mt-4">
+
+                <button
+                @click="mostrarConfirmacion = false"
+                class="px-4 py-2 rounded bg-gray-200 text-[#03192B] hover:bg-gray-300"
+                >
+                Cancelar
+                </button>
+
+                <button
+                @click="$wire.submit(); mostrarConfirmacion = false"
+                class="px-4 py-2 rounded bg-[#9AD700] text-white hover:bg-[#83b800]"
+                >
+                Enviar
+                </button>
+            </div>
+
+        </div>
+
         </div>
 
 
-        <div>
-            <x-label class="mb-1">Nombre</x-label>
-            <x-input type="text" wire:model.defer="nombre" class="border rounded px-3 py-2 w-full" />
+
+    <!-- FORM (wire:submit.prevent) -->
+   {{-- <form @submit.prevent="confirmarEnvio" class="space-y-4" enctype="multipart/form-data"> --}}
+     <form wire:submit.prevent="confirmar" class="space-y-4" enctype="multipart/form-data">
+            {{-- <x-validation-errors /> --}}
+        {{-- <div>
+            <x-label class="mb-1">Año</x-label>
+            <x-input type="text" wire:model="anio" class="border rounded px-3 py-2 w-full" readonly />
+        </div> --}}
+<!--  FORM DE 2 INPUTS POR FILA -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+     <div>
+            <x-label class="mb-1 font-bold text-[#03192B]">Nombre</x-label>
+            <x-input type="text" placeholder="Ingresa tu nombre" wire:model.defer="nombre" class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
             {{-- @error('nombre') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror --}}
         </div>
 
         <div>
-            <x-label class="mb-1">Apellido</x-label>
-            <x-input type="text" wire:model.defer="apellido" class="border rounded px-3 py-2 w-full" />
+            <x-label class="mb-1 font-bold text-[#03192B]">Apellido</x-label>
+            <x-input type="text" placeholder="Ingresa tu apellido" wire:model.defer="apellido" class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
         </div>
 
         <div>
-            <x-label class="mb-1">Email</x-label>
-            <x-input type="email" wire:model.defer="email" class="border rounded px-3 py-2 w-full" />
+            <x-label class="mb-1 font-bold text-[#03192B]">Email</x-label>
+            <x-input type="email" placeholder="Ingresa tu email" wire:model.defer="email" class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
             
         </div>
 
-        <div>
-            <x-label class="mb-1">Teléfono</x-label>
-            <x-input type="number" wire:model.defer="telefono" class="border rounded px-3 py-2 w-full" />
+        {{-- <div>
+            <x-label class="mb-1 font-bold text-[#03192B]">Teléfono</x-label>
+            <x-input type="number" placeholder="Ingresa tu número telefónico" wire:model.defer="telefono" class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
+        </div> --}}
+
+        <div x-data x-init="
+        const input = document.querySelector('#telefono');
+        const iti = window.intlTelInput(input, {
+         initialCountry: 'gt',
+         separateDialCode: true,
+         preferredCountries: ['gt', 'mx', 'us', 'sv', 'hn'],
+        });
+
+        // enviar codigo al iniciar
+        $wire.set('codigo_pais', iti.getSelectedCountryData().dialCode);
+
+        input.addEventListener('countrychange', () =>{
+        $wire.set('codigo_pais', iti.getSelectedCountryData().dialCode);
+        });
+        "
+        wire:ignore
+        >
+        <x-label class="mb-1 font-bold text-[#03192B]">
+            Teléfono
+        </x-label>
+
+        <input 
+        id="telefono"
+        type="tel"
+        class="border rounded px-3 py-2 w-full"
+        placeholder="Ingresa tu número"
+        x-on:input="$wire.set('telefono', $event.target.value)"
+        />
         </div>
 
         <div>
-            <x-label class="mb-1">CUI</x-label>
-            <x-input type="text" wire:model.defer="cui" class="border rounded px-3 py-2 w-full" maxlength="13" />
+            <x-label class="mb-1 font-bold text-[#03192B]">CUI</x-label>
+            <x-input type="text" placeholder="Ingresa tu cui" wire:model.defer="cui" class="placeholder-[#797775] border rounded px-3 py-2 w-full" maxlength="13" />
         </div>
 
         <div>
-            <x-label class="mb-1">Zona</x-label>
+            <x-label class="mb-1 font-bold text-[#03192B]">Zona</x-label>
             <select wire:model.defer="zona_id" class="border rounded px-3 py-2 w-full">
             <option value="">
                 Seleccione una zona
@@ -63,21 +174,25 @@
             </select>
         </div>
 
+</div>
+       
+
         <div>
-            <x-label class="mb-1">Domicilio</x-label>
-            <x-input type="text" wire:model.defer="domicilio" class="border rounded px-3 py-2 w-full" />
+            <x-label class="mb-1 xl font-bold text-[#03192B]">Domicilio</x-label>
+            <x-input type="text" placeholder="Ingresa la dirección de tu domicilio" wire:model.defer="domicilio" class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
         </div>
 
         <div>
-            <x-label class="block text-sm font-medium mb-1">Observaciones (opcional)</x-label>
+            <x-label class="block text-sm font-medium mb-1 xl font-bold text-[#03192B]">Observaciones (opcional)</x-label>
             <x-textarea wire:model.defer="observaciones" class="border rounded px-3 py-2 w-full" rows="3"></x-textarea>
         </div>
 
         <div>
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            <button type="submit" class="w-full bg-black text-white px-4 py-2 font-semibold rounded hover:bg-gray-800">
                 Enviar
             </button>
         </div>
 
     </form>
+    
 </div>

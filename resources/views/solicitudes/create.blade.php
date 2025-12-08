@@ -18,11 +18,14 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        <!-- Para lo de la bandera -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css" />
+
         <!-- Styles -->
         @livewireStyles
 </head>
 
-<body class="p-10">
+<body class="bg-[#F9F9F9]">
 
 
     
@@ -35,5 +38,7 @@
         @stack('modals')
 
         @livewireScripts
+        <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js">
+        </script>
 </body>
 </html>

@@ -31,6 +31,20 @@ class SolicitudForm extends Component
     // luego mostrar toast de alpine
     public $toast = null;
 
+
+    /* para la parte del telefono */
+    public $codigo_pais;
+
+    /* validacion de numero para regla telefono */
+    public $reglasTelefonos=[
+        '502' => 8, // gt
+        '503' => 8,  // salvador
+        '504' => 8, // honduras
+        '505' => 8, // nicaragua
+        '506' => 8, // costa rica
+        '52' => 10, // mexico
+        '1' => 10 // estados unidos
+    ];
      public function mount()
     {
         $this->anio = now()->year;
@@ -52,6 +66,7 @@ class SolicitudForm extends Component
         
 
         'telefono' => 'required|string|max:20',
+        'codigo_pais' => 'required',
         'cui' => [
             'required',
             'string',
@@ -90,6 +105,26 @@ class SolicitudForm extends Component
         // campo estado
         $validated['estado_id'] = 1;
 
+        // validacion por pais
+        $this->validate([
+            'telefono' => [
+                'required', function($attribute, $value, $fail){
+                    $codigo = $this->codigo_pais;
+
+                    if(isset($this->reglasTelefonos[$codigo])){
+                        $longitudRequerida = $this->reglasTelefonos[$codigo];
+
+                        if(strlen($value) != $longitudRequerida) {
+                        $fail("Este número debe tener {$longitudRequerida} dígitos.");
+                        }
+                    }
+                }
+            ]
+        ]);
+        // telefono completo
+
+        $validated['telefono'] = '+' . $this->codigo_pais . $this->telefono;
+
         // dd($validated);
 
         DB::beginTransaction();
@@ -118,5 +153,32 @@ class SolicitudForm extends Component
     public function render()
     {
         return view('livewire.solicitud-form');
+    }
+
+    // metodo confirmar para mostrar errores
+
+    public function confirmar()
+    {
+        $this->validate();
+
+
+        $this->validate([
+            'telefono' => [
+                'required', function($attribute, $value, $fail){
+                    $codigo = $this->codigo_pais;
+
+                    if(isset($this->reglasTelefonos[$codigo])){
+                        $longitudRequerida = $this->reglasTelefonos[$codigo];
+
+                        if(strlen($value) != $longitudRequerida) {
+                        $fail("Este número debe tener {$longitudRequerida} dígitos.");
+                        }
+                    }
+                }
+            ]
+        ]);
+        
+
+        $this->dispatch('abrir-modal-confirmacion');
     }
 }
