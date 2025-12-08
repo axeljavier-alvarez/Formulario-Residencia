@@ -169,6 +169,7 @@ class SolicitudForm extends Component
     public function render()
     {
 
+        // quitar esto para probar el enviar
         $this->tramites = Tramite::all();
         $this->zonas = Zona::all();
         return view('livewire.solicitud-form');
