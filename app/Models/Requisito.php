@@ -6,12 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Requisito extends Model
 {
-    
+
     use HasFactory;
     protected $fillable = ['nombre'];
 
     public function tramites()
     {
-        return $this->belongsToMany(Tramite::class);
+        return $this->belongsToMany(
+            Tramite::class,
+            'requisito_tramite',
+            'requisito_id',
+            'tramite_id'
+        );
     }
 }

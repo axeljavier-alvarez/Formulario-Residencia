@@ -6,6 +6,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Solicitud;
 use App\Models\Zona;
+use App\Models\Requisito;
 use App\Models\Estado;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
@@ -57,6 +58,10 @@ class SolicitudForm extends Component
     // pasos
     public $paso = 1;
 
+    // requisitos
+    public $requisitos=[];
+
+
      public function mount()
     {
         $this->anio = now()->year;
@@ -65,6 +70,7 @@ class SolicitudForm extends Component
 
         // parte del tramite
         $this->tramites = Tramite::all();
+
     }
 
     public function rules (){
@@ -78,7 +84,7 @@ class SolicitudForm extends Component
             'max:45',
             Rule::unique('solicitudes', 'email')
         ],
-        
+
 
         'telefono' => 'required|string|max:20',
         'codigo_pais' => 'required',
@@ -93,10 +99,10 @@ class SolicitudForm extends Component
         'zona_id' => 'required|exists:zonas,id',
         'tramite_id' => 'required|exists:tramites,id'
     ];
-      
+
     }
-        
-   
+
+
 
     protected $messages = [
         'cui.size' => 'El cui debe tener 13 caracteres.',
@@ -105,7 +111,7 @@ class SolicitudForm extends Component
         'cui.unique' => 'Ya existe una solicitud con el cui :input'
     ];
 
-   
+
 
     // public function updated($propertyName)
     // {
@@ -172,6 +178,7 @@ class SolicitudForm extends Component
         // quitar esto para probar el enviar
         $this->tramites = Tramite::all();
         $this->zonas = Zona::all();
+
         return view('livewire.solicitud-form');
     }
 
@@ -210,10 +217,22 @@ class SolicitudForm extends Component
                     $this->validate([
                         'nombre' => 'required|string|max:60',
                         'apellido' => 'required|string|max:60',
-                        'email' => 'required|email|max:45',
-                        'telefono' => 'required|string',
+                        'email' => [
+                            'required',
+                            'email',
+                            'max:45',
+                            Rule::unique('solicitudes', 'email')
+                        ],
+
+                        'telefono' => $this->reglasTelefonoPorPais(),
+
                         'codigo_pais' => 'required',
-                        'cui' => 'required|string|size:13',
+                        'cui' => [
+                            'required',
+                            'string',
+                            'size:13',
+                            Rule::unique('solicitudes', 'cui')
+                        ],
                         'domicilio' => 'required|string|max:255',
                         'zona_id' => 'required|exists:zonas,id',
                     ]);
@@ -231,8 +250,46 @@ class SolicitudForm extends Component
 
                 return true; // todo bien
             } catch (ValidationException $e) {
-                $this->dispatch('validation-error'); 
+                // $this->dispatch('validation-error');
+                $this->setErrorBag($e->validator->errors());
                 return false; // hay errores
             }
         }
+
+
+        protected function reglasTelefonoPorPais()
+{
+    return [
+        'required',
+        function ($attribute, $value, $fail) {
+            $codigo = $this->codigo_pais;
+
+            if (isset($this->reglasTelefonos[$codigo])) {
+                $longitudRequerida = $this->reglasTelefonos[$codigo];
+
+                // quitar espacios, guiones, etc.
+                $telefonoLimpio = preg_replace('/\D/', '', $value);
+
+                if (strlen($telefonoLimpio) != $longitudRequerida) {
+                    $fail("Este número debe tener {$longitudRequerida} dígitos.");
+                }
+            }
+        }
+    ];
+}
+
+
+public function updatedTramiteId($value)
+{
+    if ($value) {
+        $tramite = Tramite::with('requisitos')->find($value);
+        $this->requisitos = $tramite ? $tramite->requisitos : collect();
+    } else {
+        $this->requisitos = collect();
+    }
+}
+
+
+
+
 }

@@ -13,6 +13,11 @@ class Tramite extends Model
 
     public function requisitos()
     {
-        return $this->belongsToMany(Requisito::class);
+        return $this->belongsToMany(
+            Requisito::class,
+            'requisito_tramite',
+            'tramite_id',
+            'requisito_id'
+    );
     }
 }
