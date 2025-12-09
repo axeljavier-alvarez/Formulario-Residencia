@@ -204,7 +204,7 @@ p-8 rounded-xl"
     </div>
 
     <!-- Paso 2 -->
-        <div x-show="paso === 2">
+    <div x-show="paso === 2" wire:key="paso-2-{{ $tramite_id }}">
 
 
             <x-label class="mb-1 font-bold text-[#03192B]">
@@ -226,21 +226,18 @@ p-8 rounded-xl"
 
 
             <!-- Requisitos por tramite -->
-            @if(!empty($requisitos))
-            <div class="mt-4">
-                <x-label class="mb-1 font-bold text-[#03192B]">
-                    Requisitos:
-                </x-label>
-
-                <ul class="list-disc list-inside text-[#03192B]">
-                    @foreach($requisitos as $requisito)
-                    <li>{{ $requisito['nombre'] }}</li>
-                    @endforeach
-                </ul>
-            </div>
+             @if(!empty($requisitos) && count($requisitos) > 0)
+                <div class="mt-4">
+                    <x-label class="mb-1 font-bold text-[#03192B]">Requisitos:</x-label>
+                    <ul class="list-disc list-inside text-[#03192B]">
+                        @foreach($requisitos as $requisito)
+                            <li>{{ $requisito['nombre'] }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
-            <button type="button"
+                    <button type="button"
                 @click="pasoAnterior()"
                 class="mt-4 px-4 py-2 bg-gray-400 text-white rounded">
                 Atrás

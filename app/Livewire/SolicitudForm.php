@@ -283,11 +283,12 @@ public function updatedTramiteId($value)
 {
     if ($value) {
         $tramite = Tramite::with('requisitos')->find($value);
-        $this->requisitos = $tramite ? $tramite->requisitos : collect();
+        $this->requisitos = $tramite ? $tramite->requisitos->toArray() : [];
     } else {
-        $this->requisitos = collect();
+        $this->requisitos = [];
     }
 }
+
 
 
 
