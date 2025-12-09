@@ -282,14 +282,27 @@ class SolicitudForm extends Component
 public function updatedTramiteId($value)
 {
     if ($value) {
+        // buscar tramite
         $tramite = Tramite::with('requisitos')->find($value);
+        // pone requisitios en propiedad publica $requisitos
         $this->requisitos = $tramite ? $tramite->requisitos->toArray() : [];
     } else {
+        // si el usuario borra seleccion se borra lista
         $this->requisitos = [];
     }
 }
 
 
+public function verRequisitos()
+{
+    if (!$this->tramite_id) {
+        dd("Debe seleccionar un trámite primero");
+    }
+
+    $tramite = Tramite::with('requisitos')->find($this->tramite_id);
+
+    dd($tramite->requisitos);
+}
 
 
 

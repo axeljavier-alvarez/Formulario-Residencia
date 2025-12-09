@@ -212,7 +212,7 @@ p-8 rounded-xl"
             </x-label>
 
             <select
-            wire:model="tramite_id" class="border rounded px-3 py-2 w-full">
+            wire:model.live="tramite_id" class="border rounded px-3 py-2 w-full">
             <option value="">
                 Seleccione un trámite
             </option>
@@ -227,14 +227,14 @@ p-8 rounded-xl"
 
             <!-- Requisitos por tramite -->
              @if(!empty($requisitos) && count($requisitos) > 0)
-                <div class="mt-4">
-                    <x-label class="mb-1 font-bold text-[#03192B]">Requisitos:</x-label>
-                    <ul class="list-disc list-inside text-[#03192B]">
-                        @foreach($requisitos as $requisito)
-                            <li>{{ $requisito['nombre'] }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+                <div class="mt-4" wire:key="reqs-{{ $tramite_id }}">
+                <x-label class="mb-1 font-bold text-[#03192B]">Requisitos:</x-label>
+                <ul class="list-disc list-inside text-[#03192B]">
+                    @foreach($requisitos as $requisito)
+                        <li>{{ $requisito['nombre'] }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
                     <button type="button"
@@ -242,6 +242,15 @@ p-8 rounded-xl"
                 class="mt-4 px-4 py-2 bg-gray-400 text-white rounded">
                 Atrás
             </button>
+
+            
+                    <button type="button"
+                wire:click="verRequisitos"
+                class="mt-3 px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
+                Ver Requisitos
+            </button>
+
+        
             <button type="button"
                 @click="$wire.validarPaso(2).then(valid => valid ? siguientePaso() : null)"
                 class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-bl"
@@ -265,6 +274,10 @@ p-8 rounded-xl"
                 class="mt-4 px-4 py-2 bg-gray-400 text-white rounded">
                 Atrás
         </button>
+
+
+
+
 
         <div>
             <button type="submit" class="w-full bg-black text-white px-4 py-2 font-semibold rounded hover:bg-gray-800">
