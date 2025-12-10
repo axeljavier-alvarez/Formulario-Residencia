@@ -1,5 +1,11 @@
-<p>Hola,</p>
-
-<p>{{ $mensaje }}</p>
-
-<p>Saludos.</p>
+<table>
+    <tr>
+        <td>Hola</td>
+    </tr>
+    <tr>
+        <td>{{ $mensaje }}</td>
+    </tr>
+    <tr>
+        <td>Saludos.</td>
+    </tr>
+</table>
