@@ -399,6 +399,41 @@ public function resetFormulario()
     
 }
 
+// logica del CUI
+private function cuiEsValido(string $cui): bool
+{
+    // 1. Validar formato inicial (opcional: quitar espacios o guiones)
+    // Ya que en el frontend se limpia a solo números, aquí nos aseguramos de 13 dígitos.
+           $cui = preg_replace('/[^0-9]/', '', $cui);
 
+           if(strlen($cui) !== 13) {
+            return false;
+           }
+    // 2. extraer partes
+    $numero = substr($cui, 0, 8);
+    $verificador = (int)substr($cui, 8, 1);
+    $depto = (int) substr($cui, 9, 2);
+    $muni = (int) substr($cui, 11, 2);
+ 
+    // 3. Validación de códigos de departamento y municipio
+    // Array de municipios por departamento (índice 0 = depto 1, índice 21 = depto 22)
+    $munisPorDepto = [17, 8, 16, 16, 13, 14, 19, 8, 24, 21, 9, 30, 32, 21, 8, 17, 14, 5, 11, 11, 7, 17];
+    if($depto < 1 || $depto > count($munisPorDepto) ||
+    $muni < 1 || $muni > $munisPorDepto[$depto - 1]){
+        return false; 
+    }
+
+    // 4. validación del digitio verificador (Módulo 11)
+    $total = 0;
+    for($i = 0; $i < 8; $i ++){
+        $dig = (int)$numero[$i];
+        // multiplicadores: 2,3,4,5,6,7,8,9
+        $total += $dig * ($i + 2); 
+    }
+
+    $digitoCalculado = $total % 11;
+
+    return $digitoCalculado === $verificador;
+}
 
 }
