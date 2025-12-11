@@ -27,8 +27,8 @@ class SolicitudForm extends Component
     // campos del form
     public $no_solicitud;
     public $anio;
-    public $nombre;
-    public $apellido;
+    public $nombres;
+    public $apellidos;
     public $email;
     public $telefono;
     public $cui;
@@ -91,8 +91,8 @@ class SolicitudForm extends Component
     public function rules (){
 
         return [
-        'nombre' => 'required|string|max:60',
-        'apellido' => 'required|string|max:60',
+        'nombres' => 'required|string|max:60',
+        'apellidos' => 'required|string|max:60',
         'email' => [
             'required',
             'email',
@@ -269,28 +269,28 @@ class SolicitudForm extends Component
         {
             try {
                 if($paso == 1){
-                    $this->validate([
-                        'nombre' => 'required|string|max:60',
-                        'apellido' => 'required|string|max:60',
-                        'email' => [
-                            'required',
-                            'email',
-                            'max:45',
-                            Rule::unique('solicitudes', 'email')
-                        ],
+                    // $this->validate([
+                    //     'nombres' => 'required|string|max:60',
+                    //     'apellidos' => 'required|string|max:60',
+                    //     'email' => [
+                    //         'required',
+                    //         'email',
+                    //         'max:45',
+                    //         Rule::unique('solicitudes', 'email')
+                    //     ],
 
-                        'telefono' => $this->reglasTelefonoPorPais(),
+                    //     'telefono' => $this->reglasTelefonoPorPais(),
 
-                        'codigo_pais' => 'required',
-                        'cui' => [
-                            'required',
-                            'string',
-                            'size:13',
-                            Rule::unique('solicitudes', 'cui')
-                        ],
-                        'domicilio' => 'required|string|max:255',
-                        'zona_id' => 'required|exists:zonas,id',
-                    ]);
+                    //     'codigo_pais' => 'required',
+                    //     'cui' => [
+                    //         'required',
+                    //         'string',
+                    //         'size:13',
+                    //         Rule::unique('solicitudes', 'cui')
+                    //     ],
+                    //     'domicilio' => 'required|string|max:255',
+                    //     'zona_id' => 'required|exists:zonas,id',
+                    // ]);
                 }
                 if($paso == 2){
                     $this->validate([
@@ -382,8 +382,8 @@ public function enmascararEmail($email)
 public function resetFormulario()
 {
     $this->reset([
-        'nombre',
-        'apellido',
+        'nombres',
+        'apellidos',
         'email',
         'telefono',
         'codigo_pais',

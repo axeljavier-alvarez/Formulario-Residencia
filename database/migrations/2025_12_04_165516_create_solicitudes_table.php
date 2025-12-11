@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('estado_id')->constrained('estados')->onDelete('cascade');
             $table->string('no_solicitud', 15)->nullable();
             $table->integer('anio')->length(4);
-            $table->string('nombre', 60);
-            $table->string('apellido', 60);
+            $table->string('nombres', 60);
+            $table->string('apellidos', 60);
             $table->string('email', 45);
             $table->string('telefono', 20);
             $table->string('cui', 13);

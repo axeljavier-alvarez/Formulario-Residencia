@@ -191,6 +191,7 @@ p-8 rounded-xl"
                     $wire.resetFormulario();
                     $wire.set('mostrarExito', false);
                     paso = 1;
+                    $dispatch('form-reset');
                     " 
 
                     class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
@@ -229,7 +230,7 @@ p-8 rounded-xl"
     <div x-show="paso === 1">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            <div x-data="{ valor: '' }">
+            <div x-data="{ valor: '' }"  x-on:form-reset.window="valor = ''">
                 <x-label class="mb-1 font-bold text-[#03192B]">
                     Nombres 
                             <span class="text-red-600" x-show="valor === ''">*</span>
@@ -237,25 +238,25 @@ p-8 rounded-xl"
                 </x-label>
                 <x-input type="text" 
                 placeholder="Ingrese sus nombres" 
-                wire:model.defer="nombre" 
+                wire:model.defer="nombres" 
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
                 {{-- @error('nombre') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror --}}
             </div>
 
-            <div x-data="{ valor: '' }">
+            <div x-data="{ valor: '' }" x-on:form-reset.window="valor = ''">
                 <x-label class="mb-1 font-bold text-[#03192B]">
                     Apellidos
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
                 <x-input type="text" 
                 placeholder="Ingresa sus apellidos" 
-                wire:model.defer="apellido" 
+                wire:model.defer="apellidos" 
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
             </div>
 
-            <div x-data="{ valor: '' }">
+            <div x-data="{ valor: '' }" x-on:form-reset.window="valor = ''">
                 <x-label class="mb-1 font-bold text-[#03192B]">
                     Email
                     <span class="text-red-600" x-show="valor === ''">*</span>
@@ -272,7 +273,7 @@ p-8 rounded-xl"
                 <x-label class="mb-1 font-bold text-[#03192B]">Teléfono</x-label>
                 <x-input type="number" placeholder="Ingresa tu número telefónico" wire:model.defer="telefono" class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
             </div> --}}
-            <div class="col-span-1 md:col-span-1" x-data="{ valor: ''}" x-init="
+            <div class="col-span-1 md:col-span-1" x-data="{ valor: ''}" x-on:form-reset.window="valor = ''" x-init="
                 const input = document.querySelector('#telefono');
                 const iti = window.intlTelInput(input, {
                     initialCountry: 'gt',
@@ -301,7 +302,7 @@ p-8 rounded-xl"
             </div>
 
 
-            <div x-data="{ valor: ''}">
+            <div x-data="{ valor: ''}" x-on:form-reset.window="valor = ''">
                 <x-label class="mb-1 font-bold text-[#03192B]">
                     CUI
                     <span class="text-red-600" x-show="valor === ''">*</span>
@@ -314,7 +315,7 @@ p-8 rounded-xl"
                 maxlength="13" />
             </div>
 
-            <div x-data="{ valor: ''}">
+            <div x-data="{ valor: ''}" x-on:form-reset.window="valor = ''">
                 <x-label class="mb-1 font-bold text-[#03192B]">
                     Zona
                     <span class="text-red-600" x-show="valor === ''">*</span>
@@ -340,7 +341,7 @@ p-8 rounded-xl"
         </div>
 
 
-        <div x-data="{ valor: ''}">
+        <div x-data="{ valor: ''}" x-on:form-reset.window="valor = ''">
             <x-label class="mb-1 mt-3 xl font-bold text-[#03192B]">
                 Domicilio
             <span class="text-red-600" x-show="valor === ''">*</span>
@@ -373,13 +374,17 @@ p-8 rounded-xl"
     <!-- Paso 2 -->
     <div x-show="paso === 2" wire:key="paso-2-{{ $tramite_id }}">
 
+        <div x-data="{ valor: '' }">
 
             <x-label class="mb-1 font-bold text-[#03192B]">
                 Trámite
+                <span class="text-red-600" x-show="valor === ''">*</span>
             </x-label>
 
             <select
-            wire:model.live="tramite_id" class="border rounded px-3 py-2 w-full">
+            wire:model.live="tramite_id" 
+            class="border rounded px-3 py-2 w-full"
+            x-model="valor">
             <option value="">
                 Seleccione un trámite
             </option>
@@ -390,6 +395,9 @@ p-8 rounded-xl"
                     </option>
                 @endforeach
             </select>
+        </div>
+
+            
 
 
             <!-- Requisitos por tramite -->
