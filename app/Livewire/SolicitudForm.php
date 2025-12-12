@@ -76,6 +76,10 @@ class SolicitudForm extends Component
     // enmascarar email
     public $emailEnmascarado;
 
+    // cargas familiares
+    public $tieneCargasFamiliares = false;
+    public $agregarCargas = null;
+
 
      public function mount()
     {
@@ -128,7 +132,7 @@ class SolicitudForm extends Component
 
 
     protected $messages = [
-        'cui.size' => 'El cui debe tener 13 caracteres.',
+        'cui.size' => 'El DPI debe tener 13 caracteres.',
         'email.email' => 'El email no tiene formato válido',
         'email.unique' => 'Ya existe una solicitud con el correo :input',
         'cui.unique' => 'Ya existe una solicitud con el cui :input'
@@ -277,34 +281,34 @@ class SolicitudForm extends Component
         {
             try {
                 if($paso == 1){
-                    // $this->validate([
-                    //     'nombres' => 'required|string|max:60',
-                    //     'apellidos' => 'required|string|max:60',
-                    //     'email' => [
-                    //         'required',
-                    //         'email',
-                    //         'max:45',
-                    //         Rule::unique('solicitudes', 'email')
-                    //     ],
+                    $this->validate([
+                        'nombres' => 'required|string|max:60',
+                        'apellidos' => 'required|string|max:60',
+                        'email' => [
+                            'required',
+                            'email',
+                            'max:45',
+                            Rule::unique('solicitudes', 'email')
+                        ],
 
-                    //     'telefono' => $this->reglasTelefonoPorPais(),
+                        'telefono' => $this->reglasTelefonoPorPais(),
 
-                    //     'codigo_pais' => 'required',
-                    //     'cui' => [
-                    //         'required',
-                    //         'string',
-                    //         'size:13',
-                    //         Rule::unique('solicitudes', 'cui'),
-                    //         // regla validacion cui
-                    //         function ($attribute, $value, $fail){
-                    //             if(!$this->cuiEsValido($value)){
-                    //                 $fail('El CUI ingresado no es válido según su estructura.');
-                    //             }
-                    //         }
-                    //     ],
-                    //     'domicilio' => 'required|string|max:255',
-                    //     'zona_id' => 'required|exists:zonas,id',
-                    // ]);
+                        'codigo_pais' => 'required',
+                        'cui' => [
+                            'required',
+                            'string',
+                            'size:13',
+                            Rule::unique('solicitudes', 'cui'),
+                            // regla validacion cui
+                            function ($attribute, $value, $fail){
+                                if(!$this->cuiEsValido($value)){
+                                    $fail('El DPI ingresado no es válido');
+                                }
+                            }
+                        ],
+                        'domicilio' => 'required|string|max:255',
+                        'zona_id' => 'required|exists:zonas,id',
+                    ]);
                 }
                 if($paso == 2){
                     $this->validate([
@@ -355,9 +359,17 @@ public function updatedTramiteId($value)
         $tramite = Tramite::with('requisitos')->find($value);
         // pone requisitios en propiedad publica $requisitos
         $this->requisitos = $tramite ? $tramite->requisitos->toArray() : [];
+
+        // detectar si hay cargas familiares
+        $this->tieneCargasFamiliares = $tramite
+        ? $tramite->requisitos->contains('nombre', 'Cargas familiares')
+        : false;
     } else {
         // si el usuario borra seleccion se borra lista
         $this->requisitos = [];
+        $this->tieneCargasFamiliares;
+
+   
     }
 }
 

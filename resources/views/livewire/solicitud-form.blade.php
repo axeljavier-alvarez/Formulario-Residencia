@@ -379,6 +379,8 @@ p-8 rounded-xl"
     </div>
 
     <!-- Paso 2 -->
+    {{-- <div x-show="paso === 2" wire:key="paso-2"> --}}
+
     <div x-show="paso === 2">
 
         <div x-data="{ valor: '' }">
@@ -439,6 +441,7 @@ p-8 rounded-xl"
 
                         <tbody>
                             @foreach($requisitos as $index => $requisito)
+                                @if ($requisito['nombre'] !== 'Cargas familiares')
                                 <tr class="border-b-2" style="border-color:#83BD3F;">
                                     <td class="px-4 py-3 text-[#03192B]">
                                         {{ $requisito['nombre'] }}
@@ -473,10 +476,42 @@ p-8 rounded-xl"
                                         </label>
                                     </td>
                                 </tr>
+
+                                @endif
                             @endforeach
                         </tbody>
+
+                        
                     </table>
+
+
+                    
                 </div>
+
+                @if($tieneCargasFamiliares)
+                <div>
+                    <p class="mt-5 text-center text-[#03192B] font-semibold mb-2">
+                                        ¿Desea agregar cargas familiares?
+                                    
+                    </p>
+
+
+                    <div class="flex items-center justify-center gap-8 text-[#03192B]">
+                        <label class="flex items-center gap-1">
+                            <input type="radio" wire:model="agregarCargas" value="si">
+                            Sí
+                        </label> 
+
+                        <label class="flex items-center gap-1">
+                            <input type="radio" wire:model="agregarCargas" value="no">
+                            No
+                        </label>
+                    </div>
+                </div>
+                @endif
+
+                
+                
             @endif
 
                     {{-- <button type="button"

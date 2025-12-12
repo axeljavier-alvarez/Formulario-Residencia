@@ -1,5 +1,5 @@
 SELECT * FROM solicitudes;
-
+SELECT * FROM requisitos;
 SELECT * FROM solicitudes_has_requisitos_tramites;
 
 /* ver el no_solicitud con su requisito_nombre y tramite_nombre */
@@ -18,7 +18,7 @@ JOIN
 JOIN 
     tramites t ON t.id = rt.tramite_id
 WHERE 
-    s.no_solicitud = '1-2025';
+    s.no_solicitud = '2-2025';
 
 
 
@@ -47,7 +47,7 @@ LEFT JOIN requisitos r
 LEFT JOIN tramites t 
     ON t.id = rt.tramite_id
 WHERE 
-    s.no_solicitud = '1-2025'
+    s.no_solicitud = '2-2025'
 ORDER BY 
     tramite, requisito;
 
@@ -61,6 +61,7 @@ SELECT
     s.telefono,
     s.cui,
     s.domicilio,
+    s.observaciones,
     z.nombre AS zona,
     e.nombre AS estado,
 
@@ -75,7 +76,7 @@ LEFT JOIN requisito_tramite rt ON rt.id = sr.requisito_tramite_id
 LEFT JOIN requisitos r ON r.id = rt.requisito_id
 LEFT JOIN tramites t ON t.id = rt.tramite_id
 
-WHERE s.no_solicitud = '1-2025'
+WHERE s.no_solicitud = '2-2025'
 
 GROUP BY 
     s.id, s.no_solicitud, s.nombres, s.apellidos, s.email, 
