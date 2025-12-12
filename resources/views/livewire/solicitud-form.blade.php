@@ -250,7 +250,7 @@ p-8 rounded-xl"
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
                 <x-input type="text" 
-                placeholder="Ingresa sus apellidos" 
+                placeholder="Ingrese sus apellidos" 
                 wire:model.defer="apellidos" 
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
@@ -262,7 +262,7 @@ p-8 rounded-xl"
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
                 <x-input type="email" 
-                placeholder="Ingresa tu email" 
+                placeholder="Ingrese tu email" 
                 wire:model.defer="email"
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
@@ -296,7 +296,7 @@ p-8 rounded-xl"
                     id="telefono"
                     type="text"
                     class="border rounded px-3 py-2 w-full box-border"
-                    placeholder="Ingresa tu número"
+                    placeholder="Ingrese tu número"
                     x-model="valor"
                     {{-- x-on:input="$wire.set('telefono', $event.target.value)" --}}
                     x-on:input="
@@ -314,7 +314,7 @@ p-8 rounded-xl"
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
                 <x-input type="text" 
-                placeholder="Ingresa tu cui" 
+                placeholder="Ingrese su cui" 
                 wire:model.defer="cui" 
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" 
                 x-model="valor"
@@ -354,7 +354,7 @@ p-8 rounded-xl"
             <span class="text-red-600" x-show="valor === ''">*</span>
             </x-label>
             <x-input type="text" 
-            placeholder="Ingresa la dirección de tu domicilio" 
+            placeholder="Ingrese la dirección de su domicilio" 
             wire:model.defer="domicilio" 
             class="placeholder-[#797775] border rounded px-3 py-2 w-full"
             x-model="valor" />

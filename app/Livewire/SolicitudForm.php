@@ -107,7 +107,15 @@ class SolicitudForm extends Component
             'required',
             'string',
             'size:13',
-            Rule::unique('solicitudes', 'cui')
+            Rule::unique('solicitudes', 'cui'),
+
+            // Regla de validación lógica del cui
+            function ($attribute, $value, $fail){
+                if(!$this->cuiEsValido($value)){
+                    $fail('El cui no es válido según su estructura de dígito verificador
+                    y códigos geográficos');
+                }
+            }
         ],
         'domicilio' => 'required|string|max:255',
         'observaciones' => 'nullable|string|max:255',
@@ -286,7 +294,13 @@ class SolicitudForm extends Component
                             'required',
                             'string',
                             'size:13',
-                            Rule::unique('solicitudes', 'cui')
+                            Rule::unique('solicitudes', 'cui'),
+                            // regla validacion cui
+                            function ($attribute, $value, $fail){
+                                if(!$this->cuiEsValido($value)){
+                                    $fail('El CUI ingresado no es válido según su estructura.');
+                                }
+                            }
                         ],
                         'domicilio' => 'required|string|max:255',
                         'zona_id' => 'required|exists:zonas,id',
@@ -402,23 +416,34 @@ public function resetFormulario()
 // logica del CUI
 private function cuiEsValido(string $cui): bool
 {
-    // 1. Validar formato inicial (opcional: quitar espacios o guiones)
-    // Ya que en el frontend se limpia a solo números, aquí nos aseguramos de 13 dígitos.
+   //1. Validar formato inicial
            $cui = preg_replace('/[^0-9]/', '', $cui);
-
+  // 2. verificar que la cadena tenga 13 caracteres sino no deja
            if(strlen($cui) !== 13) {
             return false;
            }
-    // 2. extraer partes
+    // 3. extraer partes
+    // substr $cadena original, $posicion_inicial y $longitud a extraer;
+    // primeros 8 digitos 
     $numero = substr($cui, 0, 8);
+    // 9no digitio (Digito de control)
     $verificador = (int)substr($cui, 8, 1);
+    // 10mo y 11mo digito (Código de departamento)
     $depto = (int) substr($cui, 9, 2);
+    //12mo y 13mo digito (Codigo de municipio)
     $muni = (int) substr($cui, 11, 2);
  
     // 3. Validación de códigos de departamento y municipio
     // Array de municipios por departamento (índice 0 = depto 1, índice 21 = depto 22)
-    $munisPorDepto = [17, 8, 16, 16, 13, 14, 19, 8, 24, 21, 9, 30, 32, 21, 8, 17, 14, 5, 11, 11, 7, 17];
+    
+    $munisPorDepto = [17, 8, 16, 16, 13, 14, 19, 8, 
+    24, 21, 9, 30, 32, 21, 8, 
+    17, 14, 5, 11, 11, 7, 17];
+
+    // verificar que el codigo departamentos este entre 1 y 22
     if($depto < 1 || $depto > count($munisPorDepto) ||
+    // restarle 1 al depto para verificar sus municipios por ejemplo
+    // 02-1 = 1 entonces 8 es el numero de municipios del departamento 02
     $muni < 1 || $muni > $munisPorDepto[$depto - 1]){
         return false; 
     }
