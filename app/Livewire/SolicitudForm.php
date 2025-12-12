@@ -277,34 +277,34 @@ class SolicitudForm extends Component
         {
             try {
                 if($paso == 1){
-                    $this->validate([
-                        'nombres' => 'required|string|max:60',
-                        'apellidos' => 'required|string|max:60',
-                        'email' => [
-                            'required',
-                            'email',
-                            'max:45',
-                            Rule::unique('solicitudes', 'email')
-                        ],
+                    // $this->validate([
+                    //     'nombres' => 'required|string|max:60',
+                    //     'apellidos' => 'required|string|max:60',
+                    //     'email' => [
+                    //         'required',
+                    //         'email',
+                    //         'max:45',
+                    //         Rule::unique('solicitudes', 'email')
+                    //     ],
 
-                        'telefono' => $this->reglasTelefonoPorPais(),
+                    //     'telefono' => $this->reglasTelefonoPorPais(),
 
-                        'codigo_pais' => 'required',
-                        'cui' => [
-                            'required',
-                            'string',
-                            'size:13',
-                            Rule::unique('solicitudes', 'cui'),
-                            // regla validacion cui
-                            function ($attribute, $value, $fail){
-                                if(!$this->cuiEsValido($value)){
-                                    $fail('El CUI ingresado no es válido según su estructura.');
-                                }
-                            }
-                        ],
-                        'domicilio' => 'required|string|max:255',
-                        'zona_id' => 'required|exists:zonas,id',
-                    ]);
+                    //     'codigo_pais' => 'required',
+                    //     'cui' => [
+                    //         'required',
+                    //         'string',
+                    //         'size:13',
+                    //         Rule::unique('solicitudes', 'cui'),
+                    //         // regla validacion cui
+                    //         function ($attribute, $value, $fail){
+                    //             if(!$this->cuiEsValido($value)){
+                    //                 $fail('El CUI ingresado no es válido según su estructura.');
+                    //             }
+                    //         }
+                    //     ],
+                    //     'domicilio' => 'required|string|max:255',
+                    //     'zona_id' => 'required|exists:zonas,id',
+                    // ]);
                 }
                 if($paso == 2){
                     $this->validate([
@@ -435,7 +435,7 @@ private function cuiEsValido(string $cui): bool
  
     // 3. Validación de códigos de departamento y municipio
     // Array de municipios por departamento (índice 0 = depto 1, índice 21 = depto 22)
-    
+
     $munisPorDepto = [17, 8, 16, 16, 13, 14, 19, 8, 
     24, 21, 9, 30, 32, 21, 8, 
     17, 14, 5, 11, 11, 7, 17];

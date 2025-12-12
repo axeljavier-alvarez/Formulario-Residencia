@@ -379,7 +379,7 @@ p-8 rounded-xl"
     </div>
 
     <!-- Paso 2 -->
-    <div x-show="paso === 2" wire:key="paso-2-{{ $tramite_id }}">
+    <div x-show="paso === 2">
 
         <div x-data="{ valor: '' }">
 
