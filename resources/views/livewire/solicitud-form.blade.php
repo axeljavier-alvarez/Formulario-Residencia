@@ -262,7 +262,7 @@ p-8 rounded-xl"
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
                 <x-input type="email" 
-                placeholder="Ingrese tu email" 
+                placeholder="Ingrese su email" 
                 wire:model.defer="email"
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
@@ -296,7 +296,7 @@ p-8 rounded-xl"
                     id="telefono"
                     type="text"
                     class="border rounded px-3 py-2 w-full box-border"
-                    placeholder="Ingrese tu número"
+                    placeholder="Ingrese su número"
                     x-model="valor"
                     {{-- x-on:input="$wire.set('telefono', $event.target.value)" --}}
                     x-on:input="
@@ -418,7 +418,7 @@ p-8 rounded-xl"
                 </h2>
 
                 <p class="text-center text-sm mb-4" style="color:#03192B;">
-                    Recuerda que puedes subir únicamente <strong> PDF </strong> o <strong>JPG</strong>
+                    Recuerde que puede subir únicamente <strong> PDF </strong> o <strong>JPG</strong>
                 </p>
 {{-- 
                 <div class="mt-4" wire:key="reqs-{{ $tramite_id }}">
@@ -576,10 +576,27 @@ p-8 rounded-xl"
 
                                         <span>Subir carga</span>
 
-                                        <input type="file"
+                                        {{-- <input type="file"
                                         class="hidden"
-                                        wire:model.defer="cargas.{{ $index }}.archivo
-                                        accept="application/pdf,image/jpeg">
+                                        wire:model="cargas.{{ $index }}.archivo
+                                        accept="application/pdf,image/jpeg">--}}
+
+                                        <!-- para archivo carga -->
+                                        @if(!$archivoCarga)
+                                            <input type="file" 
+                                                class="hidden"
+                                                wire:model.live="archivoCarga"
+                                                accept=".pdf,.jpg,.jpeg">
+                                        @endif
+
+                                        @error('archivoCarga')
+                                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+
+                                        @if(isset($cargas[$index]['archivo']))
+                                            <p class="text-green-600 text-sm mt-1">{{ $cargas[$index]['archivo']->getClientOriginalName() }}</p>
+                                        @endif
+
                                         </label>
                                     </td>
 

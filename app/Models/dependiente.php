@@ -12,7 +12,7 @@ class Dependiente extends Model
 
         public $timestamps = false;
 
-        protected $fillable = ['nombre'];
+        protected $fillable = ['nombres', 'apellidos'];
 
         public function solicitud()
         {

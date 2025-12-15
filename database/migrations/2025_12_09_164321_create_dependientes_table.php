@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('dependientes', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 45);
+            $table->string('nombres', 45);
+            $table->string('apellidos', 45);
             $table->foreignId('solicitud_id')->constrained('solicitudes')->onDelete('cascade');
             $table->timestamps();
         });

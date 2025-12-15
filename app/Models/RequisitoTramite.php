@@ -14,7 +14,11 @@ class RequisitoTramite extends Model
             'tramite_id'
         ];
 
-
+        // relacion con requisito
+        public function requisito()
+        {
+            return $this->belongsTo(Requisito::class, 'requisito_id');
+        }
         // muchos a muchos con solicitudes
         public function solicitudes()
         {

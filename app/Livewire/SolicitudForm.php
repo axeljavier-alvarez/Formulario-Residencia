@@ -15,11 +15,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 use App\Models\Tramite;
+use Livewire\WithFileUploads;
 
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NotificacionSolicitud;
 use App\Mail\NuevaSolicitudAdmin;
+use App\Models\DetalleSolicitud;
 
 class SolicitudForm extends Component
 {
@@ -83,6 +85,12 @@ class SolicitudForm extends Component
     // inicializar carga 1
     public $cargas = [];
     public $maxCargas= 4;
+
+    public $archivoCarga;
+
+    // para subir archivos
+        use WithFileUploads;
+
 
 
      public function mount()
@@ -149,24 +157,20 @@ class SolicitudForm extends Component
     //     $this->validateOnly($propertyName);
     // }
 
-    public function submit()
+   public function submit()
 {
     $validated = $this->validate($this->rules());
 
     $validated['anio'] = now()->year;
-
-    // campo estado
     $validated['estado_id'] = 1;
 
-    // validación por país
+    // Validación por país
     $this->validate([
         'telefono' => [
             'required', function($attribute, $value, $fail){
                 $codigo = $this->codigo_pais;
-
                 if(isset($this->reglasTelefonos[$codigo])){
                     $longitudRequerida = $this->reglasTelefonos[$codigo];
-
                     if(strlen($value) != $longitudRequerida) {
                         $fail("Este número debe tener {$longitudRequerida} dígitos.");
                     }
@@ -175,29 +179,22 @@ class SolicitudForm extends Component
         ]
     ]);
 
-    // teléfono completo
     $validated['telefono'] = '+' . $this->codigo_pais . $this->telefono;
 
     DB::beginTransaction();
 
     try {
-        // crear solicitud
+        // CREAR SOLICITUD
         $solicitud = Solicitud::create($validated);
 
-        // generar no_solicitud
+        // GENERAR NO_SOLICITUD
         $no_solicitud = $solicitud->id . '-' . $solicitud->anio;
+        $solicitud->update(['no_solicitud' => $no_solicitud]);
 
+        $this->ultimoNoSolicitud = $no_solicitud;
+        $this->mostrarExito = true;
 
-        // actualizar la propiedad directamente en la solicitud
-        $solicitud->update(['no_solicitud'=> $no_solicitud]);
-        // lo guardo para mostrarlo en el modal
-        $this->ultimoNoSolicitud=$no_solicitud;
-        // establecer propiedad para alpine
-        $this->mostrarExito=true;
-
-
-
-        // OBTENER IDs DE requisito_tramite para el tramite seleccionado
+        // OBTENER IDs DE RequisitoTramite para el trámite seleccionado
         $requisitosTramiteIDs = RequisitoTramite::where('tramite_id', $this->tramite_id)
             ->pluck('id')
             ->toArray();
@@ -205,37 +202,66 @@ class SolicitudForm extends Component
         // GUARDAR EN LA TABLA PIVOTE
         $solicitud->requisitosTramites()->sync($requisitosTramiteIDs);
 
-        // ENVIAR CORREO AL EMAIL DEL USUARIO
-        Mail::to($solicitud->email)
-        ->send(new NotificacionSolicitud(
-            "Tu solicitud con número {$solicitud->no_solicitud} fue registrada correctamente."
-        ));
+        // GUARDAR CARGAS FAMILIARES
+        if($this->agregarCargas === 'si' && count($this->cargas) > 0){
+            foreach($this->cargas as $carga) {
+                if(empty($carga['nombres']) || empty($carga['apellidos'])){
+                    continue;
+                }
 
-        // ENVIAR CORREO AL ADMINISTRADO
+                $solicitud->dependientes()->create([
+                    'nombres' => $carga['nombres'],
+                    'apellidos'=> $carga['apellidos']
+                ]);
+            }
+        }
+
+        // SUBIR ARCHIVO DE CARGAS FAMILIARES
+        if($this->archivoCarga){
+            $requisitoCarga = RequisitoTramite::where('tramite_id', $this->tramite_id)
+                ->whereHas('requisito', function($q){
+                    $q->where('nombre', 'Cargas familiares');
+                })->first();
+
+            if($requisitoCarga){
+                $path = $this->archivoCarga->store('cargas_familiares', 'public');
+
+                DetalleSolicitud::create([
+                    'path' => $path,
+                    'solicitud_id' => $solicitud->id,
+                    'requisito_tramite_id' => $requisitoCarga->id
+                ]);
+            }
+        }
+
+        // ENVIAR CORREO AL USUARIO
+        if($solicitud->email){
+            Mail::to($solicitud->email)
+                ->send(new NotificacionSolicitud(
+                    "Tu solicitud con número {$solicitud->no_solicitud} fue registrada correctamente."
+                ));
+        }
+
+        // ENVIAR CORREO AL ADMIN
         Mail::to('axel5javier536@gmail.com')
-        ->send(new NuevaSolicitudAdmin($solicitud));
-
-
-        // MOSTRAR MENSAJE DE ALPINE
-        // $this->mostrarExito = true;
-        // $this->ultimoNoSolicitud = $solicitud->no_solicitud;
+            ->send(new NuevaSolicitudAdmin($solicitud));
 
         DB::commit();
 
-        // enmascarando el email
+        // ENMASCARAR EMAIL
         $this->emailEnmascarado = $this->enmascararEmail($solicitud->email);
-
-        // $this->resetExcept('anio');        
         $this->zonas = Zona::all();
-
-        // $this->toast=[
-        //     'type' => 'success',
-        //     'message' => 'Solicitud enviada correctamente'
-        // ];
 
     } catch(\Throwable $e){
         DB::rollBack();
-        dd($e->getMessage());
+        // dd($e->getMessage()); // Solo mensaje
+        // Mostrar error
+        dd([
+            'mensaje' => $e->getMessage(),
+            'archivo' => isset($this->archivoCarga) ? $this->archivoCarga->getClientOriginalName() : null,
+            'tramite_id' => $this->tramite_id,
+            'cargas' => $this->cargas
+        ]);
     }
 }
 
@@ -318,6 +344,15 @@ class SolicitudForm extends Component
                     $this->validate([
                         'tramite_id' => 'required|exists:tramites,id',
                     ]);
+
+                    if ($this->tieneCargasFamiliares && $this->agregarCargas === 'si'){
+                        $this->validate([
+                             'cargas.*.nombres'   => 'required|string|max:45',
+                             'cargas.*.apellidos' => 'required|string|max:45',
+                             'archivoCarga'       => 'required|file|mimes:pdf,jpg,jpeg|max:2048',
+                        ]);
+                    }
+
                 }
                 if($paso == 3){
                     $this->validate([
@@ -416,7 +451,7 @@ public function resetFormulario()
         'apellidos',
         'email',
         'telefono',
-        'codigo_pais',
+        //'codigo_pais',
         'cui',
         'domicilio',
         'observaciones',
