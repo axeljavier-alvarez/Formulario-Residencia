@@ -147,17 +147,33 @@ class SolicitudForm extends Component
 
 
     protected $messages = [
-        'cui.size' => 'El DPI debe tener 13 caracteres.',
-        'email.email' => 'El email no tiene formato válido',
-        'email.unique' => 'Ya existe una solicitud con el correo :input',
-        'cui.unique' => 'Ya existe una solicitud con el cui :input',
-        'requisitos.*.archivo.required' => 'Debe subir este requisito.',
-        'requisitos.*.archivo.mimes' => 'Solo se permiten archivos PDF o JPG.',
-        'requisitos.*.archivo.max' => 'El archivo no debe superar 2MB',
-        'tramite_id.required' => 'Debe seleccionar un trámite.',
-        'tramite_id.exists' => 'Debe seleccionar un trámite válido',
+    // Paso 1 - campos generales
+    'nombres.required' => 'Debe ingresar los nombres.',
+    'apellidos.required' => 'Debe ingresar los apellidos.',
+    'email.required' => 'Debe ingresar el correo electrónico.',
+    'email.email' => 'El correo electrónico no tiene un formato válido.',
+    'email.unique' => 'Ya existe una solicitud con el correo :input.',
+    'telefono.required' => 'Debe ingresar el teléfono.',
+    'cui.required' => 'Debe ingresar el DPI.',
+    'cui.size' => 'El DPI debe tener 13 caracteres.',
+    'cui.unique' => 'Ya existe una solicitud con el DPI :input.',
+    'domicilio.required' => 'Debe ingresar el domicilio.',
+    'zona_id.required' => 'Debe seleccionar una zona.',
+    'zona_id.exists' => 'La zona seleccionada no es válida.',
 
-    ];
+    // Paso 2 - trámites y requisitos
+    'tramite_id.required' => 'Debe seleccionar un trámite.',
+    'tramite_id.exists' => 'Debe seleccionar un trámite válido.',
+    'requisitos.*.archivo.required' => 'Debe subir este requisito.',
+    'requisitos.*.archivo.mimes' => 'Solo se permiten archivos PDF o JPG.',
+    'requisitos.*.archivo.max' => 'El archivo no debe superar 2MB',
+
+    // Cargas familiares (si quieres puedes agregar más específico si lo manejas)
+    'cargas.*.nombres.required' => 'Debe ingresar los nombres de la carga familiar.',
+    'cargas.*.apellidos.required' => 'Debe ingresar los apellidos de la carga familiar.',
+    'archivoCarga.required' => 'Debe ingresar el documento de la carga familiar.',
+];
+
 
 
 
