@@ -2,7 +2,7 @@ SELECT * FROM solicitudes;
 SELECT * FROM requisitos;
 SELECT * FROM solicitudes_has_requisitos_tramites;
 
-   
+   /*axel */
 /* VER TODOS LOS DATOS POR SOLICITUD */
 SELECT 
     s.id AS solicitud_id,
@@ -56,7 +56,7 @@ LEFT JOIN tramites t
 LEFT JOIN dependientes d 
        ON d.solicitud_id = s.id
 
-WHERE s.no_solicitud = '6-2025'
+WHERE s.no_solicitud = '8-2025'
 
 GROUP BY 
     s.id, s.no_solicitud, s.nombres, s.apellidos, s.email,
@@ -141,7 +141,7 @@ LEFT JOIN tramites t
 LEFT JOIN dependientes d 
        ON d.solicitud_id = s.id
 
-WHERE s.no_solicitud = '6-2025'
+WHERE s.no_solicitud = '8-2025'
 
 GROUP BY 
     s.id, s.no_solicitud, s.nombres, s.apellidos,
@@ -179,7 +179,7 @@ JOIN requisitos r
 LEFT JOIN dependientes d 
        ON d.solicitud_id = s.id
 
-WHERE s.no_solicitud = '6-2025'
+WHERE s.no_solicitud = '8-2025'
   AND r.nombre = 'Cargas familiares'
 
 GROUP BY 

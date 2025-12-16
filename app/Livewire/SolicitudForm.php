@@ -86,7 +86,10 @@ class SolicitudForm extends Component
     public $cargas = [];
     public $maxCargas= 4;
 
+    // public $archivoCarga = [];
+
     public $archivoCarga;
+
 
     // para subir archivos
         use WithFileUploads;
@@ -345,70 +348,114 @@ class SolicitudForm extends Component
         {
             try {
                 if($paso == 1){
-                    // $this->validate([
-                    //     'nombres' => 'required|string|max:60',
-                    //     'apellidos' => 'required|string|max:60',
-                    //     'email' => [
-                    //         'required',
-                    //         'email',
-                    //         'max:45',
-                    //         Rule::unique('solicitudes', 'email')
-                    //     ],
+                    $this->validate([
+                        'nombres' => 'required|string|max:60',
+                        'apellidos' => 'required|string|max:60',
+                        'email' => [
+                            'required',
+                            'email',
+                            'max:45',
+                            Rule::unique('solicitudes', 'email')
+                        ],
 
-                    //     'telefono' => $this->reglasTelefonoPorPais(),
+                        'telefono' => $this->reglasTelefonoPorPais(),
 
-                    //     'codigo_pais' => 'required',
-                    //     'cui' => [
-                    //         'required',
-                    //         'string',
-                    //         'size:13',
-                    //         Rule::unique('solicitudes', 'cui'),
-                    //         // regla validacion cui
-                    //         function ($attribute, $value, $fail){
-                    //             if(!$this->cuiEsValido($value)){
-                    //                 $fail('El DPI ingresado no es válido');
-                    //             }
-                    //         }
-                    //     ],
-                    //     'domicilio' => 'required|string|max:255',
-                    //     'zona_id' => 'required|exists:zonas,id',
-                    // ]);
+                        'codigo_pais' => 'required',
+                        'cui' => [
+                            'required',
+                            'string',
+                            'size:13',
+                            Rule::unique('solicitudes', 'cui'),
+                            // regla validacion cui
+                            function ($attribute, $value, $fail){
+                                if(!$this->cuiEsValido($value)){
+                                    $fail('El DPI ingresado no es válido');
+                                }
+                            }
+                        ],
+                        'domicilio' => 'required|string|max:255',
+                        'zona_id' => 'required|exists:zonas,id',
+                    ]);
                 }
-
                 if ($paso == 2) {
 
-                        $this->validate([
-                            'tramite_id' => 'required|exists:tramites,id',
-                        ]);
+                    $this->validate([
+                        'tramite_id' => 'required|exists:tramites,id',
+                    ]);
 
-                        // 🔹 SOLO requisitos visibles en la tabla (excluye Cargas familiares)
-                        $requisitosTabla = collect($this->requisitos)
-                            ->filter(fn ($req) => $req['nombre'] !== 'Cargas familiares')
-                            ->values();
+                    $errores = [];
 
-                        $errores = [];
 
-                        foreach ($requisitosTabla as $index => $req) {
-                            if (empty($req['archivo'])) {
-                                $errores["requisitos.$index.archivo"] =
-                                    "Debe subir el requisito: {$req['nombre']}";
+                    // Requisitos de la tabla (excluye Cargas familiares)
+                    $requisitosTabla = collect($this->requisitos)
+                    ->filter(fn ($req) =>
+                        $req['nombre'] !== 'Cargas familiares' &&
+                        $req['nombre'] !== 'Fotocopia del boleto de ornato'
+                    )
+                    ->values();
+
+
+                    foreach ($requisitosTabla as $index => $req) {
+                        if (empty($req['archivo'])) {
+                            $errores["requisitos.{$index}.archivo"] =
+                                "Debe subir el requisito: {$req['nombre']}";
+                        }
+
+                    }
+
+
+
+                    // Validar selección de cargas familiares
+                    if ($this->tieneCargasFamiliares && is_null($this->agregarCargas)) {
+                        $errores['cargas_familiares'] =
+                            'Debe indicar si desea agregar cargas familiares.';
+                    }
+
+                    // Si eligió "sí", validar datos de cargas
+                    if ($this->tieneCargasFamiliares && $this->agregarCargas === 'si') {
+                        // try {
+                        //     $this->validate([
+                        //         'cargas.*.nombres'   => 'required|string|max:45',
+                        //         'cargas.*.apellidos' => 'required|string|max:45',
+                        //         'archivoCarga'       => 'required|file|mimes:pdf,jpg,jpeg|max:2048',
+                        //     ]);
+                        // } catch (ValidationException $e) {
+                        //     $errores = array_merge(
+                        //         $errores,
+                        //         $e->validator->errors()->toArray()
+                        //     );
+                        // }
+
+                        foreach ($this->cargas as $index => $carga){
+                            $num = $index + 1;
+
+                            if(empty($carga['nombres'])){
+                                $errores["cargas.{$index}.nombres"] =
+                                    "Debe ingresar los nombres de la carga familiar {$num}.";
                             }
+
+                            if(empty($carga['apellidos'])){
+                                $errores["cargas.{$index}.apellidos"] =
+                                    "Debe ingresar los apellidos de la carga familiar {$num}.";
+                            }
+
+                            // if (empty($this->archivoCarga[$index])) {
+                            //     $errores["archivoCarga.{$index}"] =
+                            //         "Debe ingresar el documento de la carga familiar {$num}.";
+                            // }
                         }
 
-                        if (!empty($errores)) {
-                            throw ValidationException::withMessages($errores);
-                        }
-
-                        // 🔹 Validar cargas familiares SOLO si aplica
-                        if ($this->tieneCargasFamiliares && $this->agregarCargas === 'si') {
-                            $this->validate([
-                                'cargas.*.nombres'   => 'required|string|max:45',
-                                'cargas.*.apellidos' => 'required|string|max:45',
-                                'archivoCarga'       => 'required|file|mimes:pdf,jpg,jpeg|max:2048',
-                            ]);
+                        if(!$this->archivoCarga){
+                            $errores['archivoCarga']=
+                            "Debe ingresar el documento de la carga familiar.";
                         }
                     }
 
+                    // Si hay errores mostarlos todos
+                    if (!empty($errores)) {
+                        throw ValidationException::withMessages($errores);
+                    }
+                }
 
                 if($paso == 3){
                     $this->validate([
