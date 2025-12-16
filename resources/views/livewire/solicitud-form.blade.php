@@ -5,9 +5,23 @@ x-data="{
 paso: 1,
 {{-- toast: @entangle('toast'), --}}
 mostrarConfirmacion: false,
+mostrarConfirmacionEliminar: false,
+archivoAEliminar: null,
 confirmarEnvio() {
    this.mostrarConfirmacion = true;
 },
+
+abrirModalEliminar(archivoIndex){
+this.archivoAEliminar = archivoIndex;
+this.mostrarConfirmacionEliminar = true;
+},
+
+eliminarArchivo(){
+$wire.eliminarArchivoRequisito(this.archivoAEliminar);
+this.mostrarConfirmacionEliminar = false;
+this.archivoAEliminar = null
+},
+
 siguientePaso(){
 this.paso++;
 },
@@ -108,6 +122,40 @@ p-8 rounded-xl"
             </div>
         @endif
 
+        <!-- Modal de confirmar eliminacion de archivo -->
+        <div
+        x-show="mostrarConfirmacionEliminar"
+        class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+        >
+
+        <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg space-y-4">
+            <h2 class="text-xl font-bold text-[#03192B]">
+                Confirmar envío
+            </h2>
+            <p class="text-[#03192B]">
+                ¿Está seguro de que desea eliminar este archivo?
+            </p>
+
+            
+
+            <div class="flex justify-end gap-3 mt-4">
+                <button @click="mostrarConfirmacionEliminar = false"
+                class="px-4 py-2 rounded bg-gray-200 text-[#03192B] hover:bg-gray-300" 
+                >
+                Cancelar
+                </button>
+                <button @click="eliminarArchivo()"
+                class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+                >
+                Eliminar
+                </button>
+
+
+               
+            </div>
+        </div>
+
+        </div>
 
         <!-- Modal de Confirmacion -->
 
@@ -121,9 +169,9 @@ p-8 rounded-xl"
             <h2 class="text-xl font-bold text-[#03192B]">
                 Confirmar envío
             </h2>
-            <p class="text-[#03192B]"> ¿Estás seguro de que deseas enviar la solicitud?
+            <p class="text-[#03192B]"> ¿Esta seguro de que desea enviar la solicitud?
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;Por favor revisa tus datos antes de continuar
+                &nbsp;&nbsp;Por favor revise sus datos antes de continuar
             </p>
 
 
@@ -440,7 +488,9 @@ p-8 rounded-xl"
 
                         <tbody>
                             @foreach($requisitos as $index => $requisito)
-                                @if ($requisito['nombre'] !== 'Cargas familiares')
+                                {{-- @if ($requisito['nombre'] !== 'Cargas familiares') --}}
+                                @if($requisito['nombre'] && $requisito['nombre'] !== 'Cargas familiares')
+
                                 <tr class="border-b-2" style="border-color:#83BD3F;">
                                     <td class="px-4 py-3 text-[#03192B]">
                                         {{ $requisito['nombre'] }}
@@ -454,6 +504,10 @@ p-8 rounded-xl"
                                             class="block mx-auto"
                                         > --}}
 
+                                        <!-- desaparecer boton cuando haya nuevo archivo -->
+
+                                        @if(!isset($requisitos[$index]['archivo']))
+                                        
                                         <label class="cursor-pointer inline-flex items-center gap-2
                                         bg-[#10069F] text-white px-4 py-2 rounded hover:bg-[#0d057f]">
 
@@ -473,6 +527,37 @@ p-8 rounded-xl"
                                                 class="hidden"
                                                 >
                                         </label>
+                                        @else
+
+                                        <div class="flex items-center gap-2 mt-1">
+
+                                        <p class="mr-4 text-[#10069F] text-sm mt-1">
+                                            {{ $requisitos[$index]['archivo']->getClientOriginalName() }}
+                                        </p>
+                                      
+
+                                        <button type="button"
+                                        {{-- wire:click="eliminarArchivoRequisito({{ $index }})" --}}
+                                        @click="abrirModalEliminar({{ $index }})"
+                                        class="text-red-600 hover:text-red-800 font-bold"
+                                        title="Eliminar Archivo"
+                                        >
+
+                                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                                            stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" 
+                                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166
+                                                    m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077
+                                                    L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397
+                                                    m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397
+                                                    m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0
+                                                    c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                        </svg>
+                                                                            
+                                       </button>
+                                        </div>
+                                        
+                                        @endif
                                     </td>
                                 </tr>
 

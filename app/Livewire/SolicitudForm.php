@@ -364,34 +364,34 @@ class SolicitudForm extends Component
         {
             try {
                 if($paso == 1){
-                    $this->validate([
-                        'nombres' => 'required|string|max:60',
-                        'apellidos' => 'required|string|max:60',
-                        'email' => [
-                            'required',
-                            'email',
-                            'max:45',
-                            Rule::unique('solicitudes', 'email')
-                        ],
+                    // $this->validate([
+                    //     'nombres' => 'required|string|max:60',
+                    //     'apellidos' => 'required|string|max:60',
+                    //     'email' => [
+                    //         'required',
+                    //         'email',
+                    //         'max:45',
+                    //         Rule::unique('solicitudes', 'email')
+                    //     ],
 
-                        'telefono' => $this->reglasTelefonoPorPais(),
+                    //     'telefono' => $this->reglasTelefonoPorPais(),
 
-                        'codigo_pais' => 'required',
-                        'cui' => [
-                            'required',
-                            'string',
-                            'size:13',
-                            Rule::unique('solicitudes', 'cui'),
-                            // regla validacion cui
-                            function ($attribute, $value, $fail){
-                                if(!$this->cuiEsValido($value)){
-                                    $fail('El DPI ingresado no es válido');
-                                }
-                            }
-                        ],
-                        'domicilio' => 'required|string|max:255',
-                        'zona_id' => 'required|exists:zonas,id',
-                    ]);
+                    //     'codigo_pais' => 'required',
+                    //     'cui' => [
+                    //         'required',
+                    //         'string',
+                    //         'size:13',
+                    //         Rule::unique('solicitudes', 'cui'),
+                    //         // regla validacion cui
+                    //         function ($attribute, $value, $fail){
+                    //             if(!$this->cuiEsValido($value)){
+                    //                 $fail('El DPI ingresado no es válido');
+                    //             }
+                    //         }
+                    //     ],
+                    //     'domicilio' => 'required|string|max:255',
+                    //     'zona_id' => 'required|exists:zonas,id',
+                    // ]);
                 }
                 if ($paso == 2) {
 
@@ -679,6 +679,16 @@ public function eliminarCarga($index)
     if($index === 0) return;
     unset($this->cargas[$index]);
     $this->cargas = array_values($this->cargas);
+}
+
+// eliminar archivo requisito
+public function eliminarArchivoRequisito($index)
+{
+    // limpiar
+    $this->requisitos[$index]['archivo'] = null;
+    // resetear en errores de validacion
+    $this->resetErrorBag("requisitos.$index.archivo");
+
 }
 
 }
