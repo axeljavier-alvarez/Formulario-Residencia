@@ -24,7 +24,7 @@ p-8 rounded-xl"
 
 >
 
-<img src="/storage/imagenes/icono_muni.png" alt="Icono" class="w-20 mx-auto">
+<img src="/imagenes/icono_muni.png" alt="Icono" class="w-20 mx-auto">
 
 
    <h1 class="text-3xl font-extrabold text-center text-[#10069F] mb-4">
@@ -36,14 +36,14 @@ p-8 rounded-xl"
         Complete la información requerida para registrar su solicitud
     </p>
 
-    
+
 
 
     <!-- Indicadores de pasos -->
 <div class="flex justify-center gap-4 my-6">
 
     <!-- Paso 1 -->
-    <div 
+    <div
         @click="paso = 1"
         class="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center border-2"
         :class="paso === 1 ? 'bg-[#83BD3F;] text-white' : 'bg-white text-black border-[#83BD3F;]'"
@@ -52,7 +52,7 @@ p-8 rounded-xl"
     </div>
 
     <!-- Paso 2 -->
-        <div 
+        <div
             @click="
                 $wire.validarPaso(1)
                     .then(valid => {
@@ -69,7 +69,7 @@ p-8 rounded-xl"
 
 
     <!-- Paso 3 -->
-    <div 
+    <div
         @click="
             $wire.validarPaso(2).then(valid => {
                 if (valid) paso = 3;
@@ -84,7 +84,7 @@ p-8 rounded-xl"
 </div>
 
 
-{{-- 
+{{--
     <template x-if="toast">
         <div>
             <x-toast x-bind:type="toast.type">
@@ -130,15 +130,15 @@ p-8 rounded-xl"
             <div class="flex justify-end gap-3 mt-4">
 
                 <!-- Cancelar (gris oscuro como Atrás) -->
-                <button @click="mostrarConfirmacion = false" class="px-4 py-2 rounded bg-gray-200 text-[#03192B] hover:bg-gray-300" > 
-                    Cancelar 
+                <button @click="mostrarConfirmacion = false" class="px-4 py-2 rounded bg-gray-200 text-[#03192B] hover:bg-gray-300" >
+                    Cancelar
                 </button>
 
                 <!-- Enviar (negro como Siguiente) -->
                 <button
                 @click="
                     $wire.submit().then(() => {
-                        mostrarConfirmacion = false; 
+                        mostrarConfirmacion = false;
                         {{-- $wire.set('mostrarExito', true) --}}
                     })
                 "
@@ -159,9 +159,9 @@ p-8 rounded-xl"
        <!-- Modal de Éxito -->
         <!-- Modal de Éxito -->
 
-       <div 
+       <div
 
-            x-show="$wire.mostrarExito" 
+            x-show="$wire.mostrarExito"
 
             x-transition
 
@@ -185,14 +185,14 @@ p-8 rounded-xl"
                     Se envió un correo a: <strong>{{ $emailEnmascarado }}</strong>
                 </p>
 
-                <button 
+                <button
 
                     @click="
                     $wire.resetFormulario();
                     $wire.set('mostrarExito', false);
                     paso = 1;
                     $dispatch('form-reset');
-                    " 
+                    "
 
                     class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
 
@@ -206,7 +206,7 @@ p-8 rounded-xl"
         </div>
 
 
-      
+
 
 
 
@@ -232,13 +232,13 @@ p-8 rounded-xl"
 
             <div x-data="{ valor: '' }"  x-on:form-reset.window="valor = ''">
                 <x-label class="mb-1 font-bold text-[#03192B]">
-                    Nombres 
+                    Nombres
                             <span class="text-red-600" x-show="valor === ''">*</span>
 
                 </x-label>
-                <x-input type="text" 
-                placeholder="Ingrese sus nombres" 
-                wire:model.defer="nombres" 
+                <x-input type="text"
+                placeholder="Ingrese sus nombres"
+                wire:model.defer="nombres"
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
                 {{-- @error('nombre') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror --}}
@@ -249,9 +249,9 @@ p-8 rounded-xl"
                     Apellidos
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
-                <x-input type="text" 
-                placeholder="Ingrese sus apellidos" 
-                wire:model.defer="apellidos" 
+                <x-input type="text"
+                placeholder="Ingrese sus apellidos"
+                wire:model.defer="apellidos"
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
             </div>
@@ -261,8 +261,8 @@ p-8 rounded-xl"
                     Email
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
-                <x-input type="email" 
-                placeholder="Ingrese su email" 
+                <x-input type="email"
+                placeholder="Ingrese su email"
                 wire:model.defer="email"
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
@@ -313,10 +313,10 @@ p-8 rounded-xl"
                     CUI
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
-                <x-input type="text" 
-                placeholder="Ingrese su cui" 
-                wire:model.defer="cui" 
-                class="placeholder-[#797775] border rounded px-3 py-2 w-full" 
+                <x-input type="text"
+                placeholder="Ingrese su cui"
+                wire:model.defer="cui"
+                class="placeholder-[#797775] border rounded px-3 py-2 w-full"
                 x-model="valor"
                 maxlength="13"
                 x-on:input="$event.target.value = $event.target.value.replace(/[^0-9]/g, '')" />
@@ -328,8 +328,8 @@ p-8 rounded-xl"
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
 
-                <select 
-                wire:model.defer="zona_id" 
+                <select
+                wire:model.defer="zona_id"
                 class="border rounded px-3 py-2 w-full"
                 x-model="valor"
                 >
@@ -353,9 +353,9 @@ p-8 rounded-xl"
                 Domicilio
             <span class="text-red-600" x-show="valor === ''">*</span>
             </x-label>
-            <x-input type="text" 
-            placeholder="Ingrese la dirección de su domicilio" 
-            wire:model.defer="domicilio" 
+            <x-input type="text"
+            placeholder="Ingrese la dirección de su domicilio"
+            wire:model.defer="domicilio"
             class="placeholder-[#797775] border rounded px-3 py-2 w-full"
             x-model="valor" />
         </div>
@@ -374,7 +374,7 @@ p-8 rounded-xl"
             </button>
         </div>
 
-        
+
 
     </div>
 
@@ -391,7 +391,7 @@ p-8 rounded-xl"
             </x-label>
 
             <select
-            wire:model.live="tramite_id" 
+            wire:model.live="tramite_id"
             class="border rounded px-3 py-2 w-full"
             x-model="valor">
             <option value="">
@@ -406,7 +406,7 @@ p-8 rounded-xl"
             </select>
         </div>
 
-            
+
 
 
             <!-- Requisitos por tramite -->
@@ -420,7 +420,7 @@ p-8 rounded-xl"
                 <p class="text-center text-sm mb-4" style="color:#03192B;">
                     Recuerde que puede subir únicamente <strong> PDF </strong> o <strong>JPG</strong>
                 </p>
-{{-- 
+{{--
                 <div class="mt-4" wire:key="reqs-{{ $tramite_id }}">
                 <ul class="list-disc list-inside text-[#03192B]">
                     @foreach($requisitos as $requisito)
@@ -435,7 +435,7 @@ p-8 rounded-xl"
                             <tr class="border-b-4" style="border-color:#83BD3F;">
                                 <th class="px-4 py-3 font-bold text-[#03192B]">Requisitos</th>
                                 <th class="px-4 py-3 font-bold text-[#03192B] text-center">Agregar PDF / JPG</th>
-                                
+
                             </tr>
                         </thead>
 
@@ -448,27 +448,27 @@ p-8 rounded-xl"
                                     </td>
 
                                     <td class="px-4 py-3 text-right">
-                                        {{-- <input 
-                                            type="file" 
+                                        {{-- <input
+                                            type="file"
                                             wire:model="requisitos.{{ $index }}.archivo"
                                             accept="application/pdf,image/jpeg"
                                             class="block mx-auto"
                                         > --}}
 
-                                        <label class="cursor-pointer inline-flex items-center gap-2 
+                                        <label class="cursor-pointer inline-flex items-center gap-2
                                         bg-[#10069F] text-white px-4 py-2 rounded hover:bg-[#0d057f]">
 
                                                 {{-- <x-heroicons-outline.adjustments-horizontal /> --}}
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                     viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12l7-8m0 0l7 8m-7-8v12" />
                                                 </svg>
 
                                                 <span>Subir archivo</span>
 
-                                                <input 
-                                                type="file" 
+                                                <input
+                                                type="file"
                                                 wire:model="requisitos.{{ $index }}.archivo"
                                                 accept="application/pdf,image/jpeg"
                                                 class="hidden"
@@ -482,18 +482,18 @@ p-8 rounded-xl"
                             @endforeach
                         </tbody>
 
-                        
+
                     </table>
 
 
-                    
+
                 </div>
 
                 @if($tieneCargasFamiliares)
                 <div>
                     <p class="mt-5 text-center text-[#03192B] font-semibold mb-2">
                                         ¿Desea agregar cargas familiares?
-                                    
+
                     </p>
 
 
@@ -501,7 +501,7 @@ p-8 rounded-xl"
                         <label class="flex items-center gap-1">
                             <input type="radio" wire:model.live="agregarCargas" value="si">
                             Sí
-                        </label> 
+                        </label>
 
                         <label class="flex items-center gap-1">
                             <input type="radio" wire:model.live="agregarCargas" value="no">
@@ -544,7 +544,7 @@ p-8 rounded-xl"
 
                                 @foreach ($cargas as $index => $carga )
                                 <tr wire:key="carga-{{ $index }}">
-                                    
+
 
                                   <tr class="border-b" style="border-color:#83BD3F;">
                                     <td class="px-4 py-3 font-semibold text-[#03192B]">
@@ -564,13 +564,13 @@ p-8 rounded-xl"
                                         >
                                     </td>
                                     <td class="px-4 py-3 text-center">
-                                        <label class="cursor-pointer inline-flex 
+                                        <label class="cursor-pointer inline-flex
                                         items-center gap-2 bg-[#83BD3F] text-white px-4
                                         py-2 rounded hover:bg-green-700 transition">
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12l7-8m0 0l7 8m-7-8v12" />
                                         </svg>
 
@@ -583,7 +583,7 @@ p-8 rounded-xl"
 
                                         <!-- para archivo carga -->
                                         @if(!$archivoCarga)
-                                            <input type="file" 
+                                            <input type="file"
                                                 class="hidden"
                                                 wire:model.live="archivoCarga"
                                                 accept=".pdf,.jpg,.jpeg">
@@ -616,14 +616,14 @@ p-8 rounded-xl"
                                     </td>
                                  </tr>
 
-                                
+
 
 
 
 
 
                                 @endforeach
-                              
+
                             </tbody>
                         </table>
 
@@ -661,14 +661,14 @@ p-8 rounded-xl"
 
                 </div>
 
-               
-                
+
+
                 @endif
 
 
                 <!-- Agregarlo en caso de cargas familiares -->
-                
-                
+
+
             @endif
 
                     {{-- <button type="button"
@@ -677,14 +677,14 @@ p-8 rounded-xl"
                 Atrás
             </button> --}}
 
-            
+
                     {{-- <button type="button"
                 wire:click="verRequisitos"
                 class="mt-3 px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
                 Ver Requisitos
             </button> --}}
 
-        
+
             <div class="mt-4 flex justify-end">
             <button type="button"
                 @click="$wire.validarPaso(2).then(valid => valid ? siguientePaso() : null)"
@@ -693,7 +693,7 @@ p-8 rounded-xl"
                 Siguiente
             </button>
             </div>
-            
+
 
 
     </div>

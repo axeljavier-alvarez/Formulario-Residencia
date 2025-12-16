@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 class SolicitudController extends Controller
 {
+
+
     
 
     // Mostrar el formulario
@@ -41,8 +43,8 @@ class SolicitudController extends Controller
     //     return redirect()->back()->with('success', 'Solicitud enviada correctamente');
     // }
 
-    
-    
+
+
 
 
 }
