@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('tramites', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 100);
+            $table->string('slug', 255);
+
         });
     }
 

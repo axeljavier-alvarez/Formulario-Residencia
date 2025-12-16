@@ -5,21 +5,38 @@ x-data="{
 paso: 1,
 {{-- toast: @entangle('toast'), --}}
 mostrarConfirmacion: false,
+{{-- eliminararchivorequisito --}}
+mostrarConfirmacionEliminarRequisito: false,
+
 mostrarConfirmacionEliminar: false,
 archivoAEliminar: null,
+mostrarErrorArchivo: false,
+mensaje: '',
+
 confirmarEnvio() {
    this.mostrarConfirmacion = true;
 },
 
-abrirModalEliminar(archivoIndex){
-this.archivoAEliminar = archivoIndex;
-this.mostrarConfirmacionEliminar = true;
+{{-- eliminararchivorequisito --}}
+abrirModalEliminarCarga(archivoIndex){
+    this.archivoAEliminar = archivoIndex;
+    this.mostrarConfirmacionEliminar = true;
+},
+abrirModalEliminarRequisito(archivoIndex){
+    this.archivoAEliminar = archivoIndex;
+    this.mostrarConfirmacionEliminarRequisito = true;
 },
 
 eliminarArchivo(){
 $wire.eliminarArchivoRequisito(this.archivoAEliminar);
-this.mostrarConfirmacionEliminar = false;
+this.mostrarConfirmacionEliminarRequisito = false;
 this.archivoAEliminar = null
+},
+
+eliminarArchivoCarga() {
+    $wire.eliminarArchivoCarga(this.archivoAEliminar); 
+    this.mostrarConfirmacionEliminar = false;
+    this.archivoAEliminar = null;
 },
 
 siguientePaso(){
@@ -29,16 +46,17 @@ pasoAnterior(){
 this.paso--;
 }
 }"
-
+ x-on:abrir-modal-eliminar-carga.window="abrirModalEliminarCarga($event.detail)"
+x-on:abrir-modal-eliminar-requisito.window="abrirModalEliminarRequisito($event.detail)"
 x-on:abrir-modal-confirmacion.window="mostrarConfirmacion = true"
 
-class="max-w-2xl mx-auto my-20 bg-white border border-[#E4E4E4]
-rounded-lg p-6 space-y-4 border border-[#EAEAEA] shadow-[0_0_10px_#EAEAEA]
-p-8 rounded-xl"
+class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#EAEAEA]"
 
 >
 
-<img src="/imagenes/icono_muni.png" alt="Icono" class="w-20 mx-auto">
+<img src="{{ asset('imagenes/icono_muni.png') }}" 
+     alt="Icono" 
+     class="w-20 md:w-32 mx-auto block">
 
 
    <h1 class="text-3xl font-extrabold text-center text-[#10069F] mb-4">
@@ -124,7 +142,7 @@ p-8 rounded-xl"
 
         <!-- Modal de confirmar eliminacion de archivo -->
         <div
-        x-show="mostrarConfirmacionEliminar"
+        x-show="mostrarConfirmacionEliminarRequisito"
         class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
         >
 
@@ -139,7 +157,7 @@ p-8 rounded-xl"
             
 
             <div class="flex justify-end gap-3 mt-4">
-                <button @click="mostrarConfirmacionEliminar = false"
+                <button @click="mostrarConfirmacionEliminarRequisito = false"
                 class="px-4 py-2 rounded bg-gray-200 text-[#03192B] hover:bg-gray-300" 
                 >
                 Cancelar
@@ -156,6 +174,51 @@ p-8 rounded-xl"
         </div>
 
         </div>
+
+
+        <!-- Modal eliminacion de archivo carga -->
+
+        <div
+            x-show="mostrarConfirmacionEliminar"
+            class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            x-cloak
+        >
+            <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg space-y-4">
+                <h2 class="text-xl font-bold text-[#03192B]">Confirmar eliminación</h2>
+                <p class="text-[#03192B]">¿Está seguro de que desea eliminar este archivo de carga familiar?</p>
+                <div class="flex justify-end gap-3 mt-4">
+                    <button @click="mostrarConfirmacionEliminar = false"
+                        class="px-4 py-2 rounded bg-gray-200 text-[#03192B] hover:bg-gray-300">
+                        Cancelar
+                    </button>
+                    <button @click="eliminarArchivoCarga()"
+                        class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Modal de error de archivo -->
+            <div x-show="mostrarErrorArchivo" x-cloak
+     class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg space-y-4">
+        <h2 class="text-xl font-bold text-red-600">Error</h2>
+        <p x-text="mensaje" class="text-[#03192B]"></p>
+        <div class="flex justify-end mt-4">
+            <button @click="mostrarErrorArchivo = false"
+                    class="px-4 py-2 rounded bg-gray-200 text-[#03192B] hover:bg-gray-300">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+
 
         <!-- Modal de Confirmacion -->
 
@@ -276,6 +339,14 @@ p-8 rounded-xl"
 <!--  FORM DE 2 INPUTS POR FILA -->
     <!-- Paso 1 -->
     <div x-show="paso === 1">
+
+           <p class="mb-5 text-red-600 text-center text-sm mt-1 bg-yellow-100 p-2 rounded">
+                    Ingrese los nombres y apellidos tal como aparecen en el DPI
+            </p>
+
+        
+
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <div x-data="{ valor: '' }"  x-on:form-reset.window="valor = ''">
@@ -358,11 +429,11 @@ p-8 rounded-xl"
 
             <div x-data="{ valor: ''}" x-on:form-reset.window="valor = ''">
                 <x-label class="mb-1 font-bold text-[#03192B]">
-                    CUI
+                    DPI
                     <span class="text-red-600" x-show="valor === ''">*</span>
                 </x-label>
                 <x-input type="text"
-                placeholder="Ingrese su cui"
+                placeholder="Ingrese su dpi"
                 wire:model.defer="cui"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full"
                 x-model="valor"
@@ -464,9 +535,13 @@ p-8 rounded-xl"
                     REQUISITOS
                 </h2>
 
-                <p class="text-center text-sm mb-4" style="color:#03192B;">
-                    Recuerde que puede subir únicamente <strong> PDF </strong> o <strong>JPG</strong>
+                <p class="text-center text-sm p-2 rounded" style="background-color: #EFF6FF; color: #1E293B;">
+                    Recuerde que puede subir únicamente PDF o JPG
                 </p>
+
+
+
+                
 {{--
                 <div class="mt-4" wire:key="reqs-{{ $tramite_id }}">
                 <ul class="list-disc list-inside text-[#03192B]">
@@ -494,6 +569,10 @@ p-8 rounded-xl"
                                 <tr class="border-b-2" style="border-color:#83BD3F;">
                                     <td class="px-4 py-3 text-[#03192B]">
                                         {{ $requisito['nombre'] }}
+
+                                        @if($requisito['slug'] === 'fotocopia-del-boleto-de-ornato')
+                                        <strong> (opcional)</strong>
+                                        @endif
                                     </td>
 
                                     <td class="px-4 py-3 text-right">
@@ -520,12 +599,26 @@ p-8 rounded-xl"
 
                                                 <span>Subir archivo</span>
 
-                                                <input
-                                                type="file"
-                                                wire:model="requisitos.{{ $index }}.archivo"
-                                                accept="application/pdf,image/jpeg"
-                                                class="hidden"
+                                                <input type="file"
+                                                    wire:model="requisitos.{{ $index }}.archivo"
+                                                    accept="application/pdf,image/jpeg"
+                                                    class="hidden"
+                                                    x-on:change="
+                                                            const file = $event.target.files[0];
+                                                            if (file) {
+                                                                const validTypes = ['application/pdf','image/jpeg'];
+                                                                if (!validTypes.includes(file.type)) {
+                                                                    $event.target.value = '';
+                                                                    mostrarErrorArchivo = true;
+                                                                    mensaje = 'Solo puede ingresar archivos PDF o JPG';
+                                                                } else {
+                                                                    mostrarErrorArchivo = false;
+                                                                    mensaje = '';
+                                                                }
+                                                            }
+                                                    "
                                                 >
+
                                         </label>
                                         @else
 
@@ -538,7 +631,7 @@ p-8 rounded-xl"
 
                                         <button type="button"
                                         {{-- wire:click="eliminarArchivoRequisito({{ $index }})" --}}
-                                        @click="abrirModalEliminar({{ $index }})"
+                                        @click="abrirModalEliminarRequisito({{ $index }})"
                                         class="text-red-600 hover:text-red-800 font-bold"
                                         title="Eliminar Archivo"
                                         >
@@ -596,15 +689,56 @@ p-8 rounded-xl"
                 @endif
 
 
-                @if($agregarCargas == 'si')
+            @if($agregarCargas == 'si' && in_array($tramites->firstWhere('id', $tramite_id)?->slug, ['magisterio', 'tramites-legales-en-materia-civil']))
 
                 <div wire:key="bloque-cargas">
 
+
+
+                    
 
                      <div class="mt-6 mb-2 text-center text-sm text-[#03192B]">
                     Puede agregar hasta <strong> 4 cargas familiares </strong> .
                     ({{ count($cargas) }} / 4)
                 </div>
+
+                <p class="text-center text-sm p-2 rounded" style="background-color: #F0F0F0; color: #4A5568;">
+                    Recuerde que puede subir únicamente PDF o JPG
+                </p>
+
+
+                <p class="text-red-600 text-center text-sm mt-1 bg-yellow-100 p-2 rounded">
+                    Ingrese los nombres y apellidos tal como aparecen en el DPI
+                </p>
+
+
+                <p class="mt-2 text-center text-sm p-2 rounded bg-green-50 text-[#4A5568]">
+                   
+                    Si es mayor de edad, cargar la fotocopia del DPI
+                    <br>
+                    Si es menor de edad, cargar la certificación de nacimiento.
+                </p>
+
+
+                   <!-- Selección de edad -->
+                    {{-- <div x-data="{ edad: '' }" class="mb-4 text-center">
+                        <p class="mb-2 font-semibold text-[#03192B]">Seleccione su edad</p>
+
+                        <div class="flex justify-center gap-6 mb-2">
+                            <label class="flex items-center gap-1">
+                                <input type="radio" x-model="edad" value="menor"> Menor de edad
+                            </label>
+
+                            <label class="flex items-center gap-1">
+                                <input type="radio" x-model="edad" value="mayor"> Mayor de edad
+                            </label>
+                        </div>
+
+                        <p class="text-sm text-red-600 font-semibold" x-text="edad === 'menor' ? 'Certificación de nacimiento' : (edad === 'mayor' ? 'Fotocopia simple de DPI' : '')"></p>
+                    </div> --}}
+
+              
+
 
                 <div class="mt-6 mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
                     <h3 class="text-lg font-bold text-[#03192B] mb-3 text-center">
@@ -647,45 +781,60 @@ p-8 rounded-xl"
                                         class="border rounded px-3 py-2 w-full"
                                         >
                                     </td>
-                                    <td class="px-4 py-3 text-center">
-                                        <label class="cursor-pointer inline-flex
-                                        items-center gap-2 bg-[#83BD3F] text-white px-4
-                                        py-2 rounded hover:bg-green-700 transition">
+                                  
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12l7-8m0 0l7 8m-7-8v12" />
-                                        </svg>
-
-                                        <span>Subir carga</span>
-
-                                        {{-- <input type="file"
-                                        class="hidden"
-                                        wire:model="cargas.{{ $index }}.archivo
-                                        accept="application/pdf,image/jpeg">--}}
-
-                                        <!-- para archivo carga -->
-                                        @if(!$archivoCarga)
-                                            <input type="file"
-                                                class="hidden"
-                                                wire:model.live="archivoCarga"
-                                                accept=".pdf,.jpg,.jpeg">
-                                        @endif
-
-                                        @error('archivoCarga')
-                                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                                        @enderror
-
-                                        @if(isset($cargas[$index]['archivo']))
-                                            <p class="text-green-600 text-sm mt-1">{{ $cargas[$index]['archivo']->getClientOriginalName() }}</p>
-                                        @endif
-
-                                        </label>
-                                    </td>
+                                   <td class="px-4 py-3 text-center">
+    @if (!isset($cargas[$index]['archivo']))
+        <label class="cursor-pointer inline-flex items-center gap-2 bg-[#83BD3F] text-white px-4 py-2 rounded hover:bg-green-700 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12l7-8m0 0l7 8m-7-8v12"/>
+            </svg>
+            <span>Subir carga</span>
+          <input type="file" 
+                 accept="application/pdf,image/jpeg"
+class="hidden"
+    wire:model="cargas.{{ $index }}.archivo"
+    x-on:change="
+        const file = $event.target.files[0];
+        if (file) {
+            const validTypes = ['application/pdf','image/jpeg'];
+            if (!validTypes.includes(file.type)) {
+                $event.target.value = ''; // Limpia el input
+                mostrarErrorArchivo = true;
+                mensaje = 'Solo puede ingresar archivos PDF o JPG';
+            } else {
+                mostrarErrorArchivo = false;
+                mensaje = '';
+            }
+        }
+    "
+>
 
 
-                                    <td class="px-4 py-3 text-center">
+
+                                    </label>
+                                @else
+                                    <div class="flex items-center justify-center gap-2 mt-1">
+                                        <p class="text-[#10069F] text-sm mt-1">
+                                            {{ $cargas[$index]['archivo']->getClientOriginalName() }}
+                                        </p>
+                                        <button type="button"
+                                                @click="$dispatch('abrir-modal-eliminar-carga', {{ $index }})"
+                                                class="text-red-600 hover:text-red-800 font-bold"
+                                                title="Eliminar archivo">
+                                            <!-- SVG trash -->
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166 m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077 L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397 m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397 m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0 c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+
+                                        </button>
+                                    </div>
+                                @endif
+                            </td>
+
+
+
+                                     <td class="px-4 py-3 text-center">
                                         @if($index > 0)
                                         <button
                                         type="button"
@@ -712,30 +861,30 @@ p-8 rounded-xl"
                         </table>
 
                     </div>
-                </div>
+                    </div>
 
 
-                <!-- agregar cargas boton -->
-                 <!-- boton para agregar otra carga-->
+                   <!-- agregar cargas boton -->
+                      <!-- boton para agregar otra carga-->
                                  @if(count($cargas) < 4)
                                  <div class="mt-4 flex justify-center">
                                     <button
-    type="button"
-    wire:click="agregarCarga"
-    class="flex items-center gap-2 bg-blue-600 text-white
-    px-4 py-2 rounded hover:bg-blue-700 transition mb-5"
->
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="h-5 w-5 text-white"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor"
-         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 4v16m8-8H4"/>
-    </svg>
-    Agregar otra carga
-</button>
+                                    type="button"
+                                    wire:click="agregarCarga"
+                                    class="flex items-center gap-2 bg-blue-600 text-white
+                                    px-4 py-2 rounded hover:bg-blue-700 transition mb-5"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 text-white"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Agregar otra carga
+                                </button>
 
 
 
@@ -743,7 +892,7 @@ p-8 rounded-xl"
                                  @endif
 
 
-                </div>
+                      </div>
 
 
 

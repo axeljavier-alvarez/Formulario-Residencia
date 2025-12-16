@@ -255,29 +255,30 @@ class SolicitudForm extends Component
 
 
         }
-        // GUARDAR CARGAS FAMILIARES
-        if($this->agregarCargas === 'si' && count($this->cargas) > 0){
-            foreach($this->cargas as $carga) {
-                if(empty($carga['nombres']) || empty($carga['apellidos'])){
-                    continue;
-                }
+        
 
-                $solicitud->dependientes()->create([
-                    'nombres' => $carga['nombres'],
-                    'apellidos'=> $carga['apellidos']
-                ]);
-            }
+        // GUARDAR CARGAS FAMILIARES
+if($this->agregarCargas === 'si' && count($this->cargas) > 0){
+    foreach($this->cargas as $index => $carga) {
+        // validar nombres y apellidos
+        if(empty($carga['nombres']) || empty($carga['apellidos'])){
+            continue;
         }
 
-        // SUBIR ARCHIVO DE CARGAS FAMILIARES
-        if($this->archivoCarga){
+        $dependiente = $solicitud->dependientes()->create([
+            'nombres' => $carga['nombres'],
+            'apellidos'=> $carga['apellidos']
+        ]);
+
+        // Subir archivo de la carga si existe
+        if(isset($carga['archivo']) && $carga['archivo']){
             $requisitoCarga = RequisitoTramite::where('tramite_id', $this->tramite_id)
                 ->whereHas('requisito', function($q){
                     $q->where('slug', 'cargas-familiares');
                 })->first();
 
             if($requisitoCarga){
-                $path = $this->archivoCarga->store('cargas_familiares', 'public');
+                $path = $carga['archivo']->store('cargas_familiares', 'public');
 
                 DetalleSolicitud::create([
                     'path' => $path,
@@ -286,6 +287,10 @@ class SolicitudForm extends Component
                 ]);
             }
         }
+    }
+}
+
+
 
         // ENVIAR CORREO AL USUARIO
         if($solicitud->email){
@@ -393,85 +398,87 @@ class SolicitudForm extends Component
                     //     'zona_id' => 'required|exists:zonas,id',
                     // ]);
                 }
+                
                 if ($paso == 2) {
 
-                    $this->validate([
-                        'tramite_id' => 'required|exists:tramites,id',
-                    ]);
+    $this->validate([
+        'tramite_id' => 'required|exists:tramites,id',
+    ]);
 
-                    $errores = [];
+    $errores = [];
 
+    // Requisitos de la tabla (excluye Cargas familiares y opcionales)
+    $requisitosTabla = collect($this->requisitos)
+        ->filter(fn ($req) =>
+            $req['slug'] !== 'cargas-familiares' &&
+            $req['slug'] !== 'fotocopia-del-boleto-de-ornato'
+        )
+        ->values();
 
-                    // Requisitos de la tabla (excluye Cargas familiares)
-                    $requisitosTabla = collect($this->requisitos)
-                    ->filter(fn ($req) =>
-                        $req['slug'] !== 'cargas-familiares' &&
-                        $req['slug'] !== 'fotocopia-del-boleto-de-ornato'
-                    )
-                    ->values();
+    foreach ($requisitosTabla as $index => $req) {
+        if (empty($req['archivo'])) {
+            $errores["requisitos.{$index}.archivo"] =
+                "Debe subir el requisito: {$req['nombre']}";
+        } else {
+            // Validar tipo de archivo
+            $mime = $req['archivo']->getMimeType();
+            if (!in_array($mime, ['application/pdf', 'image/jpeg', 'image/jpg'])) {
+                $errores["requisitos.{$index}.archivo"] =
+                    "Solo se permiten archivos PDF o JPG para {$req['nombre']}.";
+            }
 
+            // Validar tamaño (2MB)
+            if ($req['archivo']->getSize() > 2 * 1024 * 1024) {
+                $errores["requisitos.{$index}.archivo"] =
+                    "El archivo {$req['nombre']} no debe superar 2MB.";
+            }
+        }
+    }
 
-                    foreach ($requisitosTabla as $index => $req) {
-                        if (empty($req['archivo'])) {
-                            $errores["requisitos.{$index}.archivo"] =
-                                "Debe subir el requisito: {$req['nombre']}";
-                        }
+    // Validar selección de cargas familiares
+    if ($this->tieneCargasFamiliares && is_null($this->agregarCargas)) {
+        $errores['cargas_familiares'] =
+            'Debe indicar si desea agregar cargas familiares.';
+    }
 
-                    }
+    // Validar cargas si eligió "sí"
+    if ($this->tieneCargasFamiliares && $this->agregarCargas === 'si') {
+        foreach ($this->cargas as $index => $carga) {
+            $num = $index + 1;
 
+            if (empty($carga['nombres'])) {
+                $errores["cargas.$index.nombres"] =
+                    "Debe ingresar los nombres de la carga familiar {$num}.";
+            }
 
+            if (empty($carga['apellidos'])) {
+                $errores["cargas.$index.apellidos"] =
+                    "Debe ingresar los apellidos de la carga familiar {$num}.";
+            }
 
-                    // Validar selección de cargas familiares
-                    if ($this->tieneCargasFamiliares && is_null($this->agregarCargas)) {
-                        $errores['cargas_familiares'] =
-                            'Debe indicar si desea agregar cargas familiares.';
-                    }
-
-                    // Si eligió "sí", validar datos de cargas
-                    if ($this->tieneCargasFamiliares && $this->agregarCargas === 'si') {
-                        // try {
-                        //     $this->validate([
-                        //         'cargas.*.nombres'   => 'required|string|max:45',
-                        //         'cargas.*.apellidos' => 'required|string|max:45',
-                        //         'archivoCarga'       => 'required|file|mimes:pdf,jpg,jpeg|max:2048',
-                        //     ]);
-                        // } catch (ValidationException $e) {
-                        //     $errores = array_merge(
-                        //         $errores,
-                        //         $e->validator->errors()->toArray()
-                        //     );
-                        // }
-
-                        foreach ($this->cargas as $index => $carga){
-                            $num = $index + 1;
-
-                            if(empty($carga['nombres'])){
-                                $errores["cargas.{$index}.nombres"] =
-                                    "Debe ingresar los nombres de la carga familiar {$num}.";
-                            }
-
-                            if(empty($carga['apellidos'])){
-                                $errores["cargas.{$index}.apellidos"] =
-                                    "Debe ingresar los apellidos de la carga familiar {$num}.";
-                            }
-
-                            // if (empty($this->archivoCarga[$index])) {
-                            //     $errores["archivoCarga.{$index}"] =
-                            //         "Debe ingresar el documento de la carga familiar {$num}.";
-                            // }
-                        }
-
-                        if(!$this->archivoCarga){
-                            $errores['archivoCarga']=
-                            "Debe ingresar el documento de la carga familiar.";
-                        }
-                    }
-
-                    // Si hay errores mostarlos todos
-                    if (!empty($errores)) {
-                        throw ValidationException::withMessages($errores);
-                    }
+            if (empty($carga['archivo'])) {
+                $errores["cargas.$index.archivo"] =
+                    "Debe ingresar el documento de la carga familiar {$num}.";
+            } else {
+                // Validar tipo y tamaño
+                $mime = $carga['archivo']->getMimeType();
+                if (!in_array($mime, ['application/pdf', 'image/jpeg', 'image/jpg'])) {
+                    $errores["cargas.$index.archivo"] =
+                        "Solo se permiten archivos PDF o JPG para la carga {$num}.";
                 }
+                if ($carga['archivo']->getSize() > 2 * 1024 * 1024) {
+                    $errores["cargas.$index.archivo"] =
+                        "El archivo de la carga {$num} no debe superar 2MB.";
+                }
+            }
+        }
+    }
+
+    if (!empty($errores)) {
+        throw ValidationException::withMessages($errores);
+    }
+}
+
 
                 if($paso == 3){
                     $this->validate([
@@ -691,5 +698,18 @@ public function eliminarArchivoRequisito($index)
     $this->resetErrorBag("requisitos.$index.archivo");
 
 }
+
+// eliminar archivo carga
+
+public function eliminarArchivoCarga($index)
+{
+    if(isset($this->cargas[$index]['archivo'])){
+        $this->cargas[$index]['archivo'] = null;
+        $this->resetErrorBag("cargas.$index.archivo");
+    }
+}
+
+
+
 
 }

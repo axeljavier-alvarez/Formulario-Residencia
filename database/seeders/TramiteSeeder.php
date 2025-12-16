@@ -4,6 +4,7 @@ namespace Database\Seeders;
 use App\Models\Tramite;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class TramiteSeeder extends Seeder
 {
@@ -21,8 +22,22 @@ class TramiteSeeder extends Seeder
             'Tramites legales en materia penal'
         ];
 
+        
         foreach($tramites as $nombre){
-            Tramite::create(['nombre' => $nombre]);
+             $slugBase = Str::slug($nombre);
+            $slug = $slugBase;
+            $contador = 1;
+
+
+            while(Tramite::where('slug', $slug)->exists()){
+                $slug = $slugBase . '-' . $contador;
+                 $contador++;
+            }
+
+            Tramite::create([
+                'nombre' => $nombre,
+                'slug' => $slug
+            ]);
         }
     }
 
