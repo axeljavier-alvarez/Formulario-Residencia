@@ -129,28 +129,31 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
 
 
             @if ($errors->any())
-            <div class="mb-4 p-4 rounded-md bg-[#F2DEDE] font-bold border border-[#A94442]">
-                <h3 class="font-bold text-[#A94442]">Error</h3>
+    <div class="mb-4 p-4 rounded-md bg-[#F2DEDE] font-bold border border-[#A94442]">
+        <h3 class="font-bold text-[#A94442]">Error</h3>
 
-                <ul class="mt-2 list-disc list-inside text-[#A94442]">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ 
-                        $error === 'validation.max.file'
-                        ? 'El archivo no debe superar 2MB.'
-                        : $error
-                         }}
+        <ul class="mt-2 list-disc list-inside text-[#A94442]">
+            @foreach ($errors->getMessages() as $field => $messages)
+                @foreach ($messages as $message)
+                    <li>
+                        @if ($message === 'validation.max.file' && str_starts_with($field, 'requisitos.'))
+                            @php
+                                $index = explode('.', $field)[1] ?? null;
+                                $nombre = $requisitos[$index]['nombre'] ?? 'Este requisito';
+                            @endphp
 
+                            <strong>{{ $nombre }}:</strong>
+                            El archivo no debe superar 2MB.
+                        @else
+                            {{ $message }}
+                        @endif
+                    </li>
+                @endforeach
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-                        </li>
-
-                       
-                    @endforeach
-                </ul>
-
-              
-
-            </div>
-        @endif
 
         <!-- Modal de confirmar eliminacion de archivo -->
         <div
@@ -356,7 +359,7 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                 </x-label>
                 <x-input type="text"
                 placeholder="Ingrese sus nombres"
-                wire:model.defer="nombres"
+                wire:model.live="nombres"
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
                 {{-- @error('nombre') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror --}}
@@ -369,7 +372,7 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                 </x-label>
                 <x-input type="text"
                 placeholder="Ingrese sus apellidos"
-                wire:model.defer="apellidos"
+                wire:model.live="apellidos"
                 x-model="valor"
                 class="placeholder-[#797775] border rounded px-3 py-2 w-full" />
             </div>
@@ -586,7 +589,7 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                                         
 
                                         @if(!isset($requisitos[$index]['archivo']))
-                                        
+                                        <div class="flex flex-col">
                                         <label class="cursor-pointer inline-flex items-center gap-2
                                         bg-[#10069F] text-white px-4 py-2 rounded hover:bg-[#0d057f]">
 
@@ -604,8 +607,11 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                                                     accept="application/pdf,image/jpeg"
                                                     class="hidden"
                                                     >
+                                                    
 
                                         </label>
+                                      
+                                        </div>
                                         @else
 
                                         <div class="flex items-center gap-2 mt-1">
@@ -754,13 +760,14 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                                     </td>
                                     <td class="px-4 py-3 text-[#03192B]">
                                         <input type="text"
-                                        wire:model.defer="cargas.{{ $index }}.nombres"
+                                        wire:model.live="cargas.{{ $index }}.nombres"
                                         placeholder="Nombres"+
                                         class="border rounded px-3 py-2 w-full">
                                     </td>
+                                    
                                     <td class="px-4 py-3 text-[#03192B]">
                                         <input type="text"
-                                        wire:model.defer="cargas.{{ $index }}.apellidos"
+                                        wire:model.live="cargas.{{ $index }}.apellidos"
                                         placeholder="Apellidos"
                                         class="border rounded px-3 py-2 w-full"
                                         >

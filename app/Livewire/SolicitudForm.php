@@ -178,7 +178,7 @@ class SolicitudForm extends Component
 public function updated($property)
 {
     if ($this->paso == 2) {
-        $this->validateOnly($property);
+        $this->resetErrorBag($property);
     }
 }
 
@@ -402,6 +402,7 @@ if($this->agregarCargas === 'si' && count($this->cargas) > 0){
                 }
                 
                 if ($paso == 2) {
+                    
                     $rules = [];
                     $messages = [];
                     
@@ -510,41 +511,44 @@ if($this->agregarCargas === 'si' && count($this->cargas) > 0){
 }
 
 
+public function updatedCargas($value, $key)
+{
+    // $key vendrá con un formato tipo: "0.nombres" o "1.archivo"
+    // Esto limpia el error de ese campo específico mientras el usuario escribe
+    $this->resetErrorBag('cargas.' . $key);
+}
+
+
 public function updatedTramiteId($value)
 {
-
     $this->resetErrorBag();
     $this->resetValidation();
 
-    if ($value) {
-        // buscar tramite
-        $tramite = Tramite::with('requisitos')->find($value);
-        // pone requisitios en propiedad publica $requisitos
-        // $this->requisitos = $tramite ? $tramite->requisitos->toArray() : [];
+    $this->resetErrorBag('tramite_id');
+    $this->resetErrorBag('requisitos');
+    $this->resetErrorBag('cargas');
 
-        // REQUISITOS PARA RECIBIR ARCHIVO
+    if ($value) {
+        $tramite = Tramite::with('requisitos')->find($value);
+
         $this->requisitos = $tramite
-        ? $tramite->requisitos->map(function($req){
-            return [
+            ? $tramite->requisitos->map(fn ($req) => [
                 'id' => $req->id,
                 'nombre' => $req->nombre,
                 'slug' => $req->slug,
-                'archivo' => null
-            ];
-        })->toArray(): [];
-        // detectar si hay cargas familiares
+                'archivo' => null,
+            ])->toArray()
+            : [];
+
         $this->tieneCargasFamiliares = $tramite
-        ? $tramite->requisitos->contains('slug', 'cargas-familiares')
-        : false;
+            ? $tramite->requisitos->contains('slug', 'cargas-familiares')
+            : false;
     } else {
-        // si el usuario borra seleccion se borra lista
-        
         $this->requisitos = [];
-        $this->tieneCargasFamiliares;
-
-
+        $this->tieneCargasFamiliares = false;
     }
 }
+
 
 
 public function verRequisitos()
@@ -650,8 +654,11 @@ private function cuiEsValido(string $cui): bool
 // inicializar carga
 public function updatedAgregarCargas($value)
 {
+    // limpiar error de carga para agregar
+    $this->resetErrorBag('agregarCargas');
+
     if ($value === 'si') {
-        // siempre crear carga 1 limpia
+        // carga de nombres apellidos y archivo
         $this->cargas = [
             [
                 'nombres' => '',
@@ -660,8 +667,8 @@ public function updatedAgregarCargas($value)
             ]
         ];
     } else {
-        // si es "no", limpiar todo
         $this->cargas = [];
+        $this->resetErrorBag('cargas');
     }
 }
 
@@ -707,28 +714,36 @@ public function eliminarArchivoCarga($index)
 }
 
 public function updatedRequisitos($value, $key){
-    if(str_ends_with($key, 'archivo')){
+    if (!str_ends_with($key, '.archivo')) return;
 
+    $parts = explode('.', $key);
+    $index = $parts[0];
+    $nombreRequisito = $this->requisitos[$index]['nombre'] ?? 'requisito';
         try {
+            // 
+            $this->validateOnly("requisitos.{$key}", [
+            "requisitos.{$key}" => 'nullable|file|mimes:pdf,jpeg,jpg|max:2048'
+        ], [
+            "requisitos.{$key}.mimes" => "Para el requisito '{$nombreRequisito}' solo se permiten archivos PDF o JPG",
+            "requisitos.{$key}" => $nombreRequisito
+        ],
+        [
+            "requisitos.{$key}" => $nombreRequisito
+        ]
 
-
-            $this->validateOnly("requisitos.$key", [
-                "requisitos.*.archivo" => 'nullable|file|mimes:pdf,jpeg,jpg|max:2048'
-            ], [
-                'requisitos.*.archivo.mimes' => 'Solo se permiten archivos PDF o JPG',
-                'requisitos.*.archivo.max' => 'El archivo no debe superar 2MB',
-            ]);
+        );
 
         } catch (\Exception $e) {
             
             // limpiar archivo invalido
-            [$index] = explode('.', $key);
+            // $parts = explode('.', $key);
+            // $index = $parts[0];
+            
             $this->requisitos[$index]['archivo'] = null;
-
             throw $e;
         }
         
-    }
+    
 }
 
 
