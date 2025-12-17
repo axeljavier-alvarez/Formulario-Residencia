@@ -19,7 +19,7 @@ class TramiteSeeder extends Seeder
             'Inscripción extemporánea de un menor de edad ante el Registro Nacional de las Personas',
             'Inscripción extemporánea de un mayor de edad ante el Registro Nacional de las Personas',
             'Tramites legales en materia civil',
-            'Tramites legales en materia penal'
+            'Tramites legales en materia penal, si una persona se encuentra privada de libertad'
         ];
 
         

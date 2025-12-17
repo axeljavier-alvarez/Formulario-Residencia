@@ -23,6 +23,7 @@ use App\Mail\NotificacionSolicitud;
 use App\Mail\NuevaSolicitudAdmin;
 use App\Models\DetalleSolicitud;
 
+use Illuminate\Support\Facades\Storage;
 class SolicitudForm extends Component
 {
 
@@ -94,7 +95,7 @@ class SolicitudForm extends Component
     // para subir archivos
         use WithFileUploads;
 
-
+      
 
      public function mount()
     {
@@ -168,19 +169,20 @@ class SolicitudForm extends Component
     'requisitos.*.archivo.mimes' => 'Solo se permiten archivos PDF o JPG.',
     'requisitos.*.archivo.max' => 'El archivo no debe superar 2MB',
 
-    // Cargas familiares (si quieres puedes agregar más específico si lo manejas)
-    'cargas.*.nombres.required' => 'Debe ingresar los nombres de la carga familiar.',
-    'cargas.*.apellidos.required' => 'Debe ingresar los apellidos de la carga familiar.',
-    'archivoCarga.required' => 'Debe ingresar el documento de la carga familiar.',
+    
 ];
 
 
 
 
-    // public function updated($propertyName)
-    // {
-    //     $this->validateOnly($propertyName);
-    // }
+public function updated($property)
+{
+    if ($this->paso == 2) {
+        $this->validateOnly($property);
+    }
+}
+
+
 
    public function submit()
 {
@@ -400,85 +402,75 @@ if($this->agregarCargas === 'si' && count($this->cargas) > 0){
                 }
                 
                 if ($paso == 2) {
+                    $rules = [];
+                    $messages = [];
+                    
+                
+                /* Validar trámite */
+                $rules['tramite_id'] = 'required|exists:tramites,id';
+                $messages['tramite_id.required'] = 'Debe seleccionar un trámite';
+                $messages['tramite_id.exists'] = 'Debe seleccionar un trámite válido';
+                
+                /* requisitos que puedo omitir */
+                foreach ($this->requisitos as $index => $req) {
+                    if(
+                        $req['slug'] === 'cargas-familiares' ||
+                        $req['slug'] === 'fotocopia-del-boleto-de-ornato'
+                    ){
+                        continue;
+                    }
 
-    $this->validate([
-        'tramite_id' => 'required|exists:tramites,id',
-    ]);
 
-    $errores = [];
+                    /* validaciones de requisitos */
+                $rules["requisitos.$index.archivo"] =
+                            'required|file|mimes:pdf,jpg,jpeg|max:2048';
+                $messages["requisitos.$index.archivo.required"] = 
+                "Debe subir el requisito: {$req['nombre']}.";
+                $messages["requisitos.$index.archivo.mimes"] =
+                "Solo se permiten archivos PDF o JPG para {$req['nombre']}.";
+                $messages["requisitos.$index.archivo.max"] =
+                "El archivo {$req['nombre']} no debeddd superar 2MB.";         
+               
 
-    // Requisitos de la tabla (excluye Cargas familiares y opcionales)
-    $requisitosTabla = collect($this->requisitos)
-        ->filter(fn ($req) =>
-            $req['slug'] !== 'cargas-familiares' &&
-            $req['slug'] !== 'fotocopia-del-boleto-de-ornato'
-        )
-        ->values();
-
-    foreach ($requisitosTabla as $index => $req) {
-        if (empty($req['archivo'])) {
-            $errores["requisitos.{$index}.archivo"] =
-                "Debe subir el requisito: {$req['nombre']}";
-        } else {
-            // Validar tipo de archivo
-            $mime = $req['archivo']->getMimeType();
-            if (!in_array($mime, ['application/pdf', 'image/jpeg', 'image/jpg'])) {
-                $errores["requisitos.{$index}.archivo"] =
-                    "Solo se permiten archivos PDF o JPG para {$req['nombre']}.";
-            }
-
-            // Validar tamaño (2MB)
-            if ($req['archivo']->getSize() > 2 * 1024 * 1024) {
-                $errores["requisitos.{$index}.archivo"] =
-                    "El archivo {$req['nombre']} no debe superar 2MB.";
-            }
-        }
-    }
-
-    // Validar selección de cargas familiares
-    if ($this->tieneCargasFamiliares && is_null($this->agregarCargas)) {
-        $errores['cargas_familiares'] =
-            'Debe indicar si desea agregar cargas familiares.';
-    }
-
-    // Validar cargas si eligió "sí"
-    if ($this->tieneCargasFamiliares && $this->agregarCargas === 'si') {
-        foreach ($this->cargas as $index => $carga) {
-            $num = $index + 1;
-
-            if (empty($carga['nombres'])) {
-                $errores["cargas.$index.nombres"] =
-                    "Debe ingresar los nombres de la carga familiar {$num}.";
-            }
-
-            if (empty($carga['apellidos'])) {
-                $errores["cargas.$index.apellidos"] =
-                    "Debe ingresar los apellidos de la carga familiar {$num}.";
-            }
-
-            if (empty($carga['archivo'])) {
-                $errores["cargas.$index.archivo"] =
-                    "Debe ingresar el documento de la carga familiar {$num}.";
-            } else {
-                // Validar tipo y tamaño
-                $mime = $carga['archivo']->getMimeType();
-                if (!in_array($mime, ['application/pdf', 'image/jpeg', 'image/jpg'])) {
-                    $errores["cargas.$index.archivo"] =
-                        "Solo se permiten archivos PDF o JPG para la carga {$num}.";
                 }
-                if ($carga['archivo']->getSize() > 2 * 1024 * 1024) {
-                    $errores["cargas.$index.archivo"] =
-                        "El archivo de la carga {$num} no debe superar 2MB.";
+
+                 /* cargas familiares */
+                if ($this->tieneCargasFamiliares) {
+
+                    $rules['agregarCargas'] = 'required|in:si,no';
+                    $messages['agregarCargas.required'] =
+                    'Debe indicar si desea agregar cargas familiares.';
                 }
-            }
-        }
-    }
 
-    if (!empty($errores)) {
-        throw ValidationException::withMessages($errores);
-    }
-}
+                /* validaciones de cargas familiares */
+                if($this->tieneCargasFamiliares && $this->agregarCargas === 'si'){
+                    foreach($this->cargas as $index => $carga){
+                        // ir contando
+                        $num = $index + 1;
 
+                        $rules["cargas.$index.nombres"] = 'required|string';
+                        $rules["cargas.$index.apellidos"] = 'required|string';
+                        $rules["cargas.$index.archivo"] =
+                        'required|file|mimes:pdf,jpg,jpeg|max:2048';
+
+                        $messages["cargas.$index.nombres.required"]=
+                        "Debe ingresar los nombres de la carga familiar {$num}.";
+
+                        $messages["cargas.$index.apellidos.required"] =
+                        "Debe ingresar los apellidos de la carga familiar {$num}.";
+
+                        $messages["cargas.$index.archivo.required"] =
+                        "Debe subir el archivo de la carga familiar {$num}.";
+                    }
+                }
+
+
+                
+
+                    $this->validate($rules, $messages);
+                }
+                        
+                
 
                 if($paso == 3){
                     $this->validate([
@@ -520,6 +512,10 @@ if($this->agregarCargas === 'si' && count($this->cargas) > 0){
 
 public function updatedTramiteId($value)
 {
+
+    $this->resetErrorBag();
+    $this->resetValidation();
+
     if ($value) {
         // buscar tramite
         $tramite = Tramite::with('requisitos')->find($value);
@@ -542,6 +538,7 @@ public function updatedTramiteId($value)
         : false;
     } else {
         // si el usuario borra seleccion se borra lista
+        
         $this->requisitos = [];
         $this->tieneCargasFamiliares;
 
@@ -709,6 +706,30 @@ public function eliminarArchivoCarga($index)
     }
 }
 
+public function updatedRequisitos($value, $key){
+    if(str_ends_with($key, 'archivo')){
+
+        try {
+
+
+            $this->validateOnly("requisitos.$key", [
+                "requisitos.*.archivo" => 'nullable|file|mimes:pdf,jpeg,jpg|max:2048'
+            ], [
+                'requisitos.*.archivo.mimes' => 'Solo se permiten archivos PDF o JPG',
+                'requisitos.*.archivo.max' => 'El archivo no debe superar 2MB',
+            ]);
+
+        } catch (\Exception $e) {
+            
+            // limpiar archivo invalido
+            [$index] = explode('.', $key);
+            $this->requisitos[$index]['archivo'] = null;
+
+            throw $e;
+        }
+        
+    }
+}
 
 
 

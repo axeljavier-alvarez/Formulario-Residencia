@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('telefono', 20);
             $table->string('cui', 13);
             $table->string('domicilio', 255);
-            $table->string('observaciones', 255)->nullable(); 
+            $table->string('observaciones', 500)->nullable(); 
 
             
             $table->timestamps();

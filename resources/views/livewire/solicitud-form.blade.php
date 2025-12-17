@@ -10,7 +10,7 @@ mostrarConfirmacionEliminarRequisito: false,
 
 mostrarConfirmacionEliminar: false,
 archivoAEliminar: null,
-mostrarErrorArchivo: false,
+
 mensaje: '',
 
 confirmarEnvio() {
@@ -134,9 +134,21 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
 
                 <ul class="mt-2 list-disc list-inside text-[#A94442]">
                     @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
+                        <li>{{ 
+                        $error === 'validation.max.file'
+                        ? 'El archivo no debe superar 2MB.'
+                        : $error
+                         }}
+
+
+                        </li>
+
+                       
                     @endforeach
                 </ul>
+
+              
+
             </div>
         @endif
 
@@ -202,20 +214,7 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
 
 
         <!-- Modal de error de archivo -->
-            <div x-show="mostrarErrorArchivo" x-cloak
-     class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg space-y-4">
-        <h2 class="text-xl font-bold text-red-600">Error</h2>
-        <p x-text="mensaje" class="text-[#03192B]"></p>
-        <div class="flex justify-end mt-4">
-            <button @click="mostrarErrorArchivo = false"
-                    class="px-4 py-2 rounded bg-gray-200 text-[#03192B] hover:bg-gray-300">
-                Cerrar
-            </button>
-        </div>
-    </div>
-</div>
-
+           
 
 
 
@@ -536,7 +535,7 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                 </h2>
 
                 <p class="text-center text-sm p-2 rounded" style="background-color: #EFF6FF; color: #1E293B;">
-                    Recuerde que puede subir únicamente PDF o JPG
+                    Recuerde que puede subir únicamente documentos PDF o JPG
                 </p>
 
 
@@ -573,17 +572,18 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                                         @if($requisito['slug'] === 'fotocopia-del-boleto-de-ornato')
                                         <strong> (opcional)</strong>
                                         @endif
+
+
+                                       @if(
+                                        $requisito['slug'] === 'fotocopia-simple-de-su-documento-personal-de-identificacion'
+                                        && optional($tramites->firstWhere('id', $tramite_id))->slug === 'magisterio'
+                                        )
+                                        <br><strong>Si carece de DPI puede colocar la constancia de trámite</strong>
+                                        @endif
                                     </td>
 
                                     <td class="px-4 py-3 text-right">
-                                        {{-- <input
-                                            type="file"
-                                            wire:model="requisitos.{{ $index }}.archivo"
-                                            accept="application/pdf,image/jpeg"
-                                            class="block mx-auto"
-                                        > --}}
-
-                                        <!-- desaparecer boton cuando haya nuevo archivo -->
+                                        
 
                                         @if(!isset($requisitos[$index]['archivo']))
                                         
@@ -603,21 +603,7 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                                                     wire:model="requisitos.{{ $index }}.archivo"
                                                     accept="application/pdf,image/jpeg"
                                                     class="hidden"
-                                                    x-on:change="
-                                                            const file = $event.target.files[0];
-                                                            if (file) {
-                                                                const validTypes = ['application/pdf','image/jpeg'];
-                                                                if (!validTypes.includes(file.type)) {
-                                                                    $event.target.value = '';
-                                                                    mostrarErrorArchivo = true;
-                                                                    mensaje = 'Solo puede ingresar archivos PDF o JPG';
-                                                                } else {
-                                                                    mostrarErrorArchivo = false;
-                                                                    mensaje = '';
-                                                                }
-                                                            }
-                                                    "
-                                                >
+                                                    >
 
                                         </label>
                                         @else
@@ -702,22 +688,20 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                     ({{ count($cargas) }} / 4)
                 </div>
 
-                <p class="text-center text-sm p-2 rounded" style="background-color: #F0F0F0; color: #4A5568;">
-                    Recuerde que puede subir únicamente PDF o JPG
+                <p class="text-center text-sm p-2 rounded" style="background-color: #F0F0F0; color:#10069F">
+                    Recuerde que puede subir únicamente documentos PDF o JPG
                 </p>
 
 
-                <p class="text-red-600 text-center text-sm mt-1 bg-yellow-100 p-2 rounded">
-                    Ingrese los nombres y apellidos tal como aparecen en el DPI
-                </p>
+                <ul class="text-center text-red-600 text-sm mt-1 bg-yellow-100 p-3 rounded list-disc list-inside space-y-1">
+                    <li>Si es mayor de edad, cargar la fotocopia del DPI/CUI.</li>
+                    <li>Si es menor de edad, adjuntar fotocopia del DPI/CUI.</li>
+                    <li><strong>Anotar nombres y apellidos completos.</strong></li>
+                </ul>
 
 
-                <p class="mt-2 text-center text-sm p-2 rounded bg-green-50 text-[#4A5568]">
-                   
-                    Si es mayor de edad, cargar la fotocopia del DPI
-                    <br>
-                    Si es menor de edad, cargar la certificación de nacimiento.
-                </p>
+
+              
 
 
                    <!-- Selección de edad -->
@@ -796,21 +780,7 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                  accept="application/pdf,image/jpeg"
 class="hidden"
     wire:model="cargas.{{ $index }}.archivo"
-    x-on:change="
-        const file = $event.target.files[0];
-        if (file) {
-            const validTypes = ['application/pdf','image/jpeg'];
-            if (!validTypes.includes(file.type)) {
-                $event.target.value = ''; // Limpia el input
-                mostrarErrorArchivo = true;
-                mensaje = 'Solo puede ingresar archivos PDF o JPG';
-            } else {
-                mostrarErrorArchivo = false;
-                mensaje = '';
-            }
-        }
-    "
->
+    >
 
 
 
