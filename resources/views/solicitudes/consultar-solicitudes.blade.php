@@ -29,12 +29,39 @@
 
 <body>
 <div class="px-4 md:px-8">
-        <div class="max-w-4xl mx-auto mt-16 mb-6 text-center">
-        <h1 class="text-3xl md:text-4xl font-bold text-[#030EA7] mb-4">
-            Constancia de residencia
-        </h1>
+<div class="max-w-6xl mx-auto mt-16 mb-6 text-center">
+        
 
-        <p class="text-[#4B5563] text-base md:text-lg font-bold">
+
+        <!-- titulo -->
+        <div class="flex flex-col items-center gap-3">
+                <div class="block md:hidden w-full h-1 bg-[#83BD3F]"> </div>
+
+                <div class="flex items-center w-full">
+                        <div class="flex items-center w-full">
+                                <div class="hidden md:block flex-grow h-1 bg-[#83BD3F]"> </div>
+                                <h1 class="
+                                tracking-widest 
+                                text-2xl md:text-3xl 
+                                text-[#030EA7] 
+                                text-center 
+                                mx-auto
+                                px-16
+                                whitespace-normal md:whitespace-nowrap">
+                                        CONSTANCIA DE RESIDENCIA 
+                                </h1>
+
+                                <div class="hidden md:block flex-grow h-1 bg-[#83BD3F]"></div>
+
+                        </div>
+
+                </div> 
+
+                    <div class="block md:hidden w-full h-1 bg-[#83BD3F]"></div>
+
+        </div>
+
+        <p class="mt-3 text-[#4B5563] text-base md:text-lg font-bold">
                             Acá podrá verificar el estado de la solicitud de residencia que solicitó.
         </p>
 

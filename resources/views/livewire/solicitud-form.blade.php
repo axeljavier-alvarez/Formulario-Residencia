@@ -60,14 +60,23 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
      class="w-20 md:w-32 mx-auto block">
 
 
-   <h1 class="text-3xl font-extrabold text-center text-[#10069F] mb-4">
-    Constancia de residencia
-    </h1>
+  <h1 class="
+                                tracking-widest 
+                                text-2xl md:text-3xl 
+                                text-[#030EA7] 
+                                text-center 
+                                mx-auto
+                                px-16
+                                whitespace-normal md:whitespace-nowrap">
+                                        CONSTANCIA DE RESIDENCIA 
+                                </h1>
 
 
-    <p class="text-[#03192B]  text-center mb-6">
-        Complete la información requerida para registrar su solicitud
-    </p>
+
+    
+<p class="mt-3 text-[#4B5563] text-base text-center md:text-lg font-bold" >
+                            Complete la información requerida para registrar su solicitud
+        </p>
 
 
 
@@ -828,9 +837,9 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
 
 
                 <ul class="text-center text-red-600 text-sm mt-1 bg-yellow-100 p-3 rounded list-disc list-inside space-y-1">
-                    <li>Si es mayor de edad, cargar la fotocopia del DPI/CUI.</li>
-                    <li>Si es menor de edad, adjuntar fotocopia del DPI/CUI.</li>
-                    <li><strong>Anotar nombres y apellidos completos.</strong></li>
+                    <li>Si es mayor de edad, cargar la fotocopia simple del Documento Personal de Identificación</li>
+                    <li>Si es menor de edad, certificación de nacimiento.</li>
+                    <li><strong>Colocar nombres y apellidos completos.</strong></li>
                 </ul>
 
 

@@ -1,5 +1,5 @@
 <div class="px-4 md:px-8">
-    <div class="max-w-4xl mx-auto my-20 bg-[#C0C0C0] rounded-xl p-16">
+<div class="max-w-2xl mx-auto bg-[#C0C0C0] rounded-xl px-12 py-8">
 
         {{-- CONTENEDOR SUPERIOR --}}
         <div class="bg-white border border-b-0 p-8 rounded-t-xl">
@@ -12,6 +12,10 @@
                 Ver estado de mi constancia
             </h2>
 
+             <p class="mb-5 text-red-600 text-center text-sm mt-1 bg-yellow-100 p-2 rounded">
+                    Debe ingresar los datos que colocó en su solicitud
+            </p>
+
             {{-- ICONO --}}
             <img
                 src="{{ asset('imagenes/icono_muni.png') }}"
@@ -21,6 +25,11 @@
 
             {{-- INPUT DPI / CUI --}}
             <div class="max-w-xl mx-auto mt-10">
+
+
+                <label class="block font-bold text-center text-green-600">
+                    Número de DPI/CUI
+                </label>
                 <input
                     type="text"
                     wire:model.defer="cui"
@@ -34,10 +43,16 @@
                         focus:outline-none focus:ring-0
                         transition-colors duration-300"
                 >
+                
             </div>
 
             {{-- INPUT NÚMERO DE SOLICITUD --}}
             <div class="max-w-xl mx-auto mt-10">
+
+                <label class="block text-center font-bold text-green-600">
+                    Número de solicitud
+                </label>
+
                 <input
                     type="text"
                     wire:model.defer="no_solicitud"
