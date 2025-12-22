@@ -3,6 +3,7 @@ SELECT * FROM estados;
 SELECT * FROM tramites;
 SELECT * FROM requisitos;
 SELECT * FROM dependientes;
+SELECT * FROM requisito_tramite;
 SELECT * FROM solicitudes_has_requisitos_tramites;
 SELECT * FROM detalle_solicitud;
 

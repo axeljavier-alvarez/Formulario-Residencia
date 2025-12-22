@@ -590,9 +590,10 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
              
                     
                 <div class="overflow-x-auto mt-4 border-t-4 border-b-4" style="border-color:#83BD3F;">
-                    <table class="w-full text-left">
+                    <table class="w-full table-fixed text-left">
                         <thead>
-                            <tr class="border-b-4" style="border-color:#83BD3F;">
+                            <!-- md table-row se arregla -->
+                            <tr class="border-b-4 hidden md:table-row" style="border-color:#83BD3F;">
                                 <th class="px-4 py-3 font-bold text-[#03192B]">Requisitos</th>
                                 <th class="px-4 py-3 font-bold text-[#03192B] text-center">Acción</th>
                             </tr>
@@ -601,10 +602,12 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                     <tbody>
                         @foreach($requisitos as $index => $requisito)
                             @if($requisito['slug'] && $requisito['slug'] !== 'cargas-familiares')
-                            <tr class="border-b-2" style="border-color:#83BD3F;">
+                                                        <!-- md table-row se arregla -->
+                            <tr class="border-b-2 flex flex-col md:table-row" style="border-color:#83BD3F;">
                                 
-                                <td class="px-4 py-3">
-                                    <span class="text-[#03192B]">
+                                <!-- celda nombre movil -->
+                                <td class="px-4 py-3 block md:table-cell">
+                                    <span class="text-[#03192B] font-medium md:font-normal">
                                         {{ $requisito['nombre'] }}
                                         @if($requisito['slug'] === 'fotocopia-del-boleto-de-ornato')
                                             <strong> (opcional)</strong>
@@ -612,31 +615,44 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                                     </span>
                                 </td>
 
-                            <!-- ALINEANDO ARCHIVOS DE REQUISITO -->         
-                            <td class="px-4 py-3 text-right">
-                                    <div class="flex items-center justify-end gap-3"> @if(!isset($requisitos[$index]['archivo']))
-                                            <label class="cursor-pointer inline-flex items-center gap-2 bg-[#10069F] text-white px-4 py-2 rounded hover:bg-[#0d057f] transition-colors">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12l7-8m0 0l7 8m-7-8v12" />
-                                                </svg>
-                                                <span>Subir archivo</span>
-                                                <input type="file" wire:model="requisitos.{{ $index }}.archivo" accept="application/pdf,image/jpeg" class="hidden">
-                                            </label>
-                                        @else
-                                            <p class="text-[#10069F] text-sm truncate w-[200px] text-right" title="{{ $requisitos[$index]['archivo']->getClientOriginalName() }}">
-                                                {{ $requisitos[$index]['archivo']->getClientOriginalName() }}
-                                            </p>
+                            <!-- celda movil acción -->         
+                            <td class="px-4 py-3 block md:table-cell text-left md:text-right">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-end gap-2 md:gap-3">
 
-                                            <button type="button" 
-                                                    @click="abrirModalEliminarRequisito({{ $index }})" 
-                                                    class="text-red-600 hover:text-red-800 transition-colors flex-shrink-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                </svg>
-                                            </button>
-                                        @endif
-                                    </div>
-                                </td>
+        @if(!isset($requisitos[$index]['archivo']))
+        <label class="flex md:inline-flex w-1/2 md:w-auto items-center gap-2 bg-[#10069F] text-white px-4 py-2 rounded hover:bg-[#0d057f] transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12l7-8m0 0l7 8m-7-8v12" />
+            </svg>
+            <span>Subir archivo</span>
+            <input type="file" wire:model="requisitos.{{ $index }}.archivo" accept="application/pdf,image/jpeg" class="hidden">
+        </label>
+        @else
+
+        <!-- mensaje de elimianr alineandolo-->
+        <div class="flex items-center justify-between md:justify-end w-full gap-3">
+        <p class="text-[#10069F] text-sm truncate w-[200px] text-right" title="{{ $requisitos[$index]['archivo']->getClientOriginalName() }}">
+            {{ $requisitos[$index]['archivo']->getClientOriginalName() }}
+        </p>
+
+          <button type="button"
+
+                @click="abrirModalEliminarRequisito({{ $index }})"
+
+                class="text-red-600 hover:text-red-800 transition-colors flex-shrink-0">
+
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M9 6v12m6-12v12M5 6l1 14h12l1-14" />
+            </svg>
+
+
+        </button>
+        </div>
+        
+        @endif
+
+    </div>
+</td>
 
                             </tr>
                             @endif
@@ -878,105 +894,92 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                         Carga familiar
                     </h3>
 
+
+                    <!-- barra de desplazamiento -->
                     <div class="overflow-x-auto">
-                        >
-                            <thead>
-                                <tr class="border-b" style="border-color:#83BD3F">
-                                    <th class="px-4 py-3 font-bold text-[#03192B]">#</th>
-                                    <th class="px-4 py-3 font-bold text-[#03192B]">Nombres</th>
-                                    <th class="px-4 py-3 font-bold text-[#03192B]">Apellidos</th>
-                                    <th class="px-4 py-3 font-bold text-[#03192B] text-center">
-                                        Subir Documento
-                                    </th>
-                                </tr>
-                            </thead>
+                        
 
-                            <tbody>
+                        <div class="space-y-4">
+                            @foreach ($cargas as $index => $carga )
+                                    <div class="p-4 bg-white rounded shadow flex flex-col md:flex-row 
+                                    md:items-center md:gap-4">
 
-                                @foreach ($cargas as $index => $carga )
-                                <tr wire:key="carga-{{ $index }}">
+                                        <!-- Número de carga -->
+                                        <div class="font-semibold text-[#03192B] mb-2 md:mb-0">
+                                            Carga {{ $index + 1 }}
+                                        </div>
 
+                                        <!-- Nombres -->
+                                        <div class="flex-1 mb-2 md:mb-0"> 
+                                            <input type="text" placeholder="Nombres"
+                                            wire:model.live="cargas.{{$index}}.nombres"
+                                            class="border rounded px-3 py-2 w-full">
+                                        </div>
 
-                                  <tr class="border-b" style="border-color:#83BD3F;">
-                                    <td class="px-4 py-3 font-semibold text-[#03192B]">
-                                        Carga  {{ $index + 1 }}
-                                    </td>
-                                    <td class="px-4 py-3 text-[#03192B]">
-                                        <input type="text"
-                                        wire:model.live="cargas.{{ $index }}.nombres"
-                                        placeholder="Nombres"+
-                                        class="border rounded px-3 py-2 w-full">
-                                    </td>
-                                    
-                                    <td class="px-4 py-3 text-[#03192B]">
-                                        <input type="text"
-                                        wire:model.live="cargas.{{ $index }}.apellidos"
-                                        placeholder="Apellidos"
-                                        class="border rounded px-3 py-2 w-full"
-                                        >
-                                    </td>
-                                  
+                                        <!-- Apellidos -->
+                                        <div class="flex-1 mb-2 md:mb-0">
+                                            <input type="text" placeholder="Apellidos"
+                                            wire:model.live="cargas.{{ $index }}.apellidos"
+                                            class="border rounded px-3 py-2 w-full">
+                                        
+                                        </div>
+                                        <!-- Subir archivo -->
 
-                          <!-- ALINEANDO ARCHIVOS DE CARGA -->         
+                                        <div class="flex-shrink-0 flex items-center gap-2">
+                                            @if (!isset($cargas[$index]['archivo']))
 
-                        <td class="px-4 py-3 text-right"> @if (!isset($cargas[$index]['archivo']))
-                                <div class="flex justify-end"> <label class="cursor-pointer inline-flex items-center gap-2 bg-[#83BD3F] text-white px-4 py-2 rounded hover:bg-green-700 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            
+                                            <label class="cursor-pointer inline-flex items-center
+                                            gap-2 bg-[#83BD3F] text-white px-4 py-2 rounded
+                                            hover:bg-green-700">
+
+                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12l7-8m0 0l7 8m-7-8v12"/>
-                                        </svg>
-                                        <span>Subir carga</span>
-                                        <input type="file" accept="application/pdf,image/jpeg" class="hidden" wire:model="cargas.{{ $index }}.archivo">
-                                    </label>
-                                </div>
-                            @else
-                                <div class="flex items-center justify-end gap-4"> <p class="text-[#10069F] text-sm truncate w-40 text-right" title="{{ $cargas[$index]['archivo']->getClientOriginalName() }}">
-                                        {{ $cargas[$index]['archivo']->getClientOriginalName() }}
-                                    </p>
-                                    
-                                    <button type="button"
-                                            @click="$dispatch('abrir-modal-eliminar-carga', {{ $index }})"
-                                            class="text-red-600 hover:text-red-800 flex-shrink-0"
-                                            title="Eliminar archivo">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166 m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077 L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397 m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397 m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0 c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            @endif
-                        </td>
-                                    
+                                                </svg>
+                                            
+                                            Subir carga
+                                            <input
+                                            type="file" ccept="application/pdf,image/jpeg"
+                                            class="hidden"
+                                            wire:model="cargas.{{ $index }}.archivo">
+                                            </label>
+                                            @else
+
+                                            <!-- Ajuste de texto -->
+                                            <div class="flex items-center gap-2">
+                                            <p class="text-[#10069F] text-sm truncate max-w-[120px] md:max-w-[120px]" title="{{ $cargas[$index]['archivo']->getClientOriginalName() }}">
+
+                                            {{ $cargas[$index]['archivo']->getClientOriginalName() }}
+                                            </p>
+                                            </div>
+                                           
+
+                                            <button type="button" @click="$dispatch('abrir-modal-eliminar-carga', {{  $index }})" class="text-red-600">
+                                                {{-- ✕ --}}
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M9 6v12m6-12v12M5 6l1 14h12l1-14" />
+                                                </svg>
+
+                                            </button>
 
 
+                                            @endif
+                                        </div>
 
 
-                                     <td class="px-4 py-3 text-center">
-                                        @if($index > 0)
-                                        <button
-                                        type="button"
-                                        wire:click="eliminarCarga({{ $index }})"
-                                        class="text-red-600 font-bold text-lg hover:text-red-800"
-                                        title="Eliminar carga"
-                                        >
+                                        
+                                        
 
-                                         ✕
-                                        </button>
-                                        @endif
-                                    </td>
-                                 </tr>
-
-
-
-
-
-
-
+                                    </div>
                                 @endforeach
+                                
+                        </div>
 
-                            </tbody>
-                        </table>
-
+                                
+                                
+                                
                     </div>
-                    </div>
+                </div>
 
 
                    <!-- agregar cargas boton -->
