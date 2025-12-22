@@ -1,5 +1,5 @@
 <div class="px-4 md:px-8">
-<div class="max-w-2xl mx-auto bg-[#C0C0C0] rounded-xl px-12 py-8">
+<div class="max-w-2xl mx-auto bg-[#C0C0C0] rounded-xl px-6 md:px-10 py-8">
 
         {{-- CONTENEDOR SUPERIOR --}}
         <div class="bg-white border border-b-0 p-8 rounded-t-xl">
@@ -121,7 +121,7 @@
                 $tramite = $solicitud->requisitosTramites->first()?->tramite;
             @endphp
 
-            <div class="bg-white p-8 rounded-b-xl">
+            <div class="bg-white p-8">
 
                 <h3
                     class="text-center text-xl md:text-2xl font-bold
@@ -135,8 +135,8 @@
 
                     @if ($tramite)
                         <div class="flex flex-col sm:flex-row justify-between text-sm md:text-base">
-                            <span class="text-gray-700 font-semibold">Trámite:</span>
-                            <span class="text-[#03192B] uppercase">
+                            <span class="text-gray-700 font-semibold ">Trámite:</span>
+                            <span class="text-[#03192B] uppercase text-left md:text-right">
                                 {{ strtoupper($tramite->nombre) }}
                             </span>
                         </div>
@@ -176,56 +176,51 @@
                             {{ $solicitud->estado->nombre }}
                         </span>
                     </div>
-
                 </div>
+        </div>
 
 
-                <div class="border border-gray-300 mt-3">
-                     <h3
-                    class="text-center text-xl md:text-2xl font-bold
-                    bg-[#070F9E] text-white
-                    py-3 rounded-t-lg"
-                >
-                    Estado de su proceso
-                </h3>
 
-                <hr class="border-white/40 mb-6">
+               <div class="bg-white p-8">
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-                    @foreach($estados as $estado)
+    <h3
+        class="text-center text-xl md:text-2xl font-bold
+        bg-[#070F9E] text-white
+        py-3 rounded-t-lg"
+    >
+        Estado de su proceso
+    </h3>
 
-                    @php
-                        $completado = $estado->id<=$solicitud->estado_id;
-                    @endphp
+    <div class="border border-t-0 rounded-b-lg p-6">
 
-                    <div class="flex flex-col items-center gap-2">
-                        <div class="text-3xl">
-                            @if($completado)
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
+            @foreach($estados as $estado)
+
+                @php
+                    $completado = $estado->id <= $solicitud->estado_id;
+                @endphp
+
+                <div class="flex flex-col items-center gap-2">
+                    <div class="text-3xl">
+                        @if($completado)
                             <i class="fas fa-check-circle text-green-400"></i>
-                            @else
+                        @else
                             <i class="fas fa-times-circle text-red-400"></i>
-                            @endif
-                        </div>
+                        @endif
+                    </div>
 
                     <span class="text-sm font-semibold uppercase">
                         {{ $estado->nombre }}
                     </span>
-
-                    </div>
-
-                    @endforeach
                 </div>
 
-                </div>
+            @endforeach
+        </div>
 
-               
-
-
-
-            </div>
+    </div>
+</div>
 
 
-            
         @endif
 
     </div>

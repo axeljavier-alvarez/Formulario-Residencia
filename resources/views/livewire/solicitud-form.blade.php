@@ -967,7 +967,7 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                                         </div>
 
 
-                                        
+                                        <td class="px-4 py-3 text-center"> @if($index > 0) <button type="button" wire:click="eliminarCarga({{ $index }})" class="text-red-600 font-bold text-lg hover:text-red-800" title="Eliminar carga" > ✕ </button> @endif </td>
                                         
 
                                     </div>
