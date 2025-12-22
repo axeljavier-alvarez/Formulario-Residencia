@@ -338,28 +338,58 @@ if($this->agregarCargas === 'si' && count($this->cargas) > 0){
             ->send(new NotificacionSolicitud($mensaje));
         }   
 
-
-        // ENVIAR CORREO AL ADMIN
         Mail::to('axel5javier536@gmail.com')
             ->send(new NuevaSolicitudAdmin($solicitud));
 
         DB::commit();
 
-        // ENMASCARAR EMAIL
-        $this->emailEnmascarado = $this->enmascararEmail($solicitud->email);
-        $this->zonas = Zona::all();
+        
+            $this->emailEnmascarado = $this->enmascararEmail($solicitud->email);
+            $this->zonas = Zona::all();
+       
+        } catch(\Throwable $e){
 
-    } catch(\Throwable $e){
-        DB::rollBack();
-        // dd($e->getMessage()); // Solo mensaje
-        // Mostrar error
-        dd([
-            'mensaje' => $e->getMessage(),
-            'archivo' => isset($this->archivoCarga) ? $this->archivoCarga->getClientOriginalName() : null,
-            'tramite_id' => $this->tramite_id,
-            'cargas' => $this->cargas
-        ]);
+
+
+            DB::rollBack();
+            // dd($e->getMessage()); // Solo mensaje
+            // Mostrar error
+            dd([
+                'mensaje' => $e->getMessage(),
+                'archivo' => isset($this->archivoCarga) ? $this->archivoCarga->getClientOriginalName() : null,
+                'tramite_id' => $this->tramite_id,
+                'cargas' => $this->cargas
+            ]);
     }
+
+
+    //  $mensaje = "Hemos registrado su solicitud con el número {$solicitud->no_solicitud}.
+    //     Puede consultar el estado de su trámite en:
+    //     http://constanciaresidencia.test/consulta";
+
+
+    //     // luego intentar enviar correos
+    //         try {
+    //             if ($solicitud->email) {
+    //                 Mail::to($solicitud->email)
+    //                     ->send(new NotificacionSolicitud($mensaje));
+    //             }
+
+    //             Mail::to('axel5javier536@gmail.com')
+    //                 ->send(new NuevaSolicitudAdmin($solicitud));
+
+    //         } catch (\Throwable $mailError) {
+    //             logger()->error('Error enviando correo', [
+    //                 'error' => $mailError->getMessage(),
+    //                 'solicitud_id' => $solicitud->id,
+    //             ]);
+    //         }
+
+    //         // ENMASCARAR EMAIL
+    //         $this->emailEnmascarado = $this->enmascararEmail($solicitud->email);
+    //         $this->zonas = Zona::all();
+
+
 }
 
 

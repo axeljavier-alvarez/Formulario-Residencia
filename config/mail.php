@@ -39,12 +39,15 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'mail2.muniguate.com'),
-            'port' => env('MAIL_PORT', 465),
-            'encryption' => 'ssl',
+            'host' => env('MAIL_HOST'),
+            // 'port' => env('MAIL_PORT', 465),
+            'port' => env('MAIL_PORT'),
+            // 'encryption' => 'ssl',
+            'encryption' => null,
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
+            'auto_tls' => false,
             // 'stream' => [
             //     'ssl' => [
             //         'allow_self_signed' => true,
