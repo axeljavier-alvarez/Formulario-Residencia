@@ -27,6 +27,7 @@
 </head>
 
 <body
+class="pt-10"
 x-data="{ open: false }"
 :class="{ 'overflow-hidden': open }"
 class="sm:overflow-auto"

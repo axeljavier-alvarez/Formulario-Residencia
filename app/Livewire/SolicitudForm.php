@@ -471,109 +471,129 @@ if($this->agregarCargas === 'si' && count($this->cargas) > 0){
                 
                 if ($paso == 2) {
 
-                //     $slugTramite = optional(
-                //         $this->tramites->firstWhere('id', $this->tramite_id)
-                //     )->slug;
+                    $slugTramite = optional(
+                        $this->tramites->firstWhere('id', $this->tramite_id)
+                    )->slug;
 
-                //     $rules = [];
-                //     $messages = [];
+                    $rules = [];
+                    $messages = [];
 
-                //     /* validar tramites */
-                // $rules['tramite_id'] = 'required|exists:tramites,id';
-                // $messages['tramite_id.required'] = 'Debe seleccionar un trámite.';
-                // $messages['tramite_id.exists']   = 'Debe seleccionar un trámite válido.';
+                    /* validar tramites */
+                $rules['tramite_id'] = 'required|exists:tramites,id';
+                $messages['tramite_id.required'] = 'Debe seleccionar un trámite.';
+                $messages['tramite_id.exists']   = 'Debe seleccionar un trámite válido.';
 
    
-                // if ($slugTramite === 'tramites-legales-en-materia-penal-si-una-persona-se-encuentra-privada-de-libertad') {
+                if ($slugTramite === 'tramites-legales-en-materia-penal-si-una-persona-se-encuentra-privada-de-libertad') {
 
-                //     /* verificando edad */
-                //     $rules['edad'] = 'required|in:menor,mayor';
-                //     $messages['edad.required'] = 'Debe seleccionar si es menor o mayor de edad.';
+                    /* verificando edad */
+                    $rules['edad'] = 'required|in:menor,mayor';
+                    $messages['edad.required'] = 'Debe seleccionar si es menor o mayor de edad.';
 
 
-                //     $this->validate($rules, $messages);
+                    $this->validate($rules, $messages);
 
-                //     // no seguir sin edad
-                //     if (!$this->edad) {
-                //         return;
-                //     }
+                    // no seguir sin edad
+                    if (!$this->edad) {
+                        return;
+                    }
 
-                //     /* validacion de requisitos */
-                //     $config = [
-                //         'comunes' => [
-                //             'fotocopia-simple-de-su-documento-personal-de-identificacion',
-                //             'fotocopia-de-recibo-agua-luz-o-telefono-del-lugar-de-su-residencia',
-                //             'fotocopia-simple-del-documento-personal-de-identificacion-de-quien-se-encuentra-privado-de-libertad'
-                //         ],
-                //         'mayor' => [
-                //             'resolucion-judicial-que-conste-la-detencion-de-una-persona-prevencion-policial-auto-de-procesamiento-etc',
-                //             'fotocopia-del-boleto-de-ornato',
-                //         ],
-                //         'menor' => [
-                //             'resolucion-judicial-que-ordene-el-procesamiento-de-ninos-yo-adolescentes-en-conflicto-con-la-ley-penal',
-                //             'certificacion-de-nacimiento-extendida-por-renap',
-                //         ],
-                //     ];
+                    /* validacion de requisitos */
+                    $config = [
+                        'comunes' => [
+                            'fotocopia-simple-de-su-documento-personal-de-identificacion',
+                            'fotocopia-de-recibo-agua-luz-o-telefono-del-lugar-de-su-residencia',
+                            'fotocopia-simple-del-documento-personal-de-identificacion-de-quien-se-encuentra-privado-de-libertad'
+                        ],
+                        'mayor' => [
+                            'resolucion-judicial-que-conste-la-detencion-de-una-persona-prevencion-policial-auto-de-procesamiento-etc',
+                            'fotocopia-del-boleto-de-ornato',
+                        ],
+                        'menor' => [
+                            'resolucion-judicial-que-ordene-el-procesamiento-de-ninos-yo-adolescentes-en-conflicto-con-la-ley-penal',
+                            'certificacion-de-nacimiento-extendida-por-renap',
+                        ],
+                    ];
 
-                //     $slugsRequeridos = array_merge(
-                //         $config['comunes'],
-                //         $config[$this->edad]
-                //     );
+                    $slugsRequeridos = array_merge(
+                        $config['comunes'],
+                        $config[$this->edad]
+                    );
 
-                //     foreach ($this->requisitos as $index => $req) {
+                    foreach ($this->requisitos as $index => $req) {
 
-                //         // no aplica a esta edad
-                //         if (!in_array($req['slug'], $slugsRequeridos)) {
-                //             continue;
-                //         }
+                        // no aplica a esta edad
+                        if (!in_array($req['slug'], $slugsRequeridos)) {
+                            continue;
+                        }
 
-                //         // opcional
-                //         if ($req['slug'] === 'fotocopia-del-boleto-de-ornato') {
-                //             continue;
-                //         }
+                        // opcional
+                        if ($req['slug'] === 'fotocopia-del-boleto-de-ornato') {
+                            continue;
+                        }
 
-                //         $rules["requisitos.$index.archivo"] =
-                //             'required|file|mimes:pdf,jpg,jpeg|max:2048';
+                        $rules["requisitos.$index.archivo"] =
+                            'required|file|mimes:pdf,jpg,jpeg|max:2048';
 
-                //         $messages["requisitos.$index.archivo.required"] =
-                //             "Debe subir el requisito: {$req['nombre']}.";
+                        $messages["requisitos.$index.archivo.required"] =
+                            "Debe subir el requisito: {$req['nombre']}.";
 
-                //         $messages["requisitos.$index.archivo.mimes"] =
-                //             "Solo se permiten archivos PDF o JPG para {$req['nombre']}.";
+                        $messages["requisitos.$index.archivo.mimes"] =
+                            "Solo se permiten archivos PDF o JPG para {$req['nombre']}.";
 
-                //         $messages["requisitos.$index.archivo.max"] =
-                //             "El archivo {$req['nombre']} no debe superar 2MB.";
-                //     }
+                        $messages["requisitos.$index.archivo.max"] =
+                            "El archivo {$req['nombre']} no debe superar 2MB.";
+                    }
 
-                //         }
+                        }
                     
-                //         else {
+                        else {
 
-                //             foreach ($this->requisitos as $index => $req) {
+                            foreach ($this->requisitos as $index => $req) {
 
-                //                 if (
-                //                     $req['slug'] === 'cargas-familiares' ||
-                //                     $req['slug'] === 'fotocopia-del-boleto-de-ornato'
-                //                 ) {
-                //                     continue;
-                //                 }
+                                if (
+                                    $req['slug'] === 'cargas-familiares' ||
+                                    $req['slug'] === 'fotocopia-del-boleto-de-ornato'
+                                ) {
+                                    continue;
+                                }
 
-                //                 $rules["requisitos.$index.archivo"] =
-                //                     'required|file|mimes:pdf,jpg,jpeg|max:2048';
+                                $rules["requisitos.$index.archivo"] =
+                                    'required|file|mimes:pdf,jpg,jpeg|max:2048';
 
-                //                 $messages["requisitos.$index.archivo.required"] =
-                //                     "Debe subir el requisito: {$req['nombre']}.";
-                //             }
-                //         }
+                                $messages["requisitos.$index.archivo.required"] =
+                                    "Debe subir el requisito: {$req['nombre']}.";
+                            }
+                        }
 
-                        
-                //         if ($this->tieneCargasFamiliares) {
-                //             $rules['agregarCargas'] = 'required|in:si,no';
-                //             $messages['agregarCargas.required'] =
-                //                 'Debe indicar si desea agregar cargas familiares.';
-                //         }
+    
+                        // validacion de cargas familiare
+                        if ($this->tieneCargasFamiliares) {
+                            $rules['agregarCargas'] = 'required|in:si,no';
+                            $messages['agregarCargas.required'] =
+                                'Debe indicar si desea agregar cargas familiares.';
+                        }
 
-                //         $this->validate($rules, $messages);
+
+                        if ($this->tieneCargasFamiliares && $this->agregarCargas === 'si'){
+                            foreach($this->cargas as $index => $carga){
+                                $rules["cargas.$index.nombres"] = 'required|string|max:45';
+                                $rules["cargas.$index.apellidos"] = 'required|string|max:45';
+                                $rules["cargas.$index.archivo"] = 'required|file|mimes:pdf,jpg,jpeg|max:2048';                                
+                                $messages["cargas.$index.nombres.required"] = "Debe ingresar los nombres de la carga #" . ($index + 1);
+                                $messages["cargas.$index.apellidos.required"] = "Debe ingresar los apellidos de la carga #" . ($index + 1);
+                                $messages["cargas.$index.archivo.required"] = "Debe subir un archivo para la carga #" . ($index + 1);
+
+                                $messages["cargas.$index.archivo.mimes"] = "El archivo de la carga #" . ($index + 1) . " debe ser PDF o JPG";
+                                $messages["cargas.$index.archivo.max"] = "El archivo de la carga #" . ($index + 1) . " no debe superar 2MB";
+                            }
+
+                            $rules['agregarCargas'] = 'required|in:si,no';
+                            $messages['agregarCargas.required'] = 'Debe indicar si desea agregar cargas familiares';
+                        }
+
+
+                        $this->validate($rules, $messages);
                     }
 
 
@@ -616,6 +636,8 @@ if($this->agregarCargas === 'si' && count($this->cargas) > 0){
         }
     ];
 }
+
+
 
 
 public function updatedCargas($value, $key)
@@ -877,6 +899,12 @@ public function eliminarCarga($index)
     if($index === 0) return;
     unset($this->cargas[$index]);
     $this->cargas = array_values($this->cargas);
+
+    // eliminar los errores de la carga eliminada
+
+    $this->resetErrorBag("cargas.$index.nombres");
+    $this->resetErrorBag("cargas.$index.apellidos");
+    $this->resetErrorBag("cargas.$index.archivo");
 }
 
 // eliminar archivo requisito

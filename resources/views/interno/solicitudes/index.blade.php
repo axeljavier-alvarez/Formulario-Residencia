@@ -4,7 +4,7 @@
         'url' => route('interno.consulta.index')
     ],
     [
-        'name' => 'Solicitudes'
+        'name' => 'Consulta de solicitudes',
     ]
 ]">
 

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Solicitud;
+use Carbon\Carbon;
 
 class SolicitudTable extends DataTableComponent
 {
@@ -18,34 +19,66 @@ class SolicitudTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Id", "id")
+            
+        // no solicitud
+        Column::make("No solicitud", "no_solicitud")
                 ->sortable(),
-            Column::make("No solicitud", "no_solicitud")
-                ->sortable(),
-            Column::make("Anio", "anio")
-                ->sortable(),
-            Column::make("Nombres", "nombres")
-                ->sortable(),
-            Column::make("Apellidos", "apellidos")
-                ->sortable(),
-            Column::make("Email", "email")
-                ->sortable(),
-            Column::make("Telefono", "telefono")
-                ->sortable(),
-            Column::make("Cui", "cui")
-                ->sortable(),
-            Column::make("Domicilio", "domicilio")
-                ->sortable(),
-            Column::make("Observaciones", "observaciones")
-                ->sortable(),
-            Column::make("Zona id", "zona_id")
-                ->sortable(),
-            Column::make("Estado id", "estado_id")
-                ->sortable(),
-            Column::make("Created at", "created_at")
-                ->sortable(),
-            Column::make("Updated at", "updated_at")
-                ->sortable(),
+            
+      
+        // nombre completo nombres y apellidos
+        Column::make("Nombre Completo", "nombres")
+        ->sortable()
+        ->searchable()
+        ->format(fn($value, $row) => $row->nombres . ' ' . $row->apellidos),
+
+        Column::make("Apellidos", "apellidos")
+            ->hideIf(true),
+        // email
+        Column::make("Email", "email")
+            ->sortable(),
+        // mostrar telefono
+        Column::make("Telefono", "telefono")
+            ->sortable(),
+            // Column::make("Cui", "cui")
+            //     ->sortable(),
+        // fecha de creacion   
+        // Column::make("Fecha solicitud", "created_at")
+        //         ->sortable(),
+
+        Column::make("Fecha solicitud", "created_at")
+        
+        ->sortable()
+        ->format(function($value, $row){
+            return $row->created_at
+            ? Carbon::parse($row->created_at)->translatedFormat('d F Y H:i')
+            : '-';
+        }),
+        // estado
+        Column::make("Estado", "estado.nombre") 
+            ->sortable()
+            ->searchable()
+            
+
+
+            ->format(function($value, $row){
+                $color = match($value) {
+                    'Pendiente' => 'orange',
+                    'En proceso' => '#EAB308',
+                    'Completado' => 'green',
+                    'Cancelado' => 'red'
+
+                };
+
+                return '<span style="color: ' . $color . '; font-weight: bold;">' . $value . '</span>';
+
+
+            })
+
+            ->html(),
+
+           
+
+            
         ];
     }
 }

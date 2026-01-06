@@ -38,6 +38,12 @@ class Solicitud extends Model
         return $this->belongsTo(Estado::class, 'estado_id');
     }
 
+    protected function builder()
+{
+    return Solicitud::query()->with('estado');
+}
+
+
     // muchos a muchos con requisitostramites
     public function requisitosTramites()
     {
