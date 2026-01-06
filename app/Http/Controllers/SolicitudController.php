@@ -10,7 +10,7 @@ class SolicitudController extends Controller
 
     
 
-    // Mostrar el formulario
+    // CREAR SOLICITUD USUARI9O
      public function create()
     {
         return view('solicitudes.create');

@@ -1,4 +1,6 @@
 
+@props(['breadcrumb' => []])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -31,14 +33,14 @@ class="sm:overflow-auto"
 >
 
    
-@include('layouts.includes.consulta.navigation')
-@include('layouts.includes.consulta.sidebar')
+@include('layouts.includes.interno.navigation')
+@include('layouts.includes.interno.sidebar')
 
 <div class="p-4 sm:ml-64">
 
    <div class="mt-14">
 
-   
+   @include('layouts.includes.interno.breadcrumb')
 
    <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
       <div class="w-full">
