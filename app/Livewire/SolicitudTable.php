@@ -20,65 +20,146 @@ class SolicitudTable extends DataTableComponent
     {
         return [
             
-        // no solicitud
-        Column::make("No solicitud", "no_solicitud")
-                ->sortable(),
-            
-      
-        // nombre completo nombres y apellidos
-        Column::make("Nombre Completo", "nombres")
-        ->sortable()
-        ->searchable()
-        ->format(fn($value, $row) => $row->nombres . ' ' . $row->apellidos),
+            // no solicitud
+            Column::make("No solicitud", "no_solicitud")
+                    ->sortable()
+                    ->format(function($value){
 
-        Column::make("Apellidos", "apellidos")
-            ->hideIf(true),
-        // email
-        Column::make("Email", "email")
-            ->sortable(),
-        // mostrar telefono
-        Column::make("Telefono", "telefono")
-            ->sortable(),
-            // Column::make("Cui", "cui")
-            //     ->sortable(),
-        // fecha de creacion   
-        // Column::make("Fecha solicitud", "created_at")
-        //         ->sortable(),
-
-        Column::make("Fecha solicitud", "created_at")
+                        return '<span class="font-bold text-gray-800">' 
+                        . $value . 
+                        '</span>';
+                    })
+                    ->html(),
+                
         
-        ->sortable()
-        ->format(function($value, $row){
-            return $row->created_at
-            ? Carbon::parse($row->created_at)->translatedFormat('d F Y H:i')
-            : '-';
-        }),
-        // estado
-        Column::make("Estado", "estado.nombre") 
+            // nombre completo nombres y apellidos
+            Column::make("Nombre Completo", "nombres")
             ->sortable()
             ->searchable()
-            
 
 
             ->format(function($value, $row){
-                $color = match($value) {
-                    'Pendiente' => 'orange',
-                    'En proceso' => '#EAB308',
-                    'Completado' => 'green',
-                    'Cancelado' => 'red'
+                // obtener el tramite
+                $nombreTramite = $row->requisitosTramites->first()?->
+                tramite?->nombre ?? 'N/A';
 
-                };
+                // unificar nombres y apellidos en una sola variable
 
-                return '<span style="color: ' . $color . '; font-weight: bold;">' . $value . '</span>';
+                $nombreCompleto = $row->nombres . ' ' . $row->apellidos;
 
-
+                // html unificado
+                return '<div class="flex flex-col">
+                <span class="font-bold text-gray-800">
+                ' . $nombreCompleto . ' 
+                </span> 
+                <span style="color: #322EA5; font-size: 0.85rem;"
+                class="font-semibold">
+                ' . $nombreTramite . '
+                </span>
+                </div>
+                ';
             })
-
             ->html(),
+            // ->format(fn($value, $row) => $row->nombres . ' ' . $row->apellidos),
+
+           
+
+
+            Column::make("Apellidos", "apellidos")
+                ->hideIf(true),
+
+            //  Column::make("Trámite")
+            // ->label(fn($row) => $row->requisitosTramites->first()?->
+            // tramite?->nombre ?? 'N/A'),
+
+            // email
+            Column::make("Email", "email")
+                ->sortable(),
+            // mostrar telefono
+            Column::make("Telefono", "telefono")
+                ->sortable(),
+                // Column::make("Cui", "cui")
+                //     ->sortable(),
+            // fecha de creacion   
+            // Column::make("Fecha solicitud", "created_at")
+            //         ->sortable(),
+
+            Column::make("Fecha solicitud", "created_at")
+            
+            ->sortable()
+            ->format(function($value, $row){
+                return $row->created_at
+                ? Carbon::parse($row->created_at)->translatedFormat('d F Y H:i')
+                : '-';
+            }),
+            // estado
+            Column::make("Estado", "estado.nombre") 
+                ->sortable()
+                ->searchable()
+                
+
+
+                ->format(function($value, $row){
+                    $color = match($value) {
+                        'Pendiente' => 'orange',
+                        'En proceso' => '#EAB308',
+                        'Completado' => 'green',
+                        'Cancelado' => 'red'
+
+                    };
+
+                    return '<span style="color: ' . $color . '; font-weight: bold;">' . $value . '</span>';
+
+
+                })
+
+                ->html(),
+         
+
+         
+
+        Column::make("Acción", "id")
+        ->format(function($value, $row){
+            // $url = route('interno.solicitudes.index', $row->id);
+
+            // return ' <a href="' . $url . '"  class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold underline decoration-2 decoration-blue-200 hover:decoration-blue-800 transition-colors"> 
+            // Ver detalle
+            // </a>';
+
+            return '<button wire:click="verDetalle('. $row->id . ')" 
+            class="text-blue-600 underline font-bold hover:text-blue-800">
+            Ver detalle
+            </button>';
+        })
+        ->html(),
 
            
 
             
         ];
     }
+
+    // ABRIR MODAL
+    public function verDetalle($id)
+    {
+        
+
+        //  $solicitud = Solicitud::find($id);
+
+        // objeto estado en array
+        $solicitud = Solicitud::with([
+            'estado', 
+            'zona', 
+            'dependientes',
+            'requisitosTramites.tramite'
+            ])->find($id);
+
+        if($solicitud){
+            $this->dispatch('open-modal-detalle', solicitud: $solicitud->toArray());
+        }
+
+    }
+
+
+    
 }

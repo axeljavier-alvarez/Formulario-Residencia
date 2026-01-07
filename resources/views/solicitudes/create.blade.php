@@ -26,6 +26,13 @@
         @livewireStyles
 </head>
 
+<style>
+    [x-cloak] { 
+        display: none !important; 
+    }
+</style>
+
+
 <body class="bg-[#C0C0C0]">
 
 
