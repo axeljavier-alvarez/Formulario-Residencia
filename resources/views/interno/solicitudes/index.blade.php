@@ -255,9 +255,67 @@
                 </h4>
             </div>
 
-            <div class="space-y-3 text-sm text-gray-600">
-                
+            <!-- mostrar bitacora por solicitud-->
 
+            <div class="space-y-3 text-sm text-gray-600">
+            <template x-if="solicitud.bitacoras && solicitud.bitacoras.length > 0">
+
+                <template x-for="item in solicitud.bitacoras" :key="item.id"> 
+                    <div class="bg-white border rounded-lg p-3">
+                        <p x-show="item.evento">
+                            <span class="font-semibold text-gray-900">
+                                Evento
+                            </span>
+                            <span x-text="item.evento">
+
+                            </span>
+                        </p>
+
+                        <template x-if="item.user">
+                            <p>
+                                <span class="font-semibold text-gray-900">
+                                    Usuario
+                                </span>
+                                <span
+                                x-text="item.user.name"
+                                class="italic text-gray-500"
+                                >
+                                </span>
+                            </p>
+                        </template>
+
+                        <p>
+                            <span class="font-semibold text-gray-900"> 
+                                Fecha:
+                            </span>
+                            <span x-text="item.fecha_formateada">
+                                
+                            </span>
+                        </p>
+
+                        <p>
+                            
+                            <span class="font-semibold text-gray-900">
+                                Detalle 
+                            </span>
+
+                            <span x-text="item.descripcion">
+
+                            </span>
+                        </p>
+                        
+                    </div>
+                </template>
+            </template>
+
+
+            <!-- Mensaje aleatorio-->
+            <template x-if="!solicitud.bitacoras || solicitud.bitacoras.length === 0">
+                <span class="px-2 py-1 rounded-full text-xs font-bold bg-white border text-gray-500"> 
+                    Sin movimientos registrados
+                </span>
+
+            </template>
                 
 
                 

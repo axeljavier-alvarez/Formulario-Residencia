@@ -11,10 +11,24 @@ class SolicitudTable extends DataTableComponent
 {
     protected $model = Solicitud::class;
 
-    public function configure(): void
-    {
-        $this->setPrimaryKey('id');
-    }
+   public function configure(): void
+{
+    $this->setPrimaryKey('id');
+
+    $this->setThAttributes(function (Column $column) {
+        return [
+            'style' => 'background-color: #DBEAFE !important;',
+            'class' => 'font-bold text-gray-900 text-center text-lg py-2',
+        ];
+        
+    });
+
+    $this->setTdAttributes(function (Column $column, $row, $columnIndex, $rowIndex) {
+        return [
+            'class' => 'text-left align-middle',
+        ];
+    });
+}
 
     public function columns(): array
     {
@@ -22,7 +36,6 @@ class SolicitudTable extends DataTableComponent
             
             // no solicitud
             Column::make("No solicitud", "no_solicitud")
-                    ->sortable()
                     ->format(function($value){
 
                         return '<span class="font-bold text-gray-800">' 
@@ -34,7 +47,6 @@ class SolicitudTable extends DataTableComponent
         
             // nombre completo nombres y apellidos
             Column::make("Nombre Completo", "nombres")
-            ->sortable()
             ->searchable()
 
 
@@ -74,10 +86,10 @@ class SolicitudTable extends DataTableComponent
 
             // email
             Column::make("Email", "email")
-                ->sortable(),
+                ,
             // mostrar telefono
-            Column::make("Telefono", "telefono")
-                ->sortable(),
+            Column::make("Teléfono", "telefono")
+                ,
                 // Column::make("Cui", "cui")
                 //     ->sortable(),
             // fecha de creacion   
@@ -86,7 +98,7 @@ class SolicitudTable extends DataTableComponent
 
             Column::make("Fecha solicitud", "created_at")
             
-            ->sortable()
+            
             ->format(function($value, $row){
                 return $row->created_at
                 ? Carbon::parse($row->created_at)->translatedFormat('d F Y H:i')
@@ -94,8 +106,7 @@ class SolicitudTable extends DataTableComponent
             }),
             // estado
             Column::make("Estado", "estado.nombre") 
-                ->sortable()
-                ->searchable()
+          
                 
 
 
@@ -146,19 +157,33 @@ class SolicitudTable extends DataTableComponent
 
         //  $solicitud = Solicitud::find($id);
 
+
+
+        // limitar registros bitacora 'bitacoras' => fn ($q) => $q->latest()->limit(10)
         // objeto estado en array
         $solicitud = Solicitud::with([
             'estado', 
             'zona', 
             'dependientes',
-            'requisitosTramites.tramite'
+            'requisitosTramites.tramite',
+            'bitacoras.user'
             ])->find($id);
+
+           // traduciendo la fecha de created_at
+           
+$solicitud->bitacoras->each(function ($item) {
+    $item->fecha_formateada = Carbon::parse($item->created_at)
+        ->translatedFormat('d F Y H:i');
+});
 
         if($solicitud){
             $this->dispatch('open-modal-detalle', solicitud: $solicitud->toArray());
         }
 
+        
+
     }
+
 
 
     

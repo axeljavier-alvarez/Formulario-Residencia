@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Solicitud;
+use App\Observers\SolicitudObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,10 +17,10 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * OBSERVER CON FUNCIONES DE TRIGGER REGISTRADO
      */
     public function boot(): void
     {
-        //
+        Solicitud::observe(SolicitudObserver::class);
     }
 }

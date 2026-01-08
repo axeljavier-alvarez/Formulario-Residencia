@@ -31,12 +31,17 @@
                 <a href="{{ $item['url'] }}"
                    class="{{ $loop->first
                         ? 'text-blue-600 underline font-bold hover:text-blue-800'
-                        : 'inline-flex items-center font-medium text-body-subtle'
-                   }}">
+                        : 'inline-flex items-center font-bold  text-body-subtle'
+
+                    
+                   }}"
+
+                   style="{{ !$loop->first ? 'color:#4FA74F' : '' }}"
+                   >
                     {{ $item['name'] }}
                 </a>
             @else
-                <span class="inline-flex items-center font-medium text-body-subtle">
+                <span class="inline-flex items-center textfont-medium font-bold text-body-subtle" style="color:#4FA74F">
                     {{ $item['name'] }}
                 </span>
             @endisset

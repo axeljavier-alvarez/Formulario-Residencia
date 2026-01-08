@@ -67,4 +67,10 @@ class Solicitud extends Model
     return $this->hasMany(Dependiente::class, 'solicitud_id');
    }
 
+
+   public function bitacoras()
+   {
+    return $this->hasMany(Bitacora::class);
+   }
+
 }
