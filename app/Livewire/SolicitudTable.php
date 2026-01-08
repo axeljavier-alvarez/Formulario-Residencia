@@ -150,6 +150,21 @@ class SolicitudTable extends DataTableComponent
         ];
     }
 
+    /* 
+    
+    item = {
+  id: 12,
+  evento: "Cambio de estado",
+  descripcion: "Aprobado",
+  created_at: "2026-01-08T14:32:10.000000Z",
+  fecha_formateada: "08 enero 2026 14:32",
+  user: {
+    name: "Juan Pérez"
+  }
+}
+
+*/
+
     // ABRIR MODAL
     public function verDetalle($id)
     {
@@ -171,12 +186,20 @@ class SolicitudTable extends DataTableComponent
 
            // traduciendo la fecha de created_at
            
-$solicitud->bitacoras->each(function ($item) {
-    $item->fecha_formateada = Carbon::parse($item->created_at)
-        ->translatedFormat('d F Y H:i');
-});
+           
 
         if($solicitud){
+
+            // traduciendo fecha de la solicitud
+            $solicitud->fecha_registro_traducida = $solicitud->created_at
+            ? Carbon::parse($solicitud->created_at)
+            ->translatedFormat('d F Y H:i') : 'N/A';
+            // traduciendo fecha de la bitacora
+             $solicitud->bitacoras->each(function ($item) {
+                $item->fecha_formateada = Carbon::parse($item->created_at)
+                    ->translatedFormat('d F Y H:i');
+            });
+
             $this->dispatch('open-modal-detalle', solicitud: $solicitud->toArray());
         }
 

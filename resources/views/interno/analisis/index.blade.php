@@ -12,4 +12,6 @@
 
 @livewire('analisis-documentos-table')
 
+<!-- creacion del blade para ver la solicitud -->
+
 </x-interno-layout>

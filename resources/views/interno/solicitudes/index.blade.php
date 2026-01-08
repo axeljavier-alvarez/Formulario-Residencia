@@ -137,7 +137,7 @@
                     <span class="font-semibold text-gray-900">
                         Fecha de registro
                     </span>
-                    <span x-text="solicitud.created_at">
+                    <span x-text="solicitud.fecha_registro_traducida">
 
                     </span>
                 </p>
