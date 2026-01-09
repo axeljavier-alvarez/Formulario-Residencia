@@ -6,6 +6,8 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Solicitud;
 use Carbon\Carbon;
+use App\Models\Estado;
+use Livewire\Attributes\On;
 
 class AnalisisDocumentosTable extends DataTableComponent
 {
@@ -161,6 +163,31 @@ class AnalisisDocumentosTable extends DataTableComponent
             ->translatedFormat('d F Y H:i') : 'N/A';
             
             $this->dispatch('open-modal-solicitud', solicitud: $solicitud->toArray());
+        }
+    }
+
+
+    // cancelar una solicitud
+    #[On('peticionRechazar')] 
+    public function rechazarSolicitud($id)
+    {
+        $estadoCancelado = Estado::where('nombre', 'Cancelado')->first();
+
+        if(!$estadoCancelado) return;
+
+        $solicitud = Solicitud::find($id);
+
+        if($solicitud){
+            $solicitud->update([
+                'estado_id' => $estadoCancelado->id
+            ]);
+
+            // 1. Cerramos el modal por si acaso
+            $this->dispatch('close-modal-solicitud');
+
+            // 2. Redireccionamos a la URL que pediste
+            // Esto refrescará la tabla y cerrará el modal por completo
+            return redirect()->to('/interno/analisis');
         }
     }
 

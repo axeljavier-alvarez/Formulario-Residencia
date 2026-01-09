@@ -66,7 +66,7 @@
     <div class="grid grid-cols-1 gap-6">
 
 
-            <div class="bg-gray-50 border border-gray-200
+        <div class="bg-gray-50 border border-gray-200
             rounded-xl p-5 shadow-sm">
             <div class="flex items-center mb-3">
                 <span class="p-2 bg-blue-100 rounded-lg mr-2
@@ -199,8 +199,8 @@
                       solicitud.dependientes.length > 0">
                       <template x-for="dep in solicitud.dependientes"
                       :key="dep.id">
-                        <span class="px-3 py-1 bg-blue-50 text-blue-700
-                        border border-blue-200 rounded-full text-xs font-medium">
+                        <span class="px-3 py-1 bg-green-50 text-green-700
+                        border border-green-200 rounded-full text-xs font-medium">
 
                         <span x-text="dep.nombres + ' ' + (dep.apellidos || '')">
                         </span>
