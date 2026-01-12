@@ -27,46 +27,34 @@
 
     <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
 
-   <div x-show="open"
-   x-cloak
-   x-transition:enter="ease-out duration-300"
-   x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-   x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-   
-   class="relative transform overflow-hidden rounded-lg
-   bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full
-   sm:max-w-4xl p-6">
+ 
 
-   
+        <div x-show="open"
+     x-cloak
+     class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl p-6"> <div class="bg-blue-200 text-gray-900 shadow-inner flex items-center justify-between relative 
+                -mx-6 -mt-6 mb-6 px-6 py-4 border-b"> 
+        
+        <h3 class="text-2xl font-bold" id="modal-title">
+            Solicitud No. <span x-text="solicitud.no_solicitud"></span>
+        </h3>
 
-   <div class="border-b pb-3 mb-4 flex items-center justify-between
-   relative">
-    <h3 class="text-2xl font-bold text-gray-900"
-    id="modal-title">
-    Solicitud No. 
-
-    <span x-text="solicitud.no_solicitud">
-
-    </span>
-    </h3>
-
-
-     <button @click="open = false" 
-            type="button" 
-            class="absolute top-0 right-0 p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors duration-200 focus:outline-none"
-            aria-label="Cerrar modal">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-    </button>
+        <button @click="open = false" 
+                type="button" 
+                class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors duration-200 focus:outline-none"
+                aria-label="Cerrar modal">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
     
 
-   </div>
+
 
     <div class="grid grid-cols-1 gap-6">
 
 
-        <div class="bg-gray-50 border border-gray-200
+        <div class="bg-gray-50 border border-blue-200
             rounded-xl p-5 shadow-sm">
             <div class="flex items-center mb-3">
                 <span class="p-2 bg-blue-100 rounded-lg mr-2
@@ -239,7 +227,7 @@
         </div>
 
     <!-- RECUADRO 2 -->
-        <div class="bg-gray-50 border border-gray-200
+        <div class="bg-gray-50 border border-blue-200
         rounded-xl p-5 shadow-sm">
 
             <div class="flex items-center mb-3">

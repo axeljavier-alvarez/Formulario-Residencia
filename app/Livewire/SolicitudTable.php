@@ -10,17 +10,15 @@ use Carbon\Carbon;
 class SolicitudTable extends DataTableComponent
 {
     protected $model = Solicitud::class;
-
-   public function configure(): void
+public function configure(): void
 {
     $this->setPrimaryKey('id');
 
     $this->setThAttributes(function (Column $column) {
         return [
-            'style' => 'background-color: #DBEAFE !important;',
+            'style' => 'background-color: #BFDBFE !important;',
             'class' => 'font-bold text-gray-900 text-center text-lg py-2',
         ];
-        
     });
 
     $this->setTdAttributes(function(Column $column){
@@ -32,7 +30,17 @@ class SolicitudTable extends DataTableComponent
             }
         ];
     });
+
+    // PINTAR FILAS PAR/IMPAR
+    $this->setTrAttributes(function($row, $index) {
+        return [
+            'style' => $index % 2 === 0
+                ? 'background-color: #FFFFFF' 
+                : 'background-color: #F3F4F6'
+        ];
+    });
 }
+
 
     public function columns(): array
     {

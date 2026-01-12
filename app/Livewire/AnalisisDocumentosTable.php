@@ -41,7 +41,7 @@ class AnalisisDocumentosTable extends DataTableComponent
 
     $this->setThAttributes(function (Column $column) {
         return [
-            'style' => 'background-color: #DBEAFE !important;',
+            'style' => 'background-color: #BFDBFE !important;',
             'class' => 'font-bold text-gray-900 text-center text-lg py-2',
         ];
         
@@ -54,6 +54,14 @@ class AnalisisDocumentosTable extends DataTableComponent
                 'Acción' => 'text-center align-middle',
                 default => 'text-left align-middle'
             }
+        ];
+    });
+
+    $this->setTrAttributes(function($row, $index){
+        return[
+            'style' => $index % 2 === 0
+             ? 'background-color: #FFFFFF' 
+             : 'background-color: #F3F4F6'
         ];
     });
 }
