@@ -1,15 +1,95 @@
-SELECT * FROM solicitudes;
+/* SELECT * FROM solicitudes;
 SELECT * FROM estados;
 SELECT * FROM tramites;
 SELECT * FROM requisitos;
 SELECT * FROM dependientes;
 SELECT * FROM requisito_tramite;
 SELECT * FROM solicitudes_has_requisitos_tramites;
-SELECT * FROM detalle_solicitud;
+SELECT * FROM detalle_solicitud; */
 
 
 /* consulta de dependientes, solicitud y detalle */
 
+SELECT * FROM estados;
+
+SELECT * FROM requisitos;
+SELECT 
+    s.id AS solicitud_id,
+    s.no_solicitud,
+    s.nombres,
+    s.apellidos,
+    s.email,
+    s.telefono,
+    s.cui,
+    s.domicilio,
+    s.observaciones,
+    z.nombre AS zona,
+    e.nombre AS estado,
+
+    r.nombre AS requisito,
+    t.nombre AS tramite,
+
+    -- Archivos SOLO de cargas familiares
+    CASE 
+        WHEN r.nombre = 'Cargas familiares' 
+        THEN ds.path
+        ELSE NULL
+    END AS archivo_path,
+
+    -- Flag
+    CASE 
+        WHEN r.nombre = 'Cargas familiares' 
+        THEN 'SI'
+        ELSE 'NO'
+    END AS es_carga_familiar,
+
+    -- Dependientes SOLO si es cargas familiares
+    CASE
+        WHEN r.nombre = 'Cargas familiares' THEN
+            GROUP_CONCAT(
+                DISTINCT CONCAT(d.nombres, ' ', d.apellidos)
+                SEPARATOR ' | '
+            )
+        ELSE NULL
+    END AS dependientes
+
+FROM solicitudes s
+JOIN zonas z ON z.id = s.zona_id
+JOIN estados e ON e.id = s.estado_id
+
+JOIN detalle_solicitud ds 
+    ON ds.solicitud_id = s.id
+
+JOIN requisito_tramite rt 
+    ON rt.id = ds.requisito_tramite_id
+
+JOIN requisitos r 
+    ON r.id = rt.requisito_id
+
+JOIN tramites t 
+    ON t.id = rt.tramite_id
+
+LEFT JOIN dependientes d 
+    ON d.solicitud_id = s.id
+
+WHERE s.no_solicitud = '33-2026'
+  AND r.nombre = 'Cargas familiares'
+
+GROUP BY
+    s.id,
+    s.no_solicitud,
+    s.nombres,
+    s.apellidos,
+    s.email,
+    s.telefono,
+    s.cui,
+    s.domicilio,
+    s.observaciones,
+    z.nombre,
+    e.nombre,
+    r.nombre,
+    t.nombre,
+    ds.path;
 
    /*axel */
 /* VER TODOS LOS DATOS POR SOLICITUD */

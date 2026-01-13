@@ -145,7 +145,7 @@ class VisitaCampoTable extends DataTableComponent
                      $color = match($value) {
                          'Pendiente' => '#F5725B',
                         'En proceso' => '#EAB308',
-                        'Visita de Campo' => '#92400E',
+                        'Visita de Campo' => '#FFAA0D',
                         'Completado' => '#22C55E',
                         'Cancelado' => '#EF4444'
 

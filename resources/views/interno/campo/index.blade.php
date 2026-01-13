@@ -15,6 +15,7 @@
 x-data="{
 open: false,
 solicitud: {},
+step: 1
 }"
 
 @open-modal-visita.window="
@@ -54,9 +55,66 @@ overflow-y-auto">
 
    </div>
 
-                 <!-- Datos generales -->
+   <!-- DATOS DEL STEP -->
+  
+   <!-- STEPPER -->
+<div class="flex items-center justify-center mb-8">
+
+    <!-- Paso 1 -->
+    <div class="flex items-center">
+        <button
+            @click="step = 1"
+            class="w-10 h-10 rounded-full border-2 font-bold transition
+                   flex items-center justify-center"
+            :class="step >= 1
+               ? 'bg-[#FFAA0D] border-amber-500 text-white'
+               : 'border-gray-300 text-gray-400'"
+            >
+            1
+        </button>
+
+        <div class="w-16 h-1"
+             :class="step > 1 ? 'bg-amber-500' : 'bg-gray-300'"></div>
+    </div>
+
+    <!-- Paso 2 -->
+    <div class="flex items-center">
+        <button
+            @click="step = 2"
+            class="w-10 h-10 rounded-full border-2 font-bold transition
+                   flex items-center justify-center"
+            :class="step >= 2
+                ? 'bg-[#FFAA0D] border-amber-500 text-white'
+                : 'border-gray-300 text-gray-400'">
+            2
+        </button>
+
+        <div class="w-16 h-1"
+             :class="step > 2 ? 'bg-amber-500' : 'bg-gray-300'"></div>
+    </div>
+
+    <!-- Paso 3 -->
+    <button
+        @click="step = 3"
+        class="w-10 h-10 rounded-full border-2 font-bold transition
+               flex items-center justify-center"
+        :class="step >= 3
+            ? 'bg-[#FFAA0D] border-amber-500 text-white'
+            : 'border-gray-300 text-gray-400'">
+        3
+    </button>
+
+</div>
+
+
+
+      <!-- 1. DATOS DE SOLICITUD -->
+      
       <div class="grid grid-cols-1 gap-6">
-         <div class="bg-gray-50 border border-blue-200
+
+         <div x-show="step === 1" x-transition>
+         
+            <div class="bg-gray-50 border border-gray-200
          rounded-xl p-5 shadow-sm">
          <div class="flex items-center mb-3">
             <span class="p-2 bg-blue-100 rounded-lg mr-2 text-blue-600">
@@ -230,8 +288,210 @@ overflow-y-auto">
                 </div>
 
 
+         </div>
+
 
          </div>
+
+         
+         <!-- 2. BITACORA DE ESTA SOLICITUD -->
+
+         <div x-show="step === 2" x-transition>
+
+             <div class="bg-gray-50 border border-gray-200
+         rounded-xl p-5 shadow-sm">
+         <div class="flex items-center mb-3">
+            
+            <span class="p-2 bg-green-100 rounded-lg mr-2 text-green-600">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+
+            </span>
+
+            <h4 class="font-bold text-gray-800 uppercase text-sm
+            tracking-wider">
+            Historial del trámite
+            </h4>
+
+         </div>
+
+
+         <div class="space-y-3 text-sm text-gray-600">
+            <template x-if="solicitud.bitacoras && solicitud.bitacoras.length > 0">
+               <template x-for="item in solicitud.bitacoras" :key="item.id">
+                  <div class="bg-white border rounded-lg p-3">
+                          
+                     <p x-show="item.evento">
+                            <span class="font-semibold text-gray-900">
+                                Evento
+                            </span>
+                            <span x-text="item.evento">
+
+                            </span>
+                     </p>
+
+
+                      <template x-if="item.user">
+                            <p>
+                                <span class="font-semibold text-gray-900">
+                                    Usuario
+                                </span>
+                                {{-- <span 
+                                    x-text="item.user ? item.user.name + ' ' + (item.user.lastname || '') : 'Sistema'"
+                                    class="italic text-gray-500">
+                                </span> --}}
+                                <span
+                                x-text="item.user.name"
+                                class="italic text-gray-500"
+                                >
+                                </span>
+
+                            </p>
+                     </template>
+
+
+                      <p>
+                            <span class="font-semibold text-gray-900"> 
+                                Fecha:
+                            </span>
+                            <span x-text="item.fecha_formateada">
+                                
+                            </span>
+                        </p>
+
+                        <p>
+                            
+                            <span class="font-semibold text-gray-900">
+                                Detalle 
+                            </span>
+
+                            <span x-text="item.descripcion">
+
+                            </span>
+                        </p>
+
+
+
+                  </div>
+               </template>
+            </template>
+         </div>
+
+
+
+         </div>
+
+
+         </div>
+
+
+                  <!-- 3. OBSERVACIONES Y FOTOS -->
+         <div x-show="step === 3" x-transition>
+            
+
+                <div class="bg-gray-50 border border-gray-200
+         rounded-xl p-5 shadow-sm">
+               <div class="mb-6">
+                     <div class="flex items-center mb-3">
+                        <span class="p-2 bg-gray-100 rounded-lg mr-2 text-gray-600">
+                           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 10h8M8 14h6m-2 6l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                           </svg>
+                        </span>
+
+                        <h4 class="font-bold text-gray-800
+                        uppercase text-sm tracking-wider">
+                        Observaciones
+                        </h4>
+                  </div>
+
+
+                  <textarea
+                        rows="4"
+                        placeholder="Ingrese observaciones..."
+                        class="w-full rounded-lg border border-gray-300 p-3 text-sm
+                              focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400">
+                  </textarea>
+
+               
+               </div>
+               
+
+
+
+               <div>
+
+                   <div class="flex items-center mb-2">
+                     <span class="p-2 bg-gray-100 rounded-lg mr-2 text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                 d="M3 7h3l2-3h8l2 3h3v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                     </span>
+
+                     <h4 class="font-bold text-gray-800
+                     uppercase text-sm tracking-wider">
+                     Fotografías
+                     </h4>
+                     </div>   
+
+                     <input
+                           type="file"
+                           multiple
+                           accept="image/*"
+                           class="block w-full text-sm text-gray-600
+                                 file:mr-4 file:py-2 file:px-4
+                                 file:rounded-lg file:border-0
+                                 file:text-sm file:font-semibold
+                                 file:bg-gray-200 file:text-gray-700
+                                 hover:file:bg-gray-300"
+                     />
+
+
+               </div>
+               
+
+
+
+         </div>
+
+
+
+        
+
+
+         </div>
+         <div class="flex justify-between mt-6">
+
+            <button
+               x-show="step > 1"
+               @click="step--"
+               class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold">
+               ← Anterior
+            </button>
+
+            <button
+               x-show="step < 3"
+               @click="step++"
+               class="ml-auto px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 font-semibold shadow-md hover:shadow-lg transition-colors duration-200">
+               Siguiente →
+            </button>
+
+
+
+            <button
+               x-show="step === 3"
+               class="ml-auto px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 font-semibold">
+               Enviar visita de campo 
+            </button>
+
+         </div>
+     
+
+
 
          </div>
       </div>
