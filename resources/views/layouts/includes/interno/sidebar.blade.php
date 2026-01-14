@@ -3,8 +3,8 @@
          [
             'name' => 'Dashboard',
             'icon' => 'fa-solid fa-house',
-            'route' => route('interno.consulta.index'),
-            'active' => request()->routeIs('interno.consulta.index')
+            'route' => route('interno.dashboard.index'),
+            'active' => request()->routeIs('interno.dashboard.index')
         ],
         [
          'header' => 'Administrar página',

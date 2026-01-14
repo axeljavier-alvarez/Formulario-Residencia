@@ -8,6 +8,7 @@
         'url' => '#'
     ]
 ]">
-    Hola mundod
+    
+    
 </x-interno-layout>
 

@@ -1,7 +1,7 @@
 <x-interno-layout :breadcrumb="[
     [
       'name' => 'Dashboard',
-      'url' => route('interno.consulta.index')
+      'url' => route('interno.dashboard.index')
     ],
     [
     'name' => 'Analisis de documentos'
