@@ -10,7 +10,11 @@ SELECT * FROM detalle_solicitud; */
 
 /* consulta de dependientes, solicitud y detalle */
 
-DESCRIBE detalle_solicitud;
+SELECT ds.*, u.name
+FROM detalle_solicitud ds
+LEFT JOIN users u ON u.id = ds.user_id;
+
+SELECT * FROM detalle_solicitud;
 SELECT * FROM bitacoras;
 SELECT * FROM solicitudes;
 SELECT * FROM estados;
