@@ -707,9 +707,93 @@ overflow-y-auto">
  
            </div>
            <!-- MOSTRAR CUANDO YA SE COMPLETO LA VISITA -->
-           <template x-if="solicitud.estado?.nombre === 'Visita realizada'">
-            <h2>detalles de esta visita de campo</h2>
-           </template>
+           <div x-show="solicitud.estado?.nombre === 'Visita realizada'">
+            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-6">
+                <div>
+                    <div class="flex items-center mb-3">
+                        <span class="p-2 bg-blue-50 rounded-lg mr-2 text-blue-600"> 
+                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>                             
+                        </span>
+                        <h4 class="font-bold text-gray-800 uppercase text-sm tracking-wider">
+                            Resultado de la Visita
+                        </h4>
+                    </div>
+
+                    <!-- mostrar la descripcion de la visita -->
+                    <div class="prose prose-sm max-w-none text-gray-700
+                    bg-gray-50 p-4 rounded-lg border border-dashed border-gray-300">
+                    
+                    <template x-for="bitacora in solicitud.bitacoras?.filter(b=> 
+                        b.evento.includes('Visita de campo realizada'))" :key="bitacora.id">
+
+                       <div class="mb-2">
+                        <div x-html="bitacora.descripcion">
+
+                        </div>
+                        <span class="text-xs text-gray-400" x-text="bitacora.fecha_formateada">
+
+                        </span>
+                        </div>
+
+
+                    </template>
+
+
+                    <template x-if="!solicitud.bitacoras?.some(b =>
+                        b.evento.includes('Visita de campo realizada')">
+                        <p class="italic text-gray-400">
+                            No se encontraron observaciones detalladas
+                        </p>
+                    </template>
+
+                    
+                    </div>
+                </div>
+
+                <!-- CARGAR IMAGENES -->
+                <div>
+                    <div class="flex items-center mb-3">
+                        <span class="p-2 bg-teal-50 rounded-lg mr-2 text-teal-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        </span>
+
+                        <h4 class="font-bold text-gray-800 uppercase
+                        text-sm tracking-wider">
+                        Evidencia Fotográfica
+                        </h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <template x-if="solicitud.fotos && solicitud.fotos.length > 0">
+                            <template x-for="foto in solicitud.fotos" :key="foto.id">
+                                <div class="group relative aspect-video bg-gray-100
+                                rounded-lg overflow-hidden border hover:ring-2
+                                hover:ring-teal-500 transition-all cursor-pointer"
+                                @click="$dispatch('preview-foto', { url: '/storage/' + foto.ruta })">
+
+                                <img :src="'/storage/' + foto.ruta"
+                                class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20
+                                flex items-center justify-center transition-all">
+
+                                <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
+
+                                </div>
+                                </div>
+                            </template>
+                        </template>
+
+                        <template x-if="!solicitud.fotos || solicitud.fotos.length === 0"> 
+                            <p class="col-span-full text-sm text-gray-500 italic">
+                                No se adjuntaron fotografías en esta visita
+                            </p>
+                        </template>
+                    </div>
+
+                </div>
+            </div>
+
+           </div>
                 
 
          </div>

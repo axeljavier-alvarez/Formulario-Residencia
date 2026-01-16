@@ -229,7 +229,8 @@ class VisitaCampoTable extends DataTableComponent
             'zona',
             'dependientes',
             'requisitosTramites.tramite',
-            'bitacoras.user'
+            'bitacoras.user',
+            'detalles.user'
             ])->find($id);
 
            // traduciendo la fecha de created_at
@@ -255,7 +256,30 @@ class VisitaCampoTable extends DataTableComponent
                     // }
             });
 
-            $this->dispatch('open-modal-visita', solicitud: $solicitud->toArray());
+
+            // convertir a array
+           $solicitudArray = $solicitud->toArray();
+
+           $solicitudArray['fotos'] = collect($solicitudArray['detalles'] ?? [])
+           ->filter(function($detalle){
+              // filtro para encontrar las visitas de campo
+              return !empty($detalle['path']) &&
+              is_null($detalle['requisito_tramite_id']);
+           })
+           ->map(function($detalle){
+            return [
+                'id' => $detalle['id'],
+                'ruta' => $detalle['path'],
+                'visitador_campo' => 
+                $detalle['user']['name'] ?? 'Sisitema' 
+                ];
+           })
+           ->values()
+           ->all();
+
+            // $this->dispatch('open-modal-visita', solicitud: $solicitud->toArray());
+
+        $this->dispatch('open-modal-visita', solicitud: $solicitudArray);    
         }
 
 
