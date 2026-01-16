@@ -90,10 +90,16 @@
       <div class="flex items-center justify-between border-b pb-2 mb-3">
         <h3 class="font-bold text-lg text-gray-800" x-text="documentoActual?.nombre">
         </h3>
-        <button @click="openDocumento = false"
-        class="p-2 text-red-500 hover:bg-red-50 rounded-full">
-         ✕
-        </button>
+        
+        <div class="flex items-center gap-2">
+    <a :href="`/storage/${documentoActual.path}`" target="_blank" 
+       class="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
+       title="Abrir en pestaña nueva">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+    </a>
+    <button @click="openDocumento = false" class="p-2 text-red-500 hover:bg-red-50 rounded-full">✕</button>
+</div>
+
       </div>
 
       <!-- donde se vera el documento -->
@@ -663,7 +669,8 @@
   <!-- MODAL DE VISITA DE CAMPO -->
     <div x-show="openVisitaCampo" x-cloak class="fixed inset-0 z-60
     flex items-center justify-center">
-    <div class="fixed inset-0 bg-black bg-opacity-50"
+    <div 
+    class="fixed inset-0 bg-black bg-opacity-50"
     @click="openVisitaCampo = false">
 
     </div>

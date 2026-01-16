@@ -28,7 +28,9 @@
 @livewire('visita-campo-table')
 <div
     x-data="{
-       // insertar multiples imagenes en el modal del datatable
+       {{-- CODIGO PARA IMAGENES DE CAMPO --}}
+        openPreview: false,
+        imgSource: '',
         mostrarInput: true,
         fotosSeleccionadas: [],
         // guarda wire:id de componente livewire
@@ -95,6 +97,8 @@
             });
         }
     }"
+    @preview-foto.window="openPreview = true; imgSource = $event.detail.url"
+   
 
     x-on:visita-realizada.window="
         openVisitaAsignada = false;
@@ -119,6 +123,26 @@
 >
 
 
+<!-- MODAL PARA ABRIR FOTO EN GRANDE -->
+    <div
+    x-show="openPreview"
+    x-cloak
+    @click="openPreview = false"
+    class="fixed inset-0 z-[200] flex items-center justify-center
+    bg-black bg-opacity-90 backdrop-blur-sm"
+    @keydown.escape.window="openPreview = false"
+    >
+    <button @click="openPreview = false" class="absolute top-5
+    right-5 text-white hover:text-red-400 transition-colors">
+        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+    </button>
+
+    <img :src="imgSource"
+    class="max-w-[90%] max-h-[90vh] object-contain shadow-2xl
+    rounded-lg border border-white/20"> 
+    </div>
 
 <!-- MODAL PARA CONFIRMAR VISITA DE CAMPO -->
 <div x-show="openVisitaAsignada"
@@ -470,7 +494,10 @@ overflow-y-auto">
 
          <div x-show="step === 2" x-transition>
 
-                    <div class="bg-gray-50 border border-gray-200
+            <!-- MOSTRAR SOLO CUANDO ESTADO SEA VISITA ASIGNADA-->
+           <div x-show="solicitud.estado?.nombre === 'Visita asignada'">
+
+            <div class="bg-gray-50 border border-gray-200
                 rounded-xl p-5 shadow-sm">
                     <div class="mb-6">
                             <div class="flex items-center mb-3">
@@ -553,7 +580,7 @@ overflow-y-auto">
                     // toma el primer archivo
                     const file = $event.target.files[0];
                     // busca componente livewire correcto
-                    Livewire.find(livewireId)
+                    {{-- Livewire.find(livewireId)
                     .upload('fotos', file, ()=>{
                         // agrega nombre para mostrarlo
                         fotosSeleccionadas.push(file.name);
@@ -561,7 +588,20 @@ overflow-y-auto">
                         mostrarInput = false;
                         // resetear input para volver a usarlo
                         $event.target.value = '';
+                    }); --}}
+
+                    Livewire.find(livewireId)
+                    .upload('fotos', file, ()=> {
+                        fotosSeleccionadas.push({
+                            name: file.name,
+                            url: URL.createObjectURL(file),
+                            mostrar: false
+                        });
+
+
                     });
+                    mostrarInput = false;
+                    $event.target.value = '';
                     "
                     > 
 
@@ -579,38 +619,82 @@ overflow-y-auto">
                    </button>
 
                    <!-- mostrar el listado de fotos -->
+                   <div class="grid grid-cols-1 gap-3 mt-4">
+                    <template x-for="(foto, index) in fotosSeleccionadas" :key="index">
+                        <div class="border rounded-lg p-3 bg-white shadow-sm border-gray-200">
+                            <div class="flex items-center justify-between gap-2 text-sm">
+                                <div class="flex items-center gap-2 flex-1 cursor-pointer group"
+                                @click="foto.mostrar = ! foto.mostrar">
+                                
 
-                    <div class="mt-4 space-y-2">
-                        <template x-for="(foto, index) in fotosSeleccionadas" :key="index">
-                            <div class="flex items-center gap-2 bg-white border rounded-lg p-2 text-sm">
-                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"/>
+                                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
 
-                                <span x-text="foto"></span>
+                                <span class="group-hover:text-teal-600 font-semibold transition-colors"
+                                x-text="foto.name">
+                                </span>
+                         
+                                </div>
 
-                                 <button
-                                    @click="fotosSeleccionadas.splice(index, 1)">
-                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+
+                                <button
+                                @click="fotosSeleccionadas.splice(index, 1)" class="p-1.5 hover:bg-red-100
+                                rounded-full text-red-500 transition-colors" title="Eliminar Foto"
+                                >
+
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        
+                                </svg>
+
+                                </button>
+                            </div>
+                            <!-- abrir foto -->
+                            <div x-show="foto.mostrar"
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 translate-y-2"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            class="mt-4">
+
+                            <div class="relative inline-block w-full
+                            text-center bg-gray-50 rounded-lg border border-dashed border-gray-300 p-2">
+                            <img :src="foto.url" @click="$dispatch('preview-foto', { url: foto.url })"
+                            class="max-h-72 mx-auto rounded shadow-sm object-contain cursor-zoom-in">
+
+                            <!-- botones -->
+                            <div class="flex justify-center gap-2 mt-3">
+                                <button
+                                @click="$dispatch('preview-foto', { url: foto.url })"
+                                type="button" class="inline-flex items-center px-3 py-1.5 bg-teal-600
+                                hover:bg-teal-700 text-white text-xs font-bold rounded-md transition-colors shadow-sm"
+                                >
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
+                                    Ver en grande
                                 </button>
 
+                                <button
+                                @click="foto.mostrar = false"
+                                class="inline-flex items-center px-3 py-1.5 bg-gray-600 hover:bg-gray-700
+                                text-white text-xs font-bold rounded-md transition-colors shadow-sm">
+                                Ocultar
+                                    
+                                </button>
                             </div>
+                            </div>
+                            </div>
+                        </div>
+                    </template>
+                   </div>
+                                    
 
-                           
-                        </template>
-                    </div>
-                  
-
-                   
-
-                   
+                                    
 
 
-               
+                                
 
 
 
@@ -619,10 +703,14 @@ overflow-y-auto">
 
 
 
-         </div>
-
-
-
+            </div>
+ 
+           </div>
+           <!-- MOSTRAR CUANDO YA SE COMPLETO LA VISITA -->
+           <template x-if="solicitud.estado?.nombre === 'Visita realizada'">
+            <h2>detalles de esta visita de campo</h2>
+           </template>
+                
 
          </div>
 
