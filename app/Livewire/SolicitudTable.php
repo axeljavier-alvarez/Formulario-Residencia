@@ -194,7 +194,8 @@ public function configure(): void
         $solicitud = Solicitud::with([
             'estado',
             'zona',
-            'dependientes',
+            // 'dependientes',
+            // 'detalleSolicitud.dependiente',
             'requisitosTramites.tramite',
             'bitacoras.user'
             ])->find($id);

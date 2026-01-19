@@ -63,9 +63,9 @@ class Solicitud extends Model
         );
     }
 
-   public function dependientes(){
-    return $this->hasMany(Dependiente::class, 'solicitud_id');
-   }
+//    public function dependientes(){
+//     return $this->hasMany(Dependiente::class, 'solicitud_id');
+//    }
 
 
    public function bitacoras()

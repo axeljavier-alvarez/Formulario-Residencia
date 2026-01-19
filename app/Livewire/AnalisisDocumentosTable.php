@@ -180,72 +180,77 @@ class AnalisisDocumentosTable extends DataTableComponent
 
     public function verSolicitud($id)
     {
-
         $solicitud = Solicitud::with([
             'estado',
             'zona',
-            'dependientes',
+            'detalles.dependiente',
             'requisitosTramites.requisito',
             'requisitosTramites.tramite',
             'requisitosTramites.detalles'
-
         ])->find($id);
 
 
+        if ($solicitud) {
+        $solicitud->fecha_registro_traducida = $solicitud->created_at
+            ? Carbon::parse($solicitud->created_at)->translatedFormat('d F Y H:i') 
+            : 'N/A';
 
-        // llamar al array
+            // documentos de tipo normal
+            $documentosNormales = $solicitud->requisitosTramites
+            ->filter(fn($rt) => $rt->requisito?->slug !== 'cargas-familiares')
+            ->map(function($rt) use ($solicitud){
+                $detalle = $rt->detalles->where('solicitud_id', $solicitud->id)->first();
 
-        if($solicitud) {
 
-            // traducir fecha de la solicitud
-
-            $solicitud->fecha_registro_traducida = $solicitud->created_at
-            ? Carbon::parse($solicitud->created_at)
-            ->translatedFormat('d F Y H:i') : 'N/A';
-
-            // array de requisitos por tramite
-            // $solicitud->requisitos_por_tramite = $solicitud->requisitosTramites->map(function($rt){
-            //     return $rt->requisito?->nombre;
-            // })->filter()->unique()->values()->toArray();
-
-            // no mostrar  solicitudes con cancelado
-            // $solicitud->bitacoras->each(function ($item){
-            //     if(str_contains($item->evento, 'Cancelado')){
-            //             $item->user = null;
-            //         }
-
-            // });
-
-            // mostrar documento por solicitud con sus requisitos
-            $solicitud->documentos = $solicitud->requisitosTramites
-            ->map(function ($rt) use ($solicitud){
-                // buscar detalle solo de la solicitud
-                $detalle = $rt->detalles
-                ->where('solicitud_id', $solicitud->id)
-                ->first();
-
+                if(!$detalle || !$detalle->path){
+                    return null;
+                }
 
                 return [
-                    'requisito_tramite_id' => $rt->id,
-                    'nombre' => $rt->requisito?->nombre,
-                    // ubicacion del archivo
-                    'path' => $detalle ? $detalle->path : null,
-
+                    'tipo' => 'normal',
+                    'titulo' => $rt->requisito?->nombre,
+                    'path' => $detalle->path
                 ];
-            })
+            })->filter();
 
-            ->filter(fn($item) => $item['nombre'] && $item['path'])
-            ->values()
-            ->toArray();
+            // cargas familiares
+            $rtCarga = $solicitud->requisitosTramites->where('requisito.slug', 'cargas-familiares')
+            ->first();
+
+            $dependientes = collect();
+
+            if($rtCarga){
+                $dependientes = $rtCarga->detalles
+                ->where('solicitud_id', $solicitud->id)
+                ->load('dependiente')
+                ->map(function ($d){
+                    if(!$d->dependiente) return null;
+
+                    return [
+                        'id' => $d->id,
+                        'nombre' => $d->dependiente->nombres . ' ' . $d->dependiente->apellidos,
+                        'path' => $d->path ?? null
+                    ];
+                })->filter()->values();
+            }
+
+            // unificar ambos
+            $arrayFinal = $documentosNormales->values()->toArray();
+
+            $arrayFinal[] = [
+                'tipo' => 'carga',
+                'titulo' => 'Cargas familiares',
+                'dependientes' => $dependientes->toArray()
+            ];
 
 
-
+            $solicitud->documentos = $arrayFinal;
 
 
             $this->dispatch('open-modal-solicitud', solicitud: $solicitud->toArray());
         }
     }
-
+  
 
   #[On('peticionRechazar')]
 public function rechazarSolicitud(int $id, string $observaciones)

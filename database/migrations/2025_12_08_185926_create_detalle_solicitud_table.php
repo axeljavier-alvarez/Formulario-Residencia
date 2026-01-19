@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('detalle_solicitud', function (Blueprint $table) {
             $table->id();
-            $table->string('path');
+            $table->string('path')->nullable();
+            $table->string('tipo', 100);
             $table->foreignId('solicitud_id')->constrained('solicitudes')->onDelete('cascade');
             $table->foreignId('requisito_tramite_id')
             ->nullable()

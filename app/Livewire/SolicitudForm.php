@@ -277,7 +277,8 @@ public function updated($property)
             DetalleSolicitud::create([
                 'path' => $path,
                 'solicitud_id' => $solicitud->id,
-                'requisito_tramite_id' => $requisitoTramite->id
+                'requisito_tramite_id' => $requisitoTramite->id,
+                'tipo' => 'normal'
             ]);
 
 
@@ -285,44 +286,98 @@ public function updated($property)
 
 
         // GUARDAR CARGAS FAMILIARES
-if($this->agregarCargas === 'si' && count($this->cargas) > 0){
-    foreach($this->cargas as $index => $carga) {
-        // validar nombres y apellidos
-        if(empty($carga['nombres']) || empty($carga['apellidos'])){
-            continue;
-        }
+// if($this->agregarCargas === 'si' && count($this->cargas) > 0){
+//     foreach($this->cargas as $index => $carga) {
+//         // validar nombres y apellidos
+//         if(empty($carga['nombres']) || empty($carga['apellidos'])){
+//             continue;
+//         }
 
-        $dependiente = $solicitud->dependientes()->create([
-            'nombres' => $carga['nombres'],
-            'apellidos'=> $carga['apellidos']
-        ]);
+//         // codigo antiguo
+//         // $dependiente = $solicitud->dependientes()->create([
+//         //     'nombres' => $carga['nombres'],
+//         //     'apellidos'=> $carga['apellidos']
+//         // ]);
 
-        // Subir archivo de la carga si existe
-        if(isset($carga['archivo']) && $carga['archivo']){
-            $requisitoCarga = RequisitoTramite::where('tramite_id', $this->tramite_id)
-                ->whereHas('requisito', function($q){
-                    $q->where('slug', 'cargas-familiares');
-                })->first();
+//         // NUEVO PARA GUARDAR CARGAS FAMILIARES CON DETALLE_SOLICITUD
+//         if($this->agregarCargas === 'si' && count($this->cargas) > 0){
 
-            if($requisitoCarga){
+//         }
 
-                // generando nombre del archivo
-                $extension = $carga['archivo']->getClientOriginalExtension();
-                $nombreArchivo = $no_solicitud  . '-' . Str::random(20) . '.' . $extension;
-                // $path = $carga['archivo']->store('cargas_familiares', 'public');
+//         // Subir archivo de la carga si existe
+//         if(isset($carga['archivo']) && $carga['archivo']){
+//             $requisitoCarga = RequisitoTramite::where('tramite_id', $this->tramite_id)
+//                 ->whereHas('requisito', function($q){
+//                     $q->where('slug', 'cargas-familiares');
+//                 })->first();
 
-                // nueva ruta
-                $path = $carga['archivo']->storeAs('cargas_familiares', $nombreArchivo, 'public');
+//             if($requisitoCarga){
 
-                DetalleSolicitud::create([
-                    'path' => $path,
+//                 // generando nombre del archivo
+//                 $extension = $carga['archivo']->getClientOriginalExtension();
+//                 $nombreArchivo = $no_solicitud  . '-' . Str::random(20) . '.' . $extension;
+//                 // $path = $carga['archivo']->store('cargas_familiares', 'public');
+
+//                 // nueva ruta
+//                 $path = $carga['archivo']->storeAs('cargas_familiares', $nombreArchivo, 'public');
+
+//                 DetalleSolicitud::create([
+//                     'path' => $path,
+//                     'solicitud_id' => $solicitud->id,
+//                     'requisito_tramite_id' => $requisitoCarga->id
+//                 ]);
+//             }
+//         }
+//     }
+// }
+
+       // GUARDAR CARGAS FAMILAIRES
+       if($this->agregarCargas === 'si' && count($this->cargas)>0){
+        $requisitoCarga = RequisitoTramite::where('tramite_id', $this->tramite_id)
+        ->whereHas('requisito', fn($q)=>
+        $q->where('slug', 'cargas-familiares'))
+        ->first();
+
+        // 
+        if($requisitoCarga){
+            foreach($this->cargas as $carga){
+
+                if(empty($carga['nombres']) || empty($carga['apellidos'])){
+                   continue;
+                }
+
+                // creando el detalle solicitud
+                $detalle = DetalleSolicitud::create([
                     'solicitud_id' => $solicitud->id,
-                    'requisito_tramite_id' => $requisitoCarga->id
+                    'requisito_tramite_id' => $requisitoCarga->id,
+                    'tipo' => 'carga'
                 ]);
+
+                // crear dependiente
+                $detalle->dependiente()->create([
+                    'nombres' => $carga['nombres'],
+                    'apellidos' => $carga['apellidos']
+                ]);
+
+                // subir archivo
+                if(!empty($carga['archivo'])){
+                    $extension=$carga['archivo']->getClientOriginalExtension();
+                    $nombreArchivo = $no_solicitud . '-' . Str::random(20) . '.' . $extension;
+
+                    $path = $carga['archivo']->storeAs(
+                        'cargas_familiares',
+                         $nombreArchivo,
+                         'public'
+                    );
+
+                    $detalle->update([
+                        'path' => $path
+                    ]);
+                }
+                
             }
         }
-    }
-}
+       }
 
 
 
@@ -429,36 +484,36 @@ if($this->agregarCargas === 'si' && count($this->cargas) > 0){
                 public function validarPaso($paso)
         {
             try {
-                if($paso == 1){
-                    $this->validate([
-                        'nombres' => 'required|string|max:60',
-                        'apellidos' => 'required|string|max:60',
-                        'email' => [
-                            'required',
-                            'email',
-                            'max:45',
-                            Rule::unique('solicitudes', 'email')
-                        ],
+                // if($paso == 1){
+                //     $this->validate([
+                //         'nombres' => 'required|string|max:60',
+                //         'apellidos' => 'required|string|max:60',
+                //         'email' => [
+                //             'required',
+                //             'email',
+                //             'max:45',
+                //             Rule::unique('solicitudes', 'email')
+                //         ],
 
-                        'telefono' => $this->reglasTelefonoPorPais(),
+                //         'telefono' => $this->reglasTelefonoPorPais(),
 
-                        'codigo_pais' => 'required',
-                        'cui' => [
-                            'required',
-                            'string',
-                            'size:13',
-                            Rule::unique('solicitudes', 'cui'),
-                            // regla validacion cui
-                            function ($attribute, $value, $fail){
-                                if(!$this->cuiEsValido($value)){
-                                    $fail('El DPI ingresado no es válido');
-                                }
-                            }
-                        ],
-                        'domicilio' => 'required|string|max:255',
-                        'zona_id' => 'required|exists:zonas,id',
-                    ]);
-                }
+                //         'codigo_pais' => 'required',
+                //         'cui' => [
+                //             'required',
+                //             'string',
+                //             'size:13',
+                //             Rule::unique('solicitudes', 'cui'),
+                //             // regla validacion cui
+                //             function ($attribute, $value, $fail){
+                //                 if(!$this->cuiEsValido($value)){
+                //                     $fail('El DPI ingresado no es válido');
+                //                 }
+                //             }
+                //         ],
+                //         'domicilio' => 'required|string|max:255',
+                //         'zona_id' => 'required|exists:zonas,id',
+                //     ]);
+                // }
 
 
                 if ($paso == 2) {

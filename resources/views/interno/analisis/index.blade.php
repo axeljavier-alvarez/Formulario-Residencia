@@ -92,13 +92,20 @@
         </h3>
         
         <div class="flex items-center gap-2">
-    <a :href="`/storage/${documentoActual.path}`" target="_blank" 
-       class="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
-       title="Abrir en pestaña nueva">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-    </a>
-    <button @click="openDocumento = false" class="p-2 text-red-500 hover:bg-red-50 rounded-full">✕</button>
-</div>
+
+          <template x-if="documentoActual && documentoActual.path">
+
+
+             <a :href="`/storage/${documentoActual.path}`" target="_blank" 
+              class="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
+              title="Abrir en pestaña nueva">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            </a>
+
+          </template>
+
+          <button @click="openDocumento = false" class="p-2 text-red-500 hover:bg-red-50 rounded-full">✕</button>
+    </div>
 
       </div>
 
@@ -329,38 +336,35 @@
                         <span x-text="solicitud.zona?.nombre"></span>
                       </p>
 
-
+                      <!-- DEPENDIENTES -->
                       <div class="mt-4">
-                                <h4 class="font-semibold text-gray-900">
-                                    Dependientes:
-                                </h4>
+                        <h4 class="font-semibold text-gray-900">
+                          Dependientes
+                        </h4>
+                        <div class="flex flex-wrap gap-2">
+                          <template x-if="solicitud.documentos && 
+                          solicitud.documentos.find(d => d.tipo === 'carga')">
+                          <div class="flex flex-wrap gap-2">
+                            <template x-for="dep in solicitud.documentos.find(d => d.tipo === 'carga').dependientes" :key="dep.id">
+                              <button
+                              @click="documentoActual = dep; openDocumento = true;"
+                              class="px-3 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full
+                              text-xs font-medium hover:bg-green-100 transition">
+                              <span x-text="dep.nombre"></span>
+                              </button>
+                            </template>
 
-                                <div class="flex flex-wrap gap-2">
-                                  <template x-if="solicitud.dependientes &&
-                                  solicitud.dependientes.length > 0">
-                                  <template x-for="dep in solicitud.dependientes"
-                                  :key="dep.id">
-                                    <span class="px-3 py-1 bg-green-50 text-green-700
-                                    border border-green-200 rounded-full text-xs font-medium">
-
-                                    <span x-text="dep.nombres + ' ' + (dep.apellidos || '')">
-                                    </span>
-                                    </span>
-
-                                  </template>
-                                  </template>
-
-                                  <template x-if="!solicitud.dependientes ||
-                                  solicitud.dependientes.length === 0">
-                                  <span class="px-2 py-1 rounded-full text-xs font-bold
-                                  bg-white border text-gray-500">
-                                  N/A
-                                  </span>
-                                  </template>
-                                </div>
-                            </div>
-
-                            <p>
+                            <template x-if="solicitud.documentos.find(d => d.tipo === 'carga').dependientes.length === 0">
+                              <span class="px-2 py-1 rounded-full text-xs font-bold bg-white border text-gray-500">
+                                El usuario no ingreso dependientes
+                              </span>
+                            </template>
+                          </div>
+                          </template>
+                        </div>
+                      </div>
+                      
+                                                  <p>
                                 <span class="font-semibold text-gray-900">
                                     Trámite:
                                 </span>
@@ -378,89 +382,94 @@
                 </div>
                 </div>
 
-                <!-- CONTENEDOR 2-->
-                <div class="bg-gray-50 border border-blue-200
-                            rounded-xl p-5 shadow-sm">
+                          <!-- CONTENEDOR 2-->
+                          <div class="bg-gray-50 border border-blue-200
+                                      rounded-xl p-5 shadow-sm">
 
-                            <div class="flex items-center mb-3">
-                                <span class="p-2 bg-yellow-100 rounded-lg mr-2 text-yellow-600">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                                    </svg>
-                                </span>
+                                      <div class="flex items-center mb-3">
+                                          <span class="p-2 bg-yellow-100 rounded-lg mr-2 text-yellow-600">
+                                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                              </svg>
+                                          </span>
 
-                                <h4 class="font-bold text-gray-800 uppercase text-sm tracking-wider">
-                                    Documentos del solicitante
-                                </h4>
-                            </div>
-
-                            <div class="space-y-2 mt-3">
-                               <template x-if="solicitud.documentos && solicitud.documentos.length > 0">
-                                <template x-for="doc in solicitud.documentos" :key="doc.requisito_tramite_id">
-
-                                  <button
-                                  @click="
-                                  documentoActual = doc;
-                                  openDocumento = true;
-                                  "
-                                  class="w-full flex items-center justify-between px-4 py-2
-                                  bg-yellow-50 border border-yellow-300 rounded-lg text-sm
-                                  font-bold text-yellow-800 hover:bg-yellow-100 transition">
-
-                                  <span x-text="doc.nombre"> </span>
-
-{{--
-                                  <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M15 12H9m6 0l-3-3m3 3l-3 3"/>
-                                  </svg> --}}
-
-                                  </button>
-                                </template>
+                                          <h4 class="font-bold text-gray-800 uppercase text-sm tracking-wider">
+                                              Documentos del solicitante
+                                          </h4>
+                                      </div>
 
 
-                              </template>
+                                      <!-- DOCUMENTOS DE TIPO NORMAL -->
+                                      <div class="space-y-2 mt-3">
+                                        <template x-if="solicitud.documentos && solicitud.documentos.length > 0">
+                                          <template x-for="(doc, index) in solicitud.documentos" :key="index">
+                                            
+                                            <div>
+                                              <template x-if="doc.tipo === 'normal'">
+                                                <button
+                                                @click="documentoActual = doc;
+                                                openDocumento = true;"
+                                                class="w-full flex items-center justify-between px-4 py-2 bg-yellow-50 border
+                                                border-yellow-300 rounded-lg text-sm font-bold text-yellow-800 hover:bg-yellow-100
+                                                transition mb-2">
 
-                              <template x-if="!solicitud.documentos || solicitud.documentos.length === 0">
-                                <span class="px-2 py-1 rounded-full text-xs font-bold bg-white border text-gray-500">
-                                  N/A
-                                </span>
-                              </template>
-                            </div>
-
-
-
-                              <div class="mt-4">
-                                <h4 class="font-semibold text-gray-900">
-                                    Dependientes:
-                                </h4>
-
-                                <div class="flex flex-wrap gap-2">
-                                  <template x-if="solicitud.dependientes &&
-                                  solicitud.dependientes.length > 0">
-                                  <template x-for="dep in solicitud.dependientes"
-                                  :key="dep.id">
-                                    <span class="px-3 py-1 bg-green-50 text-green-700
-                                    border border-green-200 rounded-full text-xs font-medium">
-
-                                    <span x-text="dep.nombres + ' ' + (dep.apellidos || '')">
-                                    </span>
-                                    </span>
-
-                                  </template>
-                                  </template>
-
-                                  <template x-if="!solicitud.dependientes ||
-                                  solicitud.dependientes.length === 0">
-                                  <span class="px-2 py-1 rounded-full text-xs font-bold
-                                  bg-white border text-gray-500">
-                                  N/A
-                                  </span>
-                                  </template>
-                                </div>
-                            </div>
+                                                <span x-text="doc.titulo"></span>
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
 
 
+                                                </button>
+                                              </template>
+                                              <template x-if="doc.tipo === 'carga'">
+                                                <div class="w-full px-4 py-2 bg-green-50 border border-green-300
+                                                rounded-lg text-sm font-bold text-green-800">
+                                                <div class="flex items-center mb-3">
+                                                  <h4 class="font-bold" x-text="doc.titulo">
+
+                                                  </h4>
+                                                </div> 
+
+                                                <div class="mt-1 space-y-1">
+                                                  <template x-if="doc.dependientes && doc.dependientes.length > 0">
+                                                    <template x-for="dep in doc.dependientes" :key="dep.id">
+                                                    <button
+                                                    @click="documentoActual = dep;
+                                                    openDocumento = true;"
+                                                    class="w-full text-left px-2 py-1 rounded bg-white border border-green-200
+                                                    hover:bg-green-100 transition text-green-700 font-medium text-sm mb-1">
+                                                    <span x-text="dep.nombre"></span>
+                                                    </button>
+
+                                                    
+                                                    </template>
+
+                                                  </template>
+
+                                                  <template x-if="!doc.dependientes || doc.dependientes.length === 0">
+                                                     <div class="bg-white/50 border border-green-200 rounded px-2 py-2 text-center">
+                                                      <span class="text-xs font-bold text-green-600 uppercase tracking-tighter">
+                                                        El usuario no ingresó dependientes
+                                                      </span>
+                                                  </div>
+
+                                                  </template>
+                                                </div>
+                                                </div>
+
+                                              </template>
+          
+                                            </div>
+                                          </template>
+                                        </template> 
+
+                                      </div>
+
+
+                            
+
+                          
 
 
 

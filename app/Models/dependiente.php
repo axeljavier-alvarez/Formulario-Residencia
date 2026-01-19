@@ -12,11 +12,24 @@ class Dependiente extends Model
 
         public $timestamps = false;
 
-        protected $fillable = ['nombres', 'apellidos'];
-
-        public function solicitud()
+        protected $fillable = [
+                'nombres',
+                'apellidos',
+                'detalle_solicitud_id'
+        ];
+        // public function solicitud()
+        // {
+        //     return $this->belongsTo(Solicitud::class, 'solicitud_id');
+        // }
+        
+        public function detalleSolicitud()
         {
-            return $this->belongsTo(Solicitud::class, 'solicitud_id');
+            return $this->belongsTo(
+                DetalleSolicitud::class,
+                'detalle_solicitud_id'
+            );
         }
+
+       
 
 }

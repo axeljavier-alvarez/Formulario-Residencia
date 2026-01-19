@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('nombres', 45);
             $table->string('apellidos', 45);
-            $table->foreignId('solicitud_id')->constrained('solicitudes')->onDelete('cascade');
+            // $table->foreignId('solicitud_id')->constrained('solicitudes')->onDelete('cascade');
+            $table->foreignId('detalle_solicitud_id')
+            ->constrained('detalle_solicitud')
+            ->onDelete('cascade');
             $table->timestamps();
         });
     }

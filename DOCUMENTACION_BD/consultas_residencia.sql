@@ -6,6 +6,27 @@ UPDATE solicitudes
 SET estado_id = 3
 WHERE id = 32; */
 
+/* ver los archivos por no_solicitud de dependientes 
+*/
+
+SELECT
+    s.no_solicitud,
+    dsol.id               AS detalle_id,
+    dsol.path             AS archivo,
+    dep.id                AS dependiente_id,
+    dep.nombres,
+    dep.apellidos
+FROM solicitudes s
+INNER JOIN detalle_solicitud dsol
+    ON dsol.solicitud_id = s.id
+INNER JOIN dependientes dep
+    ON dep.detalle_solicitud_id = dsol.id
+WHERE s.no_solicitud = '1-2026';
+
+
+SELECT * FROM detalle_solicitud;
+
+DESCRIBE detalle_solicitud;
 SELECT 
 s.no_solicitud,
 -- bitacora

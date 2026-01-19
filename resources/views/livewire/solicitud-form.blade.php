@@ -923,47 +923,57 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                                         </div>
                                         <!-- Subir archivo -->
 
-                                        <div class="flex-shrink-0 flex items-center gap-2">
+                                        {{-- <div class="flex-shrink-0 flex items-center gap-2"> --}}
+                                        <div class="flex-shrink-0 w-full md:w-auto">
+                                            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+
                                             @if (!isset($cargas[$index]['archivo']))
 
-                                            
-                                            <label class="cursor-pointer inline-flex items-center
-                                            gap-2 bg-[#83BD3F] text-white px-4 py-2 rounded
-                                            hover:bg-green-700">
+                                                <label class="
+                                                    cursor-pointer
+                                                    flex items-center justify-center gap-2
+                                                    bg-[#83BD3F] text-white
+                                                    px-4 py-2 rounded
+                                                    hover:bg-green-700
+                                                    w-full sm:w-auto
+                                                ">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12l7-8m0 0l7 8m-7-8v12"/>
+                                                    </svg>
+                                                    Subir carga
+                                                    <input type="file"
+                                                        accept="application/pdf,image/jpeg"
+                                                        class="hidden"
+                                                        wire:model="cargas.{{ $index }}.archivo">
+                                                </label>
 
-                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12l7-8m0 0l7 8m-7-8v12"/>
-                                                </svg>
-                                            
-                                            Subir carga
-                                            <input
-                                            type="file" ccept="application/pdf,image/jpeg"
-                                            class="hidden"
-                                            wire:model="cargas.{{ $index }}.archivo">
-                                            </label>
                                             @else
 
-                                            <!-- Ajuste de texto -->
-                                            <div class="flex items-center gap-2">
-                                            <p class="text-[#10069F] text-sm truncate max-w-[120px] md:max-w-[120px]" title="{{ $cargas[$index]['archivo']->getClientOriginalName() }}">
+                                                <div class="flex items-center gap-2 w-full sm:w-auto">
+                                                    <p class="text-[#10069F] text-sm truncate max-w-full sm:max-w-[120px]"
+                                                        title="{{ $cargas[$index]['archivo']->getClientOriginalName() }}">
+                                                        {{ $cargas[$index]['archivo']->getClientOriginalName() }}
+                                                    </p>
 
-                                            {{ $cargas[$index]['archivo']->getClientOriginalName() }}
-                                            </p>
-                                            </div>
-                                           
-
-                                            <button type="button" @click="$dispatch('abrir-modal-eliminar-carga', {{  $index }})" class="text-red-600">
-                                                {{-- ✕ --}}
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M9 6v12m6-12v12M5 6l1 14h12l1-14" />
-                                                </svg>
-
-                                            </button>
-
+                                                    <button
+                                                        type="button"
+                                                        @click="$dispatch('abrir-modal-eliminar-carga', {{ $index }})"
+                                                        class="text-red-600 hover:text-red-800 flex-shrink-0"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M3 6h18M9 6v12m6-12v12M5 6l1 14h12l1-14" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
 
                                             @endif
-                                        </div>
 
+                                        </div>
+                                        </div>
 
                                         <td class="px-4 py-3 text-center"> @if($index > 0) <button type="button" wire:click="eliminarCarga({{ $index }})" class="text-red-600 font-bold text-lg hover:text-red-800" title="Eliminar carga" > ✕ </button> @endif </td>
                                         

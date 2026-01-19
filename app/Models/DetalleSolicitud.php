@@ -14,6 +14,7 @@ class DetalleSolicitud extends Model
 
     protected $fillable = [
         'path',
+        'tipo',
         'solicitud_id',
         'user_id', 
         'requisito_tramite_id'
@@ -33,4 +34,10 @@ class DetalleSolicitud extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+     public function dependiente()
+    {
+        return $this->hasOne(Dependiente::class);
+    }
+
 }
