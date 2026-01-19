@@ -17,6 +17,9 @@
         <!-- Font awesome -->
         <script src="https://kit.fontawesome.com/e2d71e4ca2.js" crossorigin="anonymous"></script>
 
+        <!-- ApexCharts -->
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
         <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
 
         <script>
