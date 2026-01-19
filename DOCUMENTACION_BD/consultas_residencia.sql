@@ -23,9 +23,10 @@ INNER JOIN dependientes dep
     ON dep.detalle_solicitud_id = dsol.id
 WHERE s.no_solicitud = '1-2026';
 
-
+SELECT * FROM requisitos;
+SELECT * FROM solicitudes;
 SELECT * FROM detalle_solicitud;
-
+SELECT * FROM dependientes;
 DESCRIBE detalle_solicitud;
 SELECT 
 s.no_solicitud,
