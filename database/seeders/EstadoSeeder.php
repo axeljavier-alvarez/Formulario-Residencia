@@ -19,11 +19,12 @@ class EstadoSeeder extends Seeder
 
 
     $estados = [
-    'Pendiente',          // Recién creada, sin asignación
-    'En proceso',         // En revisión administrativa
-    'Visita asignada',    // Ya tiene visita de campo programada
-    'Visita realizada',  // Ya se hizo la visita
-    'Completado',         // Trámite finalizado
+    'Pendiente',               
+    'Visita asignada',    
+    'Visita realizada',  
+    'Por autorizar',
+    'Por emitir',
+    'Completado',         
     'Cancelado'
     ];
 

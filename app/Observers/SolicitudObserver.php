@@ -42,7 +42,7 @@ class SolicitudObserver
             
             $descripcion = $comentario ?: match ($nombreEstado) {
                 'Cancelado'        => 'La solicitud se canceló.',
-                'En proceso'       => 'La solicitud está en proceso para análisis.',
+                'Por autorizar'       => 'La solicitud está pendiente de autorizar',
                 'Visita asignada'  => 'La solicitud fue asignada a visita de campo.',
                 'Visita realizada' => 'El visitador de campo no ingreso observaciones',
                 default            => 'Cambio de estado.',
