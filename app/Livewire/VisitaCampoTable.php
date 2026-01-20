@@ -336,9 +336,12 @@ class VisitaCampoTable extends DataTableComponent
         $estadoVisitaRealizada = Estado::where('nombre', 'Visita realizada')->first();
         if(!$estadoVisitaRealizada) return;
 
-        $solicitud->update([
-            'estado_id' => $estadoVisitaRealizada->id,
-        ]);
+        // observaciones al modelo
+        $solicitud->observacion_bitacora =
+        trim(strip_tags($observaciones)) ?: null;
+
+        $solicitud->estado_id = $estadoVisitaRealizada->id;
+        $solicitud->save(['only' => ['estado_id']]);
 
         // guardar bitacora
         // Bitacora::create([

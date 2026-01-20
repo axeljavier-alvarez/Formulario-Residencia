@@ -26,7 +26,7 @@
     openDocumento: false,
     documentoActual: null,
 
-    observaciones: '',
+    descripcion: '',
     errorRechazo: null,
 
      {{-- codigo de cargas familiares --}}
@@ -48,7 +48,7 @@
     x-on:rechazo-exitoso.window="
         openRechazo = false;
         open = false;
-        observaciones = '';
+        descripcion = '';
         errorRechazo = null;
     "
 
@@ -627,15 +627,12 @@
 
     </p>
 
-
-
-
      <label class="block text-sm font-semibold text-gray-700 mb-2 mt-4">
       Observaciones:
-    </label>
+     </label>
 
     <textarea
-    x-model="observaciones"
+    x-model="descripcion"
     rows="4"
     class="w-full border rounded-lg p-2 text-sm focus:ring focus:ring-red-200"
     placeholder="Escriba el motivo del rechazo...">
@@ -654,7 +651,7 @@
      errorRechazo = null;
       Livewire.dispatch('peticionRechazar', {
         id: solicitud.id,
-        observaciones: observaciones
+        descripcion: descripcion
       });
       {{-- observaciones='';
       openRechazo = false;

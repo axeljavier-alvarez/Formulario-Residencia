@@ -253,10 +253,10 @@ class AnalisisDocumentosTable extends DataTableComponent
   
 
   #[On('peticionRechazar')]
-public function rechazarSolicitud(int $id, string $observaciones)
+public function rechazarSolicitud(int $id, string $descripcion)
 {
     // validar observaciones
-    if (blank($observaciones)) {
+    if (blank($descripcion)) {
         $this->dispatch('error-rechazo', mensaje: 'Debe ingresar una observación');
         return;
     }
@@ -270,17 +270,23 @@ public function rechazarSolicitud(int $id, string $observaciones)
     if (!$solicitud) return;
 
     // actualizar solo el estado (no modificamos observaciones)
-    $solicitud->update([
-        'estado_id' => $estadoCancelado->id,
-    ]);
+    // $solicitud->update([
+    //     'estado_id' => $estadoCancelado->id,
+    // ]);
 
-    // crear la bitácora directamente, igual que visitaRealizada
-    Bitacora::create([
-        'solicitud_id' => $solicitud->id,
-        'user_id' => Auth::id(),
-        'evento' => 'CAMBIO DE ESTADO: Solicitud Rechazada',
-        'descripcion' => trim(strip_tags($observaciones)) ?: 'Solicitud rechazada sin motivo detallado.'
-    ]);
+    // // crear la bitácora directamente, igual que visitaRealizada
+    // Bitacora::create([
+    //     'solicitud_id' => $solicitud->id,
+    //     'user_id' => Auth::id(),
+    //     'evento' => 'CAMBIO DE ESTADO: Solicitud Rechazada',
+    //     'descripcion' => trim(strip_tags($descripcion)) ?: 'Solicitud rechazada sin motivo detallado.'
+    // ]);
+
+    $solicitud->observacion_bitacora =
+    trim(strip_tags($descripcion));
+
+    $solicitud->estado_id = $estadoCancelado->id;
+    $solicitud->save(['only', ['estado_id']]);
 
     // enviar evento al frontend
     $this->dispatch('rechazo-exitoso');

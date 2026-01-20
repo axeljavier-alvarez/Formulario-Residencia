@@ -38,9 +38,9 @@ class SolicitudObserver
 
             
 
-        
+            $comentario = $solicitud->observacion_bitacora;
             
-            $descripcion = match ($nombreEstado) {
+            $descripcion = $comentario ?: match ($nombreEstado) {
                 'Cancelado'        => 'La solicitud se canceló.',
                 'En proceso'       => 'La solicitud está en proceso para análisis.',
                 'Visita asignada'  => 'La solicitud fue asignada a visita de campo.',

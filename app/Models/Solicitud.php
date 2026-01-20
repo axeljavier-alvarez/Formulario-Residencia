@@ -12,6 +12,9 @@ class Solicitud extends Model
 
     protected $table = 'solicitudes';
 
+    public $observacion_bitacora;
+    
+
     // DATOS DE SOLICITUDES
     protected $fillable = [
         'no_solicitud',
