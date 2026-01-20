@@ -16,6 +16,10 @@ protected $model = Solicitud::class;
         public function builder(): Builder
         {
             return Solicitud::query()
+                ->with(['estado', 'requisitosTramites.tramite'])
+                ->whereHas('estado', function($query){
+                    $query->whereIn('nombre', ['Por emitir']);
+                })
                 ->orderByDesc('id');
         }
 
@@ -23,13 +27,14 @@ protected $model = Solicitud::class;
         {
             $this->setPrimaryKey('id');
 
-            $this->setThAttributes(function (Column $column) {
-                return [
-                    'style' => 'background-color: #BFDBFE !important;',
-                    'class' => 'font-bold text-gray-900 text-center text-lg py-2',
-                ];
-            });
+            $this->setTableAttributes(['class' => 'border-separate border-spacing-y-3 px-4']);
 
+            $this->setThAttributes(fn()=>[
+                'class' => 'bg-blue-600 text-white uppercase text-xs tracking-widest py-4 px-4 font-black
+                border-none first:rounded-l-lg last:rounded-r-lg shadow-sm'
+            ]);
+
+            
             $this->setTdAttributes(function(Column $column){
                 return [
                     'class' => match($column->getTitle()){

@@ -16,7 +16,7 @@ class AutorizacionesTable extends DataTableComponent
 
     public function builder(): Builder
     {
-        // Cargamos relaciones para evitar N+1 y optimizar velocidad
+        // Cargando las relaciones
         return Solicitud::query()
             ->with(['estado', 'requisitosTramites.tramite']) 
             ->whereHas('estado', function ($query) {
