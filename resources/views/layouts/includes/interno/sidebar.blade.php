@@ -27,6 +27,20 @@
          'icon' => 'fa-solid fa-magnifying-glass-location',
          'route' => route('interno.visita-campo.index'),
          'active' => request()->routeIs('interno.visita-campo.*')
+      ],
+      [
+         'name' => 'Autorizaciones',
+         'icon' => 'fa-solid fa-user-check',
+         'route' => route('interno.autorizaciones.index'),
+         'active' => request()->routeIs('interno.autorizaciones.*')
+      ],
+      [
+         'name' => 'Emisión de Constancias',
+         'icon' => 'fa-solid fa-file-invoice',
+         'route' => route('interno.emision-constancia.index'),
+         'active' => request()->routeIs('interno.emision-constancia.*')
+
+         
       ]
 ];
    @endphp

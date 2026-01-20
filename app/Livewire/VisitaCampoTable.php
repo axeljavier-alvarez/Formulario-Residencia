@@ -341,12 +341,12 @@ class VisitaCampoTable extends DataTableComponent
         ]);
 
         // guardar bitacora
-        Bitacora::create([
-            'solicitud_id' => $solicitud->id,
-            'user_id' => Auth::id(),
-            'evento' => 'CAMBIO DE ESTADO: Visita de campo realizada',
-            'descripcion' => trim(strip_tags($observaciones)) ?: 'Visita de campo realizada sin observaciones.'
-        ]);
+        // Bitacora::create([
+        //     'solicitud_id' => $solicitud->id,
+        //     'user_id' => Auth::id(),
+        //     'evento' => 'CAMBIO DE ESTADO: Visita de campo realizada',
+        //     'descripcion' => trim(strip_tags($observaciones)) ?: 'Visita de campo realizada sin observaciones.'
+        // ]);
 
 
 

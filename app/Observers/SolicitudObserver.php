@@ -28,35 +28,25 @@ class SolicitudObserver
     public function updated(Solicitud $solicitud): void
     {
         // registrar bitacora si cambio el estado
-        if($solicitud->isDirty('estado_id')){
+         if (!$solicitud->wasChanged('estado_id')) {
+                return;
+            }
+
+
             $nuevoEstado = Estado::find($solicitud->estado_id);
             $nombreEstado = $nuevoEstado ? $nuevoEstado->nombre : 'DESCONOCIDO';
 
             
 
         
-            $descripcion = match ($nombreEstado) {
-
             
-            'Cancelado' => 'La solicitud se cancelo',
-
-            'En proceso' => 'La solicitud está en proceso para análisis.',
-
-            'Visita asignada' => 'La solicitud fue asignada a visita de campo',
-
-            'Visita realizada' => 'la',
-
-             };
-
-
-          
-        
-
-
-
-
-
-
+            $descripcion = match ($nombreEstado) {
+                'Cancelado'        => 'La solicitud se canceló.',
+                'En proceso'       => 'La solicitud está en proceso para análisis.',
+                'Visita asignada'  => 'La solicitud fue asignada a visita de campo.',
+                'Visita realizada' => 'El visitador de campo no ingreso observaciones',
+                default            => 'Cambio de estado.',
+            };
 
             Bitacora::create([
                 'solicitud_id' => $solicitud->id,
@@ -64,7 +54,7 @@ class SolicitudObserver
                 'evento' => 'CAMBIO DE ESTADO: ' . $nombreEstado,
                 'descripcion' => $descripcion
             ]);
-        }
+        
     }
 
     /**
