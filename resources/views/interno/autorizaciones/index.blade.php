@@ -182,9 +182,14 @@
                         No autorizar
                     </button>
                     
-                    <button type="button" 
-                            @click="openPorEmitir = true"
-                            class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-green-600 px-10 py-3 text-sm font-bold text-white shadow-lg shadow-green-200 hover:bg-green-700 hover:shadow-green-300 transition-all transform active:scale-95">
+                     <button
+                        type="button"
+                        @click="openPorEmitir = true"
+                        class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl
+                            bg-[#06B6D4] hover:bg-[#0891B2]
+                            px-10 py-3 text-sm font-bold text-white
+                            shadow-lg shadow-cyan-200
+                            transition-all transform active:scale-95">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Autorizar Solicitud
                     </button>
@@ -210,21 +215,23 @@
          x-transition:enter-end="opacity-100 scale-100"
          class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative overflow-hidden">
         
-        <div class="h-2 bg-green-500 w-full"></div>
+        <div class="h-2 w-full" style="background-color:#06B6D4;"></div>
 
         <div class="p-6">
             <div class="flex items-start justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                   <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                        style="background-color:#CFFAFE;">
+                        <svg class="h-6 w-6" style="color:#25CCFF" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-gray-900">
                             Autorizar Solicitud
                         </h3>
-                        <p class="text-sm text-gray-500 leading-tight">Acción de aprobación final</p>
+                        <p class="text-sm text-gray-500 leading-tight">Acción para proceder a emitir</p>
                     </div>
                 </div>
 
@@ -263,7 +270,7 @@
                 </button>
 
                 <button @click="Livewire.dispatch('peticionPorEmitir', { id: solicitud.id });"
-                        class="px-5 py-2.5 text-sm font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl shadow-lg shadow-green-200 transition-all transform active:scale-95 order-1 sm:order-2">
+                        class="px-5 py-2.5 text-sm font-bold text-white bg-[#06B6D4] hover:bg-[#0891B2] rounded-xl shadow-lg shadow-cyan-200 transition-all transform active:scale-95 order-1 sm:order-2">
                     Sí, autorizar ahora
                 </button>
             </div>

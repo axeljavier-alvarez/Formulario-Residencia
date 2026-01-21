@@ -222,9 +222,9 @@
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-gray-900">
-                            Autorizar Solicitud
+                            Completar Solicitud
                         </h3>
-                        <p class="text-sm text-gray-500 leading-tight">Acción de autorización</p>
+                        <p class="text-sm text-gray-500 leading-tight">Acción de emisión</p>
                     </div>
                 </div>
 
@@ -238,7 +238,7 @@
 
             <div class="mt-5">
                 <p class="text-gray-700 text-base">
-                    ¿Está seguro que desea autorizar la solicitud <span class="font-bold text-gray-900" x-text="solicitud.no_solicitud"></span>?
+                    ¿Está seguro que desea emitir está solicitud <span class="font-bold text-gray-900" x-text="solicitud.no_solicitud"></span>?
                 </p>
                 <div class="mt-3 bg-blue-50 border-l-4 border-blue-400 p-3">
                     <div class="flex">
@@ -249,7 +249,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm text-blue-700">
-                                Una vez autorizada, el estado cambiará a <strong>"Por emitir"</strong> y el trámite podrá finalizarse.
+                                Una vez emitida, el estado cambiará a <strong>"Completado"</strong> y el trámite finalizará
                             </p>
                         </div>
                     </div>
