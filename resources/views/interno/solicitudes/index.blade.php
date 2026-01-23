@@ -141,7 +141,7 @@
                                                 </div>
 
                                                 <p class="text-xs text-gray-600 italic" x-text="item.descripcion"></p>
-                                                <p class="text-[10px] mt-2 font-bold text-blue-500 uppercase tracking-tighter" x-text="'Por: ' + (item.user?.name || 'Sistema')"></p>
+                                                <p class="text-[10px] mt-2 font-bold text-blue-500 uppercase tracking-tighter" x-text="'Por: ' + (item.user?.name || 'Solicitante')"></p>
                                             </div>
 
                                         </div>

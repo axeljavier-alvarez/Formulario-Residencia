@@ -20,7 +20,7 @@ protected $model = Solicitud::class;
             return Solicitud::query()
                 ->with(['estado', 'requisitosTramites.tramite'])
                 ->whereHas('estado', function($query){
-                    $query->whereIn('nombre', ['Por emitir']);
+                    $query->whereIn('nombre', ['Por emitir', 'Completado']);
                 })
                 ->orderByDesc('id');
         }

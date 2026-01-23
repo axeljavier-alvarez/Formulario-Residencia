@@ -25,6 +25,7 @@
     openRechazo: false,
     openAceptar: false,
     openVisitaCampo: false,
+        openDocs: false,
 
     openDocumento: false,
     documentoActual: null,
@@ -284,6 +285,7 @@
                                                 <span class="text-[10px] text-gray-400 font-medium" x-text="item.fecha_formateada"></span>
                                             </div>
                                             <p class="text-xs text-gray-600 italic leading-relaxed" x-text="item.descripcion"></p>
+                                            <p class="text-[10px] mt-2 font-bold text-blue-500 uppercase tracking-tighter" x-text="'Por: ' + (item.user?.name || 'Solicitante')"></p>
                                         </div>
                                     </div>
                                 </template>
@@ -354,26 +356,37 @@
 
                 <!-- VISITA DE CAMPO RESULTADO -->
 <div
-    class="mt-10"
-    x-show="solicitud.estado?.nombre === 'Visita realizada'"
-    x-transition
->
+                 x-show="solicitud.estado?.nombre === 'Visita realizada'"
+                 x-transition
+                 class="mt-10 border border-gray-200 rounded-xl shadow-sm bg-white">
 
-    <!-- ENCABEZADO -->
-    <div class="flex items-center gap-2 pb-2 border-b border-gray-100 mb-6">
-        <span class="text-emerald-500">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </span>
 
-        <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">
-            Resultados de la visita de campo
-        </h4>
-    </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+
+                 <button 
+                    @click="openDocs = !openDocs" 
+                    class="w-full flex justify-between items-center px-6 py-4 bg-gray-50 rounded-t-xl hover:bg-gray-100 transition-colors">
+                    
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="font-bold text-gray-800 uppercase text-xs tracking-widest">
+                            Resultados de la visita de campo
+                        </span>
+                    </div>
+
+                    <!-- FLECHA QUE GIRA -->
+                    <svg :class="{'rotate-180': openDocs}" class="w-5 h-5 text-gray-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+
+                                    <div x-show="openDocs" x-transition class="px-6 py-4 space-y-6">
+
+                                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
 
         <div class="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
             <div class="p-2 bg-emerald-600 text-white rounded-lg">✔</div>
@@ -486,6 +499,10 @@
             </p>
         </template>
     </div>
+
+                                    </div>
+
+   
 
 </div>
 

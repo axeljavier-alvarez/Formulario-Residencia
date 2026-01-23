@@ -383,18 +383,18 @@ public function updated($property)
 
 
         // ENVIAR CORREO AL USUARIO
-        // if ($solicitud->email) {
-        // $mensaje = <<<HTML
-        // Hemos registrado su solicitud con el número {$solicitud->no_solicitud}
-        // Podrá ver el proceso de su trámite en el siguiente enlace:
-        // http://constanciaresidencia.test/consulta
-        // HTML;
+        if ($solicitud->email) {
+        $mensaje = <<<HTML
+        Hemos registrado su solicitud con el número {$solicitud->no_solicitud}
+        Podrá ver el proceso de su trámite en el siguiente enlace:
+        http://constanciaresidencia.test/consulta
+        HTML;
 
-        // Mail::to($solicitud->email)
-        //     ->send(new NotificacionSolicitud($mensaje));
-        // }
-        // Mail::to('axel5javier536@gmail.com')
-        //     ->send(new NuevaSolicitudAdmin($solicitud));
+        Mail::to($solicitud->email)
+            ->send(new NotificacionSolicitud($mensaje));
+        }
+        Mail::to('axel5javier536@gmail.com')
+            ->send(new NuevaSolicitudAdmin($solicitud));
         DB::commit();
         } catch(\Throwable $e){
             DB::rollBack();
@@ -432,8 +432,8 @@ public function updated($property)
     //         }
 
     //         // ENMASCARAR EMAIL
-            // $this->emailEnmascarado = $this->enmascararEmail($solicitud->email);
-            // $this->zonas = Zona::all();
+            $this->emailEnmascarado = $this->enmascararEmail($solicitud->email);
+            $this->zonas = Zona::all();
 
 
 }
