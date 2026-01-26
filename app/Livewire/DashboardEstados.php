@@ -12,4 +12,6 @@ class DashboardEstados extends Component
         $estados = Estado::withCount('solicitudes')->get();
         return view('livewire.dashboard-estados', compact('estados'));
     }
+
+    
 }

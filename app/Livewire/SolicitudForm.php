@@ -482,36 +482,36 @@ public function updated($property)
                 public function validarPaso($paso)
         {
             try {
-                if($paso == 1){
-                    $this->validate([
-                        'nombres' => 'required|string|max:60',
-                        'apellidos' => 'required|string|max:60',
-                        'email' => [
-                            'required',
-                            'email',
-                            'max:45',
-                            Rule::unique('solicitudes', 'email')
-                        ],
+                // if($paso == 1){
+                //     $this->validate([
+                //         'nombres' => 'required|string|max:60',
+                //         'apellidos' => 'required|string|max:60',
+                //         'email' => [
+                //             'required',
+                //             'email',
+                //             'max:45',
+                //             Rule::unique('solicitudes', 'email')
+                //         ],
 
-                        'telefono' => $this->reglasTelefonoPorPais(),
+                //         'telefono' => $this->reglasTelefonoPorPais(),
 
-                        'codigo_pais' => 'required',
-                        'cui' => [
-                            'required',
-                            'string',
-                            'size:13',
-                            Rule::unique('solicitudes', 'cui'),
-                            // regla validacion cui
-                            function ($attribute, $value, $fail){
-                                if(!$this->cuiEsValido($value)){
-                                    $fail('El DPI ingresado no es válido');
-                                }
-                            }
-                        ],
-                        'domicilio' => 'required|string|max:255',
-                        'zona_id' => 'required|exists:zonas,id',
-                    ]);
-                }
+                //         'codigo_pais' => 'required',
+                //         'cui' => [
+                //             'required',
+                //             'string',
+                //             'size:13',
+                //             Rule::unique('solicitudes', 'cui'),
+                //             // regla validacion cui
+                //             function ($attribute, $value, $fail){
+                //                 if(!$this->cuiEsValido($value)){
+                //                     $fail('El DPI ingresado no es válido');
+                //                 }
+                //             }
+                //         ],
+                //         'domicilio' => 'required|string|max:255',
+                //         'zona_id' => 'required|exists:zonas,id',
+                //     ]);
+                // }
 
 
                 if ($paso == 2) {
