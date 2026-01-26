@@ -10,7 +10,7 @@ WHERE id = 32; */
 */
 
 SELECT * FROM dependientes;
-SELECT * FROM estados;
+SELECT * FROM tramites;
 SELECT * FROM solicitudes;
 
 SELECT

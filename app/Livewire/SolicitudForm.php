@@ -40,6 +40,7 @@ class SolicitudForm extends Component
 
     public $zonas;
     public $zona_id;
+    public $razon;
     // luego mostrar toast de alpine
     // public $toast = null;
 
@@ -150,7 +151,8 @@ class SolicitudForm extends Component
         'domicilio' => 'required|string|max:255',
         'observaciones' => 'nullable|string|max:500',
         'zona_id' => 'required|exists:zonas,id',
-        'tramite_id' => 'required|exists:tramites,id'
+        'tramite_id' => 'required|exists:tramites,id',
+        'razon' => 'required|string|max:255',
     ];
 
     }
@@ -180,8 +182,9 @@ class SolicitudForm extends Component
     'requisitos.*.archivo.required' => 'Debe subir este requisito.',
     'requisitos.*.archivo.mimes' => 'Solo se permiten archivos PDF o JPG.',
     'requisitos.*.archivo.max' => 'El archivo no debe superar 2MB',
-    'cargas.*.archivo.max' => 'El archivo no debe superar 2MB'
-
+    'cargas.*.archivo.max' => 'El archivo no debe superar 2MB',
+    'razon.max' => 'Ha excedido la longitud de 255 caracteres para la razon',
+    'razon.required' => 'Debe ingresar la razon.'
 
 ];
 
@@ -482,36 +485,36 @@ public function updated($property)
                 public function validarPaso($paso)
         {
             try {
-                // if($paso == 1){
-                //     $this->validate([
-                //         'nombres' => 'required|string|max:60',
-                //         'apellidos' => 'required|string|max:60',
-                //         'email' => [
-                //             'required',
-                //             'email',
-                //             'max:45',
-                //             Rule::unique('solicitudes', 'email')
-                //         ],
+                if($paso == 1){
+                    $this->validate([
+                        'nombres' => 'required|string|max:60',
+                        'apellidos' => 'required|string|max:60',
+                        'email' => [
+                            'required',
+                            'email',
+                            'max:45',
+                            Rule::unique('solicitudes', 'email')
+                        ],
 
-                //         'telefono' => $this->reglasTelefonoPorPais(),
+                        'telefono' => $this->reglasTelefonoPorPais(),
 
-                //         'codigo_pais' => 'required',
-                //         'cui' => [
-                //             'required',
-                //             'string',
-                //             'size:13',
-                //             Rule::unique('solicitudes', 'cui'),
-                //             // regla validacion cui
-                //             function ($attribute, $value, $fail){
-                //                 if(!$this->cuiEsValido($value)){
-                //                     $fail('El DPI ingresado no es válido');
-                //                 }
-                //             }
-                //         ],
-                //         'domicilio' => 'required|string|max:255',
-                //         'zona_id' => 'required|exists:zonas,id',
-                //     ]);
-                // }
+                        'codigo_pais' => 'required',
+                        'cui' => [
+                            'required',
+                            'string',
+                            'size:13',
+                            Rule::unique('solicitudes', 'cui'),
+                            // regla validacion cui
+                            function ($attribute, $value, $fail){
+                                if(!$this->cuiEsValido($value)){
+                                    $fail('El DPI ingresado no es válido');
+                                }
+                            }
+                        ],
+                        'domicilio' => 'required|string|max:255',
+                        'zona_id' => 'required|exists:zonas,id',
+                    ]);
+                }
 
 
                 if ($paso == 2) {
@@ -534,14 +537,16 @@ public function updated($property)
                     /* verificando edad */
                     $rules['edad'] = 'required|in:menor,mayor';
                     $messages['edad.required'] = 'Debe seleccionar si es menor o mayor de edad.';
-
-
+                    $messages['edad.in'] = 'La opción de edad no es válida.';
+ 
                     $this->validate($rules, $messages);
 
+
+
                     // no seguir sin edad
-                    if (!$this->edad) {
-                        return;
-                    }
+                    // if (!$this->edad) {
+                    //     return;
+                    // }
 
                     /* validacion de requisitos */
                     $config = [
@@ -637,6 +642,22 @@ public function updated($property)
                             $messages['agregarCargas.required'] = 'Debe indicar si desea agregar cargas familiares';
                         }
 
+                        // validacion para la razon
+                        if(in_array($slugTramite, [
+                            'magisterio',
+                            'tramites-legales-en-materia-civil',
+                            'tramites-legales-en-materia-penal-si-una-persona-se-encuentra-privada-de-libertad'
+                        ])) {
+                            $rules['razon'] = 'required|string|max:255';
+                            
+                            if($slugTramite === 'magisterio') {
+                                $messages['razon.required'] = 'Debe describir su título';
+                                $messages['razon.max'] = 'La longitud de la descripción del titulo excede los 255 caracteres';
+                            } else {
+                                $messages['razon.required'] = 'Debe ingresar la razón por la que quiere realizar el trámite';
+                                $messages['razon.max'] = 'La razón excede la longitud de 255 caracteres';
+                            }
+                        }
 
                         $this->validate($rules, $messages);
                     }
@@ -808,6 +829,7 @@ public function resetFormulario()
         'tieneCargasFamiliares',
         'agregarCargas',
         'cargas',
+        'razon',
 
         // paso 3
         'observaciones',

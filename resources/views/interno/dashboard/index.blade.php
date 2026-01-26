@@ -35,41 +35,39 @@
 
     </div>
 
-    @push('js')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+  @push('js')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let chart;
 
-            // Gráfica 1 - Donut
-            new ApexCharts(document.querySelector("#chartEstados"), {
-                chart: {
-                    type: 'donut',
-                    height: 260
-                },
-                series: [12, 8, 5, 3],
-                labels: ['Pendiente', 'Aprobada', 'Rechazada', 'En proceso'],
-                legend: {
-                    position: 'bottom'
-                }
-            }).render();
+        // 1. Configuración inicial de la gráfica (Vacía)
+        const options = {
+            chart: {
+                type: 'donut',
+                height: 260
+            },
+            series: [], 
+            labels: [],
+            colors: [],
+            legend: { position: 'bottom' },
+            noData: { text: 'Cargando datos...' }
+        };
 
-            // Gráfica 2 - Barras
-            new ApexCharts(document.querySelector("#chartTipos"), {
-                chart: {
-                    type: 'bar',
-                    height: 260
-                },
-                series: [{
-                    name: 'Solicitudes',
-                    data: [15, 9, 6]
-                }],
-                xaxis: {
-                    categories: ['Residencia', 'Construcción', 'Comercio']
-                }
-            }).render();
+        chart = new ApexCharts(document.querySelector("#chartEstados"), options);
+        chart.render();
 
+        // 2. Escuchar el evento de Livewire para actualizar los datos
+        // Livewire v3 usa event.detail para los datos
+        window.addEventListener('updateChart', event => {
+            chart.updateOptions({
+                series: event.detail.series,
+                labels: event.detail.labels,
+                colors: event.detail.colors
+            });
         });
-    </script>
-    @endpush
+    });
+</script>
+@endpush
 
     
 

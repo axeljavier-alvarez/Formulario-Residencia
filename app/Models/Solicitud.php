@@ -27,7 +27,8 @@ class Solicitud extends Model
         'domicilio',
         'observaciones',
         'zona_id',
-        'estado_id'
+        'estado_id',
+        'razon'
     ];
 
     // una solicitud pertenece a una zona

@@ -536,6 +536,9 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
 
     <div x-show="paso === 2">
 
+       
+       
+
         <div x-data="{ valor: '' }">
 
             <x-label class="mb-1 font-bold text-[#03192B]">
@@ -565,6 +568,52 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
              @if(!empty($requisitos) && count($requisitos) > 0)
    @if ($tramites->firstWhere('id', $tramite_id)?->slug
                 !== 'tramites-legales-en-materia-penal-si-una-persona-se-encuentra-privada-de-libertad')
+
+           
+     <!-- TITULO -->
+
+                    @if($tramite_id && $tramites->firstWhere('id', $tramite_id)?->slug === 'magisterio')
+                    <div class="mt-4 p-4" 
+                    x-data="{ 
+                    valor: ''}"
+                    x-on:form-reset.window="
+                    valor = ''                    
+                    "
+                    >
+                    <label class="mb-2 font-bold">
+ 
+                       <div class="flex justify-center items-center gap-2 mb-2">
+                            <h2 class="text-[#03192B] text-[18px]  font-semibold">
+                                Describa su título
+                            </h2>                        
+                            <span class="text-red-600" x-show="valor === ''">*</span>
+                        </div>
+
+                        <x-input
+                            x-model="valor"
+                            placeholder="Ej: Licenciatura en Administración"
+
+                            wire:model.live="razon"
+                            class="
+                                w-full
+                                border-2
+                                border-[#D1D5DB]
+                                hover
+                                text-gray-600
+                                font-normal
+                                placeholder:text-gray-400
+                                focus:ring-0
+                                focus:border-[#000000]
+                                focus:outline-none
+                            "
+                        />
+                    </label>
+
+                    </div>
+
+                    @endif
+                    
+
                 <!-- titulo centrado -->
                 <h2 class="text-center text-2xl font-bold mt-6 mb-2" style="color:#10069F">
                     REQUISITOS
@@ -586,6 +635,55 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                 </ul>
                 </div> --}}
 
+
+
+                <!-- BLOQUE PARA ESCRIBIR EL TITULO -->
+
+
+                   
+                    
+
+
+                    @if($tramite_id && in_array($tramites->firstWhere('id', $tramite_id)?->slug,
+                        ['tramites-legales-en-materia-civil']))
+
+                        
+                     <div class="mt-4 p-4" 
+                                x-data="{ 
+                                valor: ''}"
+                                x-on:form-reset.window="
+                                valor = ''
+                                
+                                "
+                                >
+                                <div class="flex justify-center items-center gap-2 mb-2">
+                                        <h2 class="text-[#03192B] text-[18px]  font-semibold">
+                                            Ingrese la razón de la solicitud
+                                        </h2>                          
+                                        <span class="text-red-600" x-show="valor === ''">*</span>
+                                    </div>
+                              
+                                <x-input
+                                    x-model="valor"
+                                    placeholder="Ej: Solicitud de actualización de datos"
+                                    class="
+                                        w-full
+                                        border-2
+                                        border-[#D1D5DB]
+                                        hover
+                                        text-gray-600
+                                        font-normal
+                                        placeholder:text-gray-400
+                                        focus:ring-0
+                                        focus:border-[#000000]
+                                        focus:outline-none
+                                    "
+                                />
+                            </label>
+
+                            </div>
+                    @endif
+                
 
 
 
@@ -698,6 +796,8 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                         === 'tramites-legales-en-materia-penal-si-una-persona-se-encuentra-privada-de-libertad'
                     )
 
+                    
+
                     <div
                     x-data="{
                     edad: '',
@@ -720,27 +820,71 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                     class="mt-6"
                     >
 
+                    <div x-data="{ edad: @entangle('edad') }">
 
-                        <p class=" text-center mt-2 mb-2 font-semibold text-[#03192B]">Seleccione su edad</p>
+                        <p class="text-center mt-2 mb-2 font-semibold text-[#03192B]">
+                            Seleccione su edad
+                        </p>
 
                         <div class="flex justify-center gap-6 mb-2">
                             <label class="flex items-center gap-1">
-                                <input type="radio" x-model="edad" value="menor" wire:model.live="edad"> Menor de edad
+                                <input type="radio" value="menor" wire:model="edad">
+                                Menor de edad
                             </label>
 
                             <label class="flex items-center gap-1">
-                                <input type="radio" x-model="edad" value="mayor" wire:model.live="edad"> Mayor de edad
+                                <input type="radio" value="mayor" wire:model="edad">
+                                Mayor de edad
                             </label>
-
-
                         </div>
 
 
+                        
                         <p class="text-center mt-1 text-sm text-red-600 font-semibold" x-text="edad === 'menor' ? 'Adolescentes en conflicto con la ley penal' : (edad === 'mayor' ? 'Privados de libertad por encontrarse en un proceso penal' : '')"></p>
+
+                        <!-- INGRESAR EL TITULO -->
+
 
 
                         <!-- DIBUJAR LOS REQUISITOS FILTRADOS -->
-                        <div x-show="edad !== ''" x-transition>
+                        <div x-show="edad !== null" x-transition>
+
+                            <!-- Input para escribir la razón en trámites penales -->
+                              <div class="mt-4 p-4" 
+                                x-data="{ 
+                                valor: ''}"
+                                x-on:form-reset.window="
+                                valor = ''
+                                
+                                "
+                                >
+                                <div class="flex justify-center items-center gap-2 mb-2">
+                                        <h2 class="text-[#03192B] text-[18px]  font-semibold">
+                                            Ingrese la razón de la solicitud
+                                        </h2>                          
+                                        <span class="text-red-600" x-show="valor === ''">*</span>
+                                    </div>
+                              
+                                <x-input
+                                    x-model="valor"
+                                    placeholder="Ej: Solicitud de actualización de datos"
+                                    class="
+                                        w-full
+                                        border-2
+                                        border-[#D1D5DB]
+                                        hover
+                                        text-gray-600
+                                        font-normal
+                                        placeholder:text-gray-400
+                                        focus:ring-0
+                                        focus:border-[#000000]
+                                        focus:outline-none
+                                    "
+                                />
+                            </label>
+
+                            </div>
+
 
                             <h2 class="text-center text-2xl font-bold mt-6 mb-2" style="color:#10069F">
                                 REQUISITOS
@@ -826,6 +970,9 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
                             </div>
 
                         </div>
+
+                    </div>
+
 
                     </div>
 

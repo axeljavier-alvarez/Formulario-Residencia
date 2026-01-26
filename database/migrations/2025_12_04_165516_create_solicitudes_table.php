@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('cui', 13);
             $table->string('domicilio', 255);
             $table->string('observaciones', 500)->nullable(); 
+            $table->string('razon', 255)->nullable();
 
             
             $table->timestamps();
@@ -33,6 +34,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
+    
     public function down(): void
     {
         Schema::dropIfExists('solicitudes');
