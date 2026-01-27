@@ -512,22 +512,24 @@
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
 
                         <button type="button" @click="openRechazo = true"
+                            x-show="!['Visita asignada'].includes(solicitud.estado?.nombre)"
                             class="w-full md:w-auto inline-flex items-center justify-center rounded-xl bg-red-50 px-6 py-3.5 text-sm font-black text-red-600 border border-red-100 hover:bg-red-600 hover:text-white transition-all transform active:scale-95 group">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             RECHAZAR SOLICITUD
                         </button>
 
                         <div class="flex flex-col sm:flex-row w-full md:w-auto gap-3">
-                            <button type="button" @click="openVisitaCampo = true"
-                                x-show="solicitud.estado?.nombre !== 'Visita realizada'"
+                            <button type="button" 
+                                @click="openVisitaCampo = true"
+                                x-show="!['Visita realizada', 'Visita asignada'].includes(solicitud.estado?.nombre)"
                                 class="inline-flex items-center justify-center rounded-xl bg-amber-50 px-6 py-3.5 text-sm font-black text-amber-700 border border-amber-200 hover:bg-amber-500 hover:text-white transition-all transform active:scale-95">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
                                 INSPECCIÓN DE CAMPO
                             </button>
 
                             <button
                                 type="button"
                                 @click="openAceptar = true"
+                                x-show="!['Visita asignada'].includes(solicitud.estado?.nombre)"
                                 class="inline-flex items-center justify-center rounded-xl
                                       bg-[#3B82F6]
                                       px-10 py-3.5 text-sm font-black text-white

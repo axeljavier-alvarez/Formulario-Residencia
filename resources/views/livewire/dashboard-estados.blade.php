@@ -17,25 +17,31 @@
    <div class="grid grid-cols-1 sm:grid-cols-2 
    md:grid-cols-3 lg:grid-cols-6 gap-4">
    @foreach($estados as $estado)
+
+   @if(in_array($estado->nombre, ['Visita asignada', 'Visita realizada']))
+        @continue
+   @endif
    @php
        $color = match($estado->nombre){
                 'Pendiente'        => '#FACC15',
-                'Visita asignada'  => '#D97706',
-                'Visita realizada' => '#8B5CF6',
+                // 'Visita asignada'  => '#D97706',
+                // 'Visita realizada' => '#8B5CF6',
                 'Por autorizar'    => '#3B82F6',
                 'Por emitir'    => '#06B6D4',
                 'Completado'       => '#22C55E',
+                'Previo'           => '#F97316',
                 'Cancelado'        => '#EF4444',
                 default            => '#6B7280',
        };
 
        $icon = match($estado->nombre){
                 'Pendiente'        => 'fa-clock',
-                'Visita asignada'  => 'fa-map-marker-alt',
-                'Visita realizada' => 'fa-check-double',
+                // 'Visita asignada'  => 'fa-map-marker-alt',
+                // 'Visita realizada' => 'fa-check-double',
                 'Por autorizar'       => 'fa-user-check',
                 'Por emitir'       => 'fa-file-circle-plus',
                 'Completado'       => 'fa-check-circle',
+                'Previo'           => 'fa-arrows-rotate',
                 'Cancelado'        => 'fa-times-circle',
                 default            => 'fa-question-circle',
        };

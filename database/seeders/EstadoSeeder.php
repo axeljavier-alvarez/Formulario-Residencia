@@ -25,7 +25,8 @@ class EstadoSeeder extends Seeder
     'Por autorizar',
     'Por emitir',
     'Completado',         
-    'Cancelado'
+    'Cancelado',
+    'Previo'
     ];
 
 
