@@ -9,6 +9,7 @@ WHERE id = 32; */
 /* ver los archivos por no_solicitud de dependientes 
 */
 
+SELECT * FROM estados;
 SELECT * FROM dependientes;
 SELECT * FROM tramites;
 SELECT * FROM solicitudes;
