@@ -152,7 +152,7 @@ class SolicitudForm extends Component
         'observaciones' => 'nullable|string|max:500',
         'zona_id' => 'required|exists:zonas,id',
         'tramite_id' => 'required|exists:tramites,id',
-        'razon' => 'required|string|max:255',
+        // 'razon' => 'required|string|max:255',
     ];
 
     }
@@ -183,8 +183,6 @@ class SolicitudForm extends Component
     'requisitos.*.archivo.mimes' => 'Solo se permiten archivos PDF o JPG.',
     'requisitos.*.archivo.max' => 'El archivo no debe superar 2MB',
     'cargas.*.archivo.max' => 'El archivo no debe superar 2MB',
-    'razon.max' => 'Ha excedido la longitud de 255 caracteres para la razon',
-    'razon.required' => 'Debe ingresar la razon.'
 
 ];
 

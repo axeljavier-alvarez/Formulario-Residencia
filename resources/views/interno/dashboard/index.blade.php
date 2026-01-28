@@ -4,20 +4,19 @@
 ]">
 
 <style>
-    /* 1. Forzamos que cada ítem de la leyenda sea un contenedor único */
     .apexcharts-legend-series {
         display: flex !important;
         align-items: center !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 4px !important;        
     }
     .apexcharts-legend-marker {
-        display: none !important; /* Escondemos el marcador original */
+        display: none !important;
     }
     .apexcharts-legend-text {
         color: transparent !important;
         font-size: 0 !important;
     }
-</style>
+</style> 
 
 <div class="py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen">
     
@@ -66,9 +65,11 @@
 
 @push('js')
 <script>
-    const globalFont = 'Inter, ui-sans-serif, system-ui, -apple-system, sans-serif';
+   
+   // misma tipografia
+     const globalFont = 'Inter, ui-sans-serif, system-ui, -apple-system, sans-serif';
 
-    // Estilos dinámicos para limpiar las leyendas nativas de ApexCharts
+    // creando el css desde javascripte insertandolo en el head
     const style = document.createElement('style');
     style.innerHTML = `
         .apexcharts-legend-series {
@@ -77,6 +78,7 @@
             margin-bottom: 6px !important;
             cursor: pointer;
         }
+            // ocultar cuadro y texto original
         .apexcharts-legend-marker {
             display: none !important;
         }
@@ -89,10 +91,11 @@
     `;
     document.head.appendChild(style);
 
+    // asegurar que chartEstados y chartZonas existann antes de crear graficas
     document.addEventListener('DOMContentLoaded', function(){
         
         // --- 1. CONFIGURACIÓN GRÁFICA CIRCULAR (ESTADOS) ---
-        // --- 1. CONFIGURACIÓN GRÁFICA CIRCULAR (ESTADOS) ---
+        // configuracion dona
         const optionsEstados = {
             chart: {
                 type: 'donut',
@@ -101,32 +104,36 @@
                 toolbar: { show: false },
                 animations: { enabled: true }
             },
-            // ESTO es lo que evita que se ponga oscuro al hacer click o pasar el mouse
-            states: {
-                normal: {
-                    filter: { type: 'none', value: 0 }
-                },
-                hover: {
-                    filter: { type: 'none', value: 0 }
-                },
-                active: {
-                    allowMultipleDataPointsSelection: false,
-                    filter: { type: 'none', value: 0 } // Aquí quitamos el oscurecimiento del click
-                }
-            },
+            // se arranca vacio
             series: [],
             labels: [],
             colors: [],
+             noData: {
+            text: 'Cargando datos...', 
+             align: 'center',        
+            verticalAlign: 'middle',
+            style: {
+                color: '#64748b',
+                fontSize: '18px',
+                fontFamily: globalFont
+            }
+        },
+
+           
             dataLabels: { enabled: false },
+            // leyenda personalizada
             legend: {
                 show: true,
                 position: 'right',
                 horizontalAlign: 'left',
                 useHTML: true,
                 itemMargin: { vertical: 4 },
+                // dibujar la leyenda a mano
+                // nombre estado
                 formatter: function(seriesName, opts) {
+                    // color real 
                     const color = opts.w.config.colors[opts.seriesIndex];
-                    // Usamos config.series para que el número sea persistente y no cambie a 0
+                    // valor real
                     const val = opts.w.config.series[opts.seriesIndex];
                     return `
                         <div style="display: flex; align-items: center; min-width: 140px; justify-content: space-between;">
@@ -151,7 +158,7 @@
                                 label: 'TOTAL',
                                 color: '#64748b',
                                 fontWeight: 800,
-                                // Fix para que el total central tampoco se pierda
+                                // suma valores de la dona y muestra total aunque se haga click
                                 formatter: function (w) {
                                     return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
                                 }
@@ -165,16 +172,19 @@
         const chartEstados = new ApexCharts(document.querySelector("#chartEstados"), optionsEstados);
         chartEstados.render();
 
-        // --- 2. CONFIGURACIÓN GRÁFICA DE BARRAS (VISITAS) ---
-        // --- 2. CONFIGURACIÓN GRÁFICA DE BARRAS (VISITAS) ---
+
+        // 2. grafica de barras
         const optionsZonas = {
             chart: { 
+
+                // grafica de barras apilada
                 type: 'bar', 
                 stacked: true, 
                 height: 380, 
                 fontFamily: globalFont, 
                 toolbar: { show: false },
                 events: {
+                    // click normal aisla una serie normal muestra todas
                     legendClick: function(chartContext, seriesIndex, config) {
                         const w = chartContext.w;
                         const globals = w.globals;
@@ -197,10 +207,12 @@
                                 }
                             });
                         }
-                        return false; // Evita el comportamiento nativo de ApexCharts
+                        // evitar comportamiento nativo de apexcharts
+                        return false; 
                     }
                 }
             },
+            // CSS DE LAS BARRAS
             colors: ['#D97706', '#8B5CF6'],
             plotOptions: { 
                 bar: { 
@@ -209,24 +221,38 @@
                     dataLabels: { position: 'center' } 
                 } 
             },
+            // MUETRA NUMEROS DENTRO DE CADA BARRA
             dataLabels: { 
                 enabled: true, 
                 style: { fontSize: '12px', fontWeight: 800, colors: ['#fff'] },
                 formatter: val => val > 0 ? val : ''
             },
-            // tooltip: { enabled: false },
+         // MUESRA MENSAJE NO HAY DATOS
+         noData: {
+                text: 'Cargando datos...', 
+                align: 'center',        // Añade esto
+                verticalAlign: 'middle',
+                style: {
+                    color: '#64748b',
+                    fontSize: '16px',
+                    fontFamily: globalFont
+                }
+            },
+
             series: [],
             xaxis: { categories: [], labels: { style: { colors: '#64748b', fontWeight: 500 } } },
             grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+            // dibujar la leyenda
             legend: {
                 show: true,
                 position: 'top',
                 horizontalAlign: 'right',
                 useHTML: true,
-                // IMPORTANTE: Mantenemos el total fijo usando la configuración inicial
+                // dar nombre a las series
                 formatter: function(seriesName, opts) {
+                    // color leyenda con el de barra
                     const color = opts.w.config.colors[opts.seriesIndex];
-                    // Buscamos en config.series para que el dato sea estático y no cambie al filtrar
+                    // total no cambia cuando hago click sobre el estado
                     const dataOriginal = opts.w.config.series[opts.seriesIndex].data;
                     const total = dataOriginal.reduce((a, b) => a + (Number(b) || 0), 0);
                     
@@ -242,14 +268,49 @@
         const chartZonas = new ApexCharts(document.querySelector("#chartZonas"), optionsZonas);
         chartZonas.render();
 
-        // LISTENERS LIVEWIRE
+        // confia en livewire para actualizar datos de graficas
         window.addEventListener('updateChart', event => {
             chartEstados.updateOptions({ series: event.detail.series, labels: event.detail.labels, colors: event.detail.colors });
         });
 
-        window.addEventListener('updateChartZonas', event => {
-            chartZonas.updateOptions({ series: event.detail.series, xaxis: { categories: event.detail.labels } });
+        // escuchar evento para actualizar grafica de zonas
+       window.addEventListener('updateChartZonas', event => {
+
+        
+    // verificar 0 en grafica
+    const totalVisitas = event.detail.series.reduce((acc, serie) => {
+        return acc + serie.data.reduce((a, b) => a + (Number(b) || 0), 0);
+    }, 0);
+
+
+    const tieneDatos = totalVisitas > 0;
+
+    if (!tieneDatos) {
+        // Si no hay datos, limpiamos las series y mostramos el mensaje personalizado
+        chartZonas.updateOptions({
+            series: [],
+            xaxis: { categories: [] },
+            noData: {
+                text: 'No hay visitas de campo asignadas o realizadas',
+                align: 'center',
+                verticalAlign: 'middle',
+                style: {
+                    color: '#94a3b8', 
+                    fontSize: '16px',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: 500
+                }
+            }
         });
+    } else {
+        // Si hay datos, actualizamos normalmente
+        chartZonas.updateOptions({ 
+            series: event.detail.series, 
+            xaxis: { categories: event.detail.labels },
+            noData: { text: 'Cargando datos...' }
+        });
+    }
+});
     });
 </script>
 @endpush
