@@ -183,27 +183,26 @@
                         No autorizar
                     </button>
 
-                   <button type="button"
-                    class="w-full sm:w-auto inline-flex items-center justify-center
-                        rounded-xl
-                        bg-emerald-600
-                        px-8 py-3
-                        text-sm font-black text-white
-                        shadow-lg shadow-emerald-600/30
-                        hover:bg-emerald-700
-                        hover:shadow-emerald-700/40
-                        transition-all transform active:scale-95">
+         <button
+            type="button"
+            x-on:click="
+                Livewire.dispatch('generar-constancia', {
+                    id: solicitud.id
+                })
+            "
+            class="w-full sm:w-auto rounded-xl bg-emerald-600 px-8 py-3
+                text-sm font-black text-white shadow-lg
+                hover:bg-emerald-700 transition-all">
 
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-2.083 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946 2.083 3.42 3.42 0 012.742 2.742 3.42 3.42 0 002.083 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-2.083 1.946 3.42 3.42 0 01-2.742 2.742 3.42 3.42 0 00-1.946 2.083 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-2.083 3.42 3.42 0 01-2.742-2.742 3.42 3.42 0 00-2.083-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 002.083-1.946 3.42 3.42 0 012.742-2.742z"></path>
-                    </svg>
-                    Generar constancia
-                </button>
+            Generar constancia
+        </button>
 
-                    
+
 
                     
-                    <button type="button" 
+
+                    
+                <button type="button" 
                             x-show="solicitud.estado?.nombre === 'Por emitir'"
                             @click="openCompletado = true"
                              class="inline-flex items-center justify-center rounded-xl
@@ -215,7 +214,7 @@
                                       transition-all transform">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Autorizar Solicitud
-                    </button>
+                </button>
                 </div>
             </div>
         </div>

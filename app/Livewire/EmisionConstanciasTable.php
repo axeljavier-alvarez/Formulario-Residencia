@@ -9,10 +9,17 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\On;
 use App\Models\Estado;
+use PhpOffice\PhpWord\TemplateProcessor;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class EmisionConstanciasTable extends DataTableComponent
 {
     
+public $solicitudIdSeleccionada;
+
+
 protected $model = Solicitud::class;
 
         public function builder(): Builder
@@ -190,6 +197,7 @@ protected $model = Solicitud::class;
     public function verDetalle($id)
     {
 
+    $this->solicitudIdSeleccionada = $id;
 
         //  $solicitud = Solicitud::find($id);
 
@@ -256,5 +264,72 @@ protected $model = Solicitud::class;
 
         }
     }
+
+  
+
+    #[On('generar-constancia')]
+public function generarConstancia()
+{
+    if (!$this->solicitudIdSeleccionada) {
+        return;
+    }
+
+    $solicitud = Solicitud::with(['zona'])
+        ->findOrFail($this->solicitudIdSeleccionada);
+
+    $templatePath = resource_path('word/constancia_residencia.docx');
+    $outputDir = storage_path('app/public/constancias');
+
+    if (!is_dir($outputDir)) {
+        mkdir($outputDir, 0755, true);
+    }
+
+    // Revisa que ya haya algun archivo generado con el mismo no_solicitud
+    $pattern = $outputDir . '/' . $solicitud->no_solicitud . '*.docx';
+    $archivosExistentes = glob($pattern);
+
+    if (!empty($archivosExistentes)) {
+        // Ya hay alguna constancia generada no_solicitud, no hacer nada
+        return;
+    }
+
+
+    // Generar nombre único con hash
+    $fileName = $solicitud->no_solicitud 
+                . '-constancia-' 
+                . Str::random(20) 
+                . '.docx';
+
+    $outputPath = $outputDir . '/' . $fileName;
+
+    try {
+        $template = new TemplateProcessor($templatePath);
+
+        $template->setValue('nombre', $solicitud->nombres . ' ' . $solicitud->apellidos);
+        $template->setValue('cui', $solicitud->cui ?? 'N/A');
+        $template->setValue('domicilio', $solicitud->domicilio ?? 'N/A');
+        $template->setValue('fecha', now()->format('d/m/Y'));
+
+        $template->saveAs($outputPath);
+
+        // guardar en detalle solicitud
+        $solicitud->detalles()->create([
+            'tipo' => 'constancia',
+            'path' => 'constancias/' . $fileName,
+            'user_id' => Auth::id(),
+
+            
+        ]);
+
+        $this->dispatch('constancia-generada', [
+            'fileName' => $fileName
+        ]);
+
+    } catch (\Exception $e) {
+        return;
+    }
+}
+
+
 
 }
