@@ -391,7 +391,15 @@
                                          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
 
         <div class="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
-            <div class="p-2 bg-emerald-600 text-white rounded-lg">✔</div>
+
+            <div class="p-2 bg-emerald-600 text-white rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+            </div>
+
             <div>
                 <p class="text-[10px] uppercase font-bold text-emerald-700">Estado</p>
                 <p class="font-black text-emerald-900">Visita realizada</p>
@@ -399,7 +407,17 @@
         </div>
 
         <div class="flex items-center gap-3 p-4 rounded-xl bg-blue-50 border border-blue-200">
-            <div class="p-2 bg-blue-600 text-white rounded-lg">📍</div>
+           
+            <div class="p-2 bg-blue-600 text-white rounded-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 11a3 3 0 100-6 3 3 0 000 6z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11c0 5-7 10-7 10S5 16 5 11a7 7 0 1114 0z" />
+                                    </svg>
+            </div>
+
             <div>
                 <p class="text-[10px] uppercase font-bold text-blue-700">Domicilio verificado</p>
                 <p class="text-xs font-semibold text-blue-900" x-text="solicitud.domicilio"></p>
@@ -423,9 +441,15 @@
 
     <div class="mb-8">
         <div class="flex items-center mb-3">
-            <span class="p-2 bg-amber-50 rounded-lg mr-2 text-amber-600">
-                📝
-            </span>
+            
+             <span class="p-2 bg-amber-50 rounded-lg mr-2 text-amber-600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7v12a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h8l4 4zM9 13h6M9 17h4" />
+                                        </svg>
+             </span>
+
             <h4 class="font-bold text-gray-800 uppercase text-sm tracking-wider">
                 Observaciones de la visita
             </h4>
@@ -464,7 +488,15 @@
 
     <div>
         <div class="flex items-center mb-3">
-            <span class="p-2 bg-teal-50 rounded-lg mr-2 text-teal-600">📸</span>
+            <span class="p-2 bg-teal-50 rounded-lg mr-2 text-teal-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                                                            viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 7h4l2-3h6l2 3h4v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                <circle cx="12" cy="13" r="3" />
+                </svg>
+            </span>
+
             <h4 class="font-bold text-gray-800 uppercase text-sm tracking-wider">
                 Evidencia fotográfica
             </h4>

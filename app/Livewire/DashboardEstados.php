@@ -5,6 +5,8 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Estado;
 
+use function Ramsey\Uuid\v1;
+
 class DashboardEstados extends Component
 {
 
@@ -23,6 +25,8 @@ public function render()
    $counts = $estados->pluck('solicitudes_count')->toArray();
    $colors = [];
 
+//    dd($labels);
+
    foreach($labels as $nombre) {
     $colors[] = match($nombre) {
 
@@ -30,8 +34,10 @@ public function render()
             // 'Visita asignada' => '#D97706',
             // 'Visita realizada' => '#8B5CF6',
             'Por emitir'       => '#06B6D4',
+            'Emitido'          => '#D6C19A', 
             'Por autorizar'    => '#3B82F6',
-            'Completado'       => '#22C55E',
+            'Autorizado'       => '#39FF14', 
+            'Completado'       => '#16A34A', 
             'Previo'           => '#F97316',
             'Cancelado'        => '#EF4444',
             default            => '#6B7280',
@@ -39,6 +45,7 @@ public function render()
     };
    }
 
+   
    $this->dispatch('updateChart', labels: $labels, series: $counts, colors: $colors);   
 
    return view('livewire.dashboard-estados', [

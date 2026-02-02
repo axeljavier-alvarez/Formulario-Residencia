@@ -16,19 +16,18 @@ class EstadoSeeder extends Seeder
     {
 
            // DB::table('estados')->truncate();
-
-
-    $estados = [
-    'Pendiente',               
-    'Visita asignada',    
-    'Visita realizada', 
-    'Por emitir', 
-    'Por autorizar',
-    'Completado',  
-    'Previo', 
-    'Cancelado',
-   
-    ];
+        $estados = [
+        'Pendiente',               
+        'Visita asignada',    
+        'Visita realizada', 
+        'Por emitir', 
+        'Emitido',
+        'Por autorizar',
+        'Autorizado',
+        'Completado',  
+        'Previo', 
+        'Cancelado',
+        ];
 
 
     foreach($estados as $nombre){
