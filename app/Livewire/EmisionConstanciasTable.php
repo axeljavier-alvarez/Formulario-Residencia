@@ -27,7 +27,7 @@ protected $model = Solicitud::class;
             return Solicitud::query()
                 ->with(['estado', 'requisitosTramites.tramite'])
                 ->whereHas('estado', function($query){
-                    $query->whereIn('nombre', ['Por emitir']);
+                    $query->whereIn('nombre', ['Por emitir',  'Emitido']);
                 })
                 ->orderByDesc('id');
         }
@@ -244,12 +244,11 @@ protected $model = Solicitud::class;
                 ->latest()
                 ->first();
 
+            // Verificar que el archivo exista en storage
+            $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
 
-                            // agregando la path
-
-
-            $solicitud->constancia_generada = (bool) $constancia;
-            $solicitud->constancia_path = $constancia?->path;
+            $solicitud->constancia_generada = $constanciaGenerada;
+            $solicitud->constancia_path = $constanciaGenerada ? $constancia->path : null;
 
 
             $this->dispatch('open-modal-detalle', solicitud: $solicitud->toArray());
@@ -282,16 +281,81 @@ protected $model = Solicitud::class;
 
   
 
-    #[On('generar-constancia')]
-public function generarConstancia()
+//     #[On('generar-constancia')]
+// public function generarConstancia()
+// {
+//     if (!$this->solicitudIdSeleccionada) {
+//         return;
+//     }
+
+//     $solicitud = Solicitud::with(['zona'])
+//         ->findOrFail($this->solicitudIdSeleccionada);
+
+//     $templatePath = resource_path('word/constancia_residencia.docx');
+//     $outputDir = storage_path('app/public/constancias');
+
+//     if (!is_dir($outputDir)) {
+//         mkdir($outputDir, 0755, true);
+//     }
+
+//     // Revisa que ya haya algun archivo generado con el mismo no_solicitud
+//     $pattern = $outputDir . '/' . $solicitud->no_solicitud . '*.docx';
+//     $archivosExistentes = glob($pattern);
+
+//     if (!empty($archivosExistentes)) {
+//         return;
+//     }
+
+
+//     $fileName = $solicitud->no_solicitud 
+//                 . '-constancia-' 
+//                 . Str::random(20) 
+//                 . '.docx';
+
+//     $outputPath = $outputDir . '/' . $fileName;
+
+//     try {
+//         $template = new TemplateProcessor($templatePath);
+
+//         $template->setValue('nombre', $solicitud->nombres . ' ' . $solicitud->apellidos);
+//         $template->setValue('cui', $solicitud->cui ?? 'N/A');
+//         $template->setValue('domicilio', $solicitud->domicilio ?? 'N/A');
+//         $template->setValue('fecha', now()->format('d/m/Y'));
+
+//         $template->saveAs($outputPath);
+
+//         // guardar en detalle solicitud
+//         $solicitud->detalles()->create([
+//             'tipo' => 'constancia',
+//             'path' => 'constancias/' . $fileName,
+//             'user_id' => Auth::id(),
+
+            
+//         ]);
+
+//         $this->dispatch('constancia-generada', [
+//             'path' => 'constancias/' . $fileName
+//         ]);
+
+
+//     } catch (\Exception $e) {
+//         return;
+//     }
+// }
+
+
+
+#[On('emitir-constancia')]
+public function emitirConstancia()
 {
-    if (!$this->solicitudIdSeleccionada) {
-        return;
-    }
+    if (!$this->solicitudIdSeleccionada) return;
 
-    $solicitud = Solicitud::with(['zona'])
-        ->findOrFail($this->solicitudIdSeleccionada);
+    $solicitud = Solicitud::with(['zona'])->findOrFail($this->solicitudIdSeleccionada);
 
+    $estadoEmitido = Estado::where('nombre', 'Emitido')->first();
+    if (!$estadoEmitido) return;
+
+    // === Generar archivo ===
     $templatePath = resource_path('word/constancia_residencia.docx');
     $outputDir = storage_path('app/public/constancias');
 
@@ -299,51 +363,52 @@ public function generarConstancia()
         mkdir($outputDir, 0755, true);
     }
 
-    // Revisa que ya haya algun archivo generado con el mismo no_solicitud
-    $pattern = $outputDir . '/' . $solicitud->no_solicitud . '*.docx';
-    $archivosExistentes = glob($pattern);
-
-    if (!empty($archivosExistentes)) {
-        return;
-    }
-
-
-    $fileName = $solicitud->no_solicitud 
-                . '-constancia-' 
-                . Str::random(20) 
-                . '.docx';
-
+    $fileName = $solicitud->no_solicitud . '-constancia-' . Str::random(15) . '.docx';
     $outputPath = $outputDir . '/' . $fileName;
 
-    try {
-        $template = new TemplateProcessor($templatePath);
+    $template = new TemplateProcessor($templatePath);
+    $template->setValue('nombre', $solicitud->nombres . ' ' . $solicitud->apellidos);
+    $template->setValue('cui', $solicitud->cui ?? 'N/A');
+    $template->setValue('domicilio', $solicitud->domicilio ?? 'N/A');
+    $template->setValue('fecha', now()->format('d/m/Y'));
+    $template->saveAs($outputPath);
 
-        $template->setValue('nombre', $solicitud->nombres . ' ' . $solicitud->apellidos);
-        $template->setValue('cui', $solicitud->cui ?? 'N/A');
-        $template->setValue('domicilio', $solicitud->domicilio ?? 'N/A');
-        $template->setValue('fecha', now()->format('d/m/Y'));
+    // === Guardar documento ===
+    $solicitud->detalles()->create([
+        'tipo' => 'constancia',
+        'path' => 'constancias/' . $fileName,
+        'user_id' => Auth::id(),
+    ]);
 
-        $template->saveAs($outputPath);
+    // === Cambiar estado ===
+    $solicitud->update([
+        'estado_id' => $estadoEmitido->id
+    ]);
 
-        // guardar en detalle solicitud
-        $solicitud->detalles()->create([
-            'tipo' => 'constancia',
-            'path' => 'constancias/' . $fileName,
-            'user_id' => Auth::id(),
+    // === Recargar relaciones actualizadas ===
+    $solicitud->load([
+        'estado',
+        'bitacoras.user',
+        'detalles'
+    ]);
 
-            
-        ]);
+    // === Calcular constancia_generada y constancia_path para Alpine ===
+    $constancia = $solicitud->detalles()
+        ->where('tipo', 'constancia')
+        ->latest()
+        ->first();
 
-        $this->dispatch('constancia-generada', [
-            'path' => 'constancias/' . $fileName
-        ]);
+    $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
 
+    $solicitudArray = $solicitud->toArray();
+    $solicitudArray['constancia_generada'] = $constanciaGenerada;
+    $solicitudArray['constancia_path'] = $constanciaGenerada ? $constancia->path : null;
 
-    } catch (\Exception $e) {
-        return;
-    }
+    // === Enviar a Alpine ===
+    $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
+
+    // === Refrescar la tabla automáticamente ===
+    $this->dispatch('$refresh');
 }
-
-
 
 }
