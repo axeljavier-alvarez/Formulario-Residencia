@@ -62,6 +62,13 @@ x-on:constancia-generada.window="
 
 <div x-show="open" 
      class="fixed inset-0 z-50 overflow-y-auto">
+
+
+     <div class="fixed inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity"
+         @click="open = false">
+     </div>
+
+
     <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
         
         <div x-show="open"
@@ -319,6 +326,7 @@ x-on:constancia-generada.window="
                     stroke-width="2"
                     d="M14 14l3 2-3 2" />
             </svg>
+            
                         </div>
           <div>
             <h3 class="text-xl font-bold text-gray-900">

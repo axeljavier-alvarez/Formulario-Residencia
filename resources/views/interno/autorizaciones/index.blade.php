@@ -48,11 +48,18 @@
      x-transition:enter-start="opacity-0"
      x-transition:enter-end="opacity-100"
      class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity z-50"
-     @click="open = false">
+     @click="open = true">
 </div>
 
 <div x-show="open"
      class="fixed inset-0 z-50 overflow-y-auto">
+
+      <div class="fixed inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity"
+         @click="open = false">
+     </div>
+
+     
+
     <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
 
         <div x-show="open"

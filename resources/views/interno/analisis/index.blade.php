@@ -16,8 +16,9 @@
 
 
     x-data="{
+    
             openPreview: false,
-                    imgSource: '',
+            imgSource: '',
 
     open:false,
     solicitud: {},
@@ -205,9 +206,10 @@
 
        <div class="fixed inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity"
          @click="open = false">
-    </div>
+        </div>
 
-            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+
         <div x-show="open"
              x-cloak
              x-transition:enter="ease-out duration-300"
