@@ -29,11 +29,11 @@
         <div class="bg-blue-50/30 rounded-2xl shadow-sm border-2 border-blue-100 overflow-hidden transition-all hover:shadow-lg">
             <div class="p-5 border-b border-blue-100 bg-white/50 flex justify-between items-center">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-800">Distribución de Solicitudes</h3>
-                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Estado actual de expedientes</p>
+                    <h3 class="text-lg font-bold text-gray-800">Tipos de trámite</h3>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Total de solicitudes recibidas por tramite</p>
                 </div>
-                <div class="h-10 w-10 bg-blue-500 text-white rounded-xl flex items-center justify-center shadow-sm">
-                    <i class="fas fa-chart-pie"></i>
+                <div class="h-10 w-10 bg-indigo-500 text-white rounded-xl flex items-center justify-center shadow-md">
+                    <i class="fas fa-clipboard-list"></i>
                 </div>
             </div>
             <div class="p-6">
@@ -43,15 +43,15 @@
 
        
         <div class="bg-blue-50/40 rounded-2xl shadow-sm border border-blue-100 overflow-hidden transition-all hover:shadow-lg">
-    <div class="p-5 border-b border-blue-100 bg-white/50 flex justify-between items-center">
-        <div>
-            <h3 class="text-lg font-bold text-gray-800">Visitas de Campo por Zona</h3>
-            <p class="text-xs text-blue-600/70 uppercase tracking-wider font-semibold">Productividad regional</p>
+        <div class="p-5 border-b border-blue-100 bg-white/50 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800">Visitas de Campo por Zona</h3>
+                    <p class="text-xs text-blue-600/70 uppercase tracking-wider font-semibold">Productividad regional</p>
+                </div>
+                <div class="h-10 w-10 bg-amber-500 text-white rounded-xl flex items-center justify-center shadow-sm">
+                    <i class="fas fa-map-location-dot"></i>
+                </div>
         </div>
-        <div class="h-10 w-10 bg-amber-500 text-white rounded-xl flex items-center justify-center shadow-sm">
-            <i class="fas fa-map-location-dot"></i>
-        </div>
-    </div>
 
     <div class="p-6">
         @livewire('dashboard-visitas-zona')

@@ -1,0 +1,1 @@
+<div wire:ignore id="chartEstados" class="min-h-[320px]"></div>
