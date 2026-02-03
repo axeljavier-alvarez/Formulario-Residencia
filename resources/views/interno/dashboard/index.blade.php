@@ -94,6 +94,10 @@
         
      
         const optionsEstados = {
+
+
+        
+            
             chart: {
                 type: 'donut',
                 height: 380,
@@ -101,6 +105,11 @@
                 toolbar: { show: false },
                 animations: { enabled: true }
             },
+
+
+            
+
+
           
             series: [],
             labels: [],
@@ -116,33 +125,81 @@
             }
         },
 
-           
-            dataLabels: { enabled: false },
+           // poner el porcentaje en la grafica
+            dataLabels: { 
+                enabled: true,
+
+            },
             // leyenda personalizada
             legend: {
                 show: true,
                 position: 'right',
                 horizontalAlign: 'left',
                 useHTML: true,
-                itemMargin: { vertical: 4 },
+                // itemMargin: { vertical: 4 },
              
                 formatter: function(seriesName, opts) {
-                const val = opts.w.config.series[opts.seriesIndex];
-                const total = opts.w.config.series.reduce((a, b) => a + b, 0);
-                const percent = total ? ((val / total) * 100).toFixed(1) : 0;
 
-                const color = opts.w.config.colors[opts.seriesIndex];
-                
-                return `
-                    <div style="display: flex; align-items: center; min-width: 140px; justify-content: space-between;">
-                        <div style="display: flex; align-items: center;">
-                            <div style="width: 12px; height: 12px; background-color: ${color}; border-radius: 50%; margin-right: 10px; flex-shrink: 0;"></div>
-                            <span style="color: #475569; font-weight: 700; font-size: 14px;">${seriesName}</span>
-                        </div>
-                        <span style="color: ${color}; font-weight: 800; font-size: 14px; margin-left: 8px;">${percent}%</span>
+                    const val = opts.w.config.series[opts.seriesIndex];
+                    const total = opts.w.config.series.reduce((a,b) => a+b, 0);
+
+                    const percent = total ? ((val / total) * 100).toFixed(1) : 0;
+
+                    const color = opts.w.config.colors[opts.seriesIndex];
+
+                    const icon = (currentIcons && currentIcons[opts.seriesIndex])
+                    ? currentIcons[opts.seriesIndex]
+                    : 'fas fa-circle'; 
+                    // const color = opts.w.config.colors[opts.seriesIndex];
+
+
+                     return `
+            <div style="display: flex; align-items: center; min-width: 160px; justify-content: space-between; padding: 2px 0;">
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 24px; text-align: center; margin-right: 8px;">
+                        <i class="${icon}" style="color: ${color}; font-size: 14px;"></i>
                     </div>
-                `;
-            }
+                    <span style="color: #475569; font-weight: 600; font-size: 13px;">${seriesName}</span>
+                </div>
+                <div style="text-align: right;">
+                    <span style="color: ${color}; font-weight: 800; font-size: 13px; display: block;">${percent}%</span>
+                    <small style="color: #94a3b8; font-size: 10px; display: block;">${val} sol.</small>
+                </div>
+            </div>`;
+
+                    // return `
+                    // <div style="display: flex; align-items:center; min-width: 140px;
+                    // justify-content: space-between;">
+                    // <div style="display: flex; align-items: center;">
+                        
+                    //     <div style="width: 12px; height: 12px;
+                    //     background-color: ${color}; border-radius: 50%; margin-right: 10px;
+                    //     flex-shrink: 0;
+                    //     ">
+                    //     </div>
+                    //     <span style="color: #475569; font-weight: 700;
+                    //     font-size:14px;">
+                    //     ${seriesName}
+                    //     </span>    
+                    // </div> 
+                    // <span style="color: ${color}; font-weight: 800; font-size: 14px;
+                    // margin-left: 8px;">
+                    // ${percent}%
+                    // </span>    
+                    // </div> 
+                    // `
+
+
+                    // return `
+                    //     <div style="display: flex; align-items: center; min-width: 140px; justify-content: space-between;">
+                    //         <div style="display: flex; align-items: center;">
+                    //             <div style="width: 12px; height: 12px; background-color: ${color}; border-radius: 50%; margin-right: 10px; flex-shrink: 0;"></div>
+                    //             <span style="color: #475569; font-weight: 700; font-size: 14px;">${seriesName}</span>
+                    //         </div>
+                    //         <span style="color: ${color}; font-weight: 800; font-size: 14px; margin-left: 8px;">${val}</span>
+                    //     </div>
+                    // `;
+                }
             },
             plotOptions: {
                 pie: {
@@ -165,6 +222,8 @@
                     }
                 }
             }
+
+           
         };
 
         const chartEstados = new ApexCharts(document.querySelector("#chartEstados"), optionsEstados);
@@ -260,7 +319,11 @@
         chartZonas.render();
 
         // confia en livewire para actualizar datos de graficas
+
+        let currentIcons = [];
         window.addEventListener('updateChart', event => {
+            currentIcons = event.detail.icons;
+
             chartEstados.updateOptions({ series: event.detail.series, labels: event.detail.labels, colors: event.detail.colors });
         });
 
