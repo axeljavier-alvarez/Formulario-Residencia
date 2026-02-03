@@ -8,7 +8,7 @@ class Tramite extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'slug'];
+    protected $fillable = ['nombre', 'slug', 'path'];
 
     public $timestamps = false;
 
@@ -22,4 +22,16 @@ class Tramite extends Model
             'requisito_id'
     );
     }
+
+
+     public function plantillas()
+    {
+        return $this->hasMany(Plantilla::class);
+    }
+
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class);
+    }
+
 }

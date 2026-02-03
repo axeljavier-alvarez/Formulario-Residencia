@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tramites', function (Blueprint $table) {
+        Schema::create('plantillas', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 100);
-            $table->string('slug', 255);
+            $table->string('tipo', 100);
+            $table->string('path', 250);
+            $table->foreignId('tramite_id')->constrained('tramites')->restrictOnDelete();
+            $table->timestamps();
         });
     }
 
@@ -23,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tramites');
+        Schema::dropIfExists('plantillas');
     }
 };

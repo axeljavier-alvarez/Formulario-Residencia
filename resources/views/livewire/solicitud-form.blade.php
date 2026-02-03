@@ -616,7 +616,10 @@ class="max-w-4xl mx-auto my-20 bg-white border rounded-xl p-8 shadow-[0_0_10px_#
 
 
                     @if($tramite_id && in_array($tramites->firstWhere('id', $tramite_id)?->slug,
-                        ['tramites-legales-en-materia-civil']))
+                        ['solicitar-dpi-al-registro-nacional-de-las-personas',
+                        'inscripcion-extemporanea-de-un-menor-de-edad-ante-el-registro-nacional-de-las-personas',
+                        'inscripcion-extemporanea-de-un-mayor-de-edad-ante-el-registro-nacional-de-las-personas',
+                        'tramites-legales-en-materia-civil']))
 
                         
                      <div class="mt-4 p-4" 

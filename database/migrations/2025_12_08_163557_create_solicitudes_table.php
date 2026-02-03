@@ -25,8 +25,7 @@ return new class extends Migration
             $table->string('domicilio', 255);
             $table->string('observaciones', 500)->nullable(); 
             $table->string('razon', 255)->nullable();
-
-            
+            $table->foreignId('tramite_id')->constrained('tramites')->restrictOnDelete();            
             $table->timestamps();
         });
     }

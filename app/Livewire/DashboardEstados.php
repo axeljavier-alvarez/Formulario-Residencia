@@ -31,15 +31,14 @@ public function render()
     $colors[] = match($nombre) {
 
             'Pendiente'       => '#FACC15',
+            'Analisis' => '#06B6D4',
             // 'Visita asignada' => '#D97706',
             // 'Visita realizada' => '#8B5CF6',
-            'Por emitir'       => '#06B6D4',
-            'Emitido'          => '#D6C19A', 
             'Por autorizar'    => '#3B82F6',
-            'Autorizado'       => '#39FF14', 
-            'Completado'       => '#16A34A', 
+            'Emitido'          => '#C2A97E', 
+            'Autorizado'       => '#22C55E', 
             'Previo'           => '#F97316',
-            'Cancelado'        => '#EF4444',
+            'Rechazado'        => '#EF4444',
             default            => '#6B7280',
             
     };

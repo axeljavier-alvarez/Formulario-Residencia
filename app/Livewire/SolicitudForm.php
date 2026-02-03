@@ -152,7 +152,7 @@ class SolicitudForm extends Component
         'observaciones' => 'nullable|string|max:500',
         'zona_id' => 'required|exists:zonas,id',
         'tramite_id' => 'required|exists:tramites,id',
-        // 'razon' => 'required|string|max:255',
+        'razon' => 'required|string|max:255',
     ];
 
     }
@@ -208,6 +208,7 @@ public function updated($property)
    public function submit()
 {
     $validated = $this->validate($this->rules());
+    $validated['tramite_id'] = $this->tramite_id;
 
     $validated['anio'] = now()->year;
     $validated['estado_id'] = 1;
@@ -641,11 +642,16 @@ public function updated($property)
                         }
 
                         // validacion para la razon
-                        if(in_array($slugTramite, [
+                        if(in_array($slugTramite, 
+                        [
                             'magisterio',
+                            'solicitar-dpi-al-registro-nacional-de-las-personas',
+                            'inscripcion-extemporanea-de-un-menor-de-edad-ante-el-registro-nacional-de-las-personas',
+                            'inscripcion-extemporanea-de-un-mayor-de-edad-ante-el-registro-nacional-de-las-personas',
                             'tramites-legales-en-materia-civil',
                             'tramites-legales-en-materia-penal-si-una-persona-se-encuentra-privada-de-libertad'
-                        ])) {
+                        ]
+                        )) {
                             $rules['razon'] = 'required|string|max:255';
                             
                             if($slugTramite === 'magisterio') {

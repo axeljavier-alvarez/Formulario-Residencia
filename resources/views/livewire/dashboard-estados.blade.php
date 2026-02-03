@@ -23,32 +23,26 @@
    @endif
    @php
        $color = match($estado->nombre){
-                'Pendiente'        => '#FACC15',
-                // 'Visita asignada'  => '#D97706',
-                // 'Visita realizada' => '#8B5CF6',
-                'Por emitir'    => '#06B6D4',
-                'Emitido'          => '#D6C19A', 
-                'Por autorizar'    => '#3B82F6',
-                'Autorizado'       => '#39FF14',
-                'Completado'       => '#16A34A', 
-                'Previo'           => '#F97316',
-                'Cancelado'        => '#EF4444',
-                default            => '#6B7280',
-       };
+            'Pendiente'      => '#FACC15',
+            'Analisis'       => '#06B6D4', 
+            'Por autorizar'  => '#3B82F6', 
+            'Emitido'        => '#C2A97E', 
+            'Autorizado'       => '#22C55E', 
+            'Previo'           => '#F97316',
+            'Rechazado'        => '#EF4444',
+            default            => '#6B7280',
+        };
 
-       $icon = match($estado->nombre){
-                'Pendiente'        => 'fa-clock',
-                // 'Visita asignada'  => 'fa-map-marker-alt',
-                // 'Visita realizada' => 'fa-check-double',
-                'Por emitir'       => 'fa-file-circle-plus',
-                'Emitido'          => 'fa-file-lines',  
-                'Por autorizar'       => 'fa-user-check',
-                'Autorizado'       => 'fa-circle-check', 
-                 'Completado'       => 'fa-check-double',  
-                'Previo'           => 'fa-arrows-rotate',
-                'Cancelado'        => 'fa-times-circle',
-                default            => 'fa-question-circle',
-       };
+        $icon = match($estado->nombre){
+            'Pendiente'      => 'fa-hourglass-half',
+            'Analisis'       => 'fa-magnifying-glass-chart',
+            'Por autorizar'  => 'fa-user-shield',
+            'Emitido'        => 'fa-file-export',
+            'Autorizado'     => 'fa-circle-check',
+            'Previo'         => 'fa-list-check',
+            'Rechazado'      => 'fa-circle-xmark',
+            default          => 'fa-circle-question',
+        };
    @endphp
 
    <div

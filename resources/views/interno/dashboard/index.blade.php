@@ -69,7 +69,6 @@
    // misma tipografia
      const globalFont = 'Inter, ui-sans-serif, system-ui, -apple-system, sans-serif';
 
-    // creando el css desde javascripte insertandolo en el head
     const style = document.createElement('style');
     style.innerHTML = `
         .apexcharts-legend-series {
@@ -91,11 +90,9 @@
     `;
     document.head.appendChild(style);
 
-    // asegurar que chartEstados y chartZonas existann antes de crear graficas
     document.addEventListener('DOMContentLoaded', function(){
         
-        // --- 1. CONFIGURACIÓN GRÁFICA CIRCULAR (ESTADOS) ---
-        // configuracion dona
+     
         const optionsEstados = {
             chart: {
                 type: 'donut',
@@ -104,7 +101,7 @@
                 toolbar: { show: false },
                 animations: { enabled: true }
             },
-            // se arranca vacio
+          
             series: [],
             labels: [],
             colors: [],
@@ -128,12 +125,11 @@
                 horizontalAlign: 'left',
                 useHTML: true,
                 itemMargin: { vertical: 4 },
-                // dibujar la leyenda a mano
-                // nombre estado
+             
                 formatter: function(seriesName, opts) {
-                    // color real 
+                    
                     const color = opts.w.config.colors[opts.seriesIndex];
-                    // valor real
+                    
                     const val = opts.w.config.series[opts.seriesIndex];
                     return `
                         <div style="display: flex; align-items: center; min-width: 140px; justify-content: space-between;">
@@ -148,7 +144,7 @@
             },
             plotOptions: {
                 pie: {
-                    expandOnClick: false, // Opcional: evita que el pedazo de dona "salte" al hacer click
+                    expandOnClick: false, 
                     donut: {
                         size: '70%',
                         labels: {
@@ -158,7 +154,7 @@
                                 label: 'TOTAL',
                                 color: '#64748b',
                                 fontWeight: 800,
-                                // suma valores de la dona y muestra total aunque se haga click
+                               
                                 formatter: function (w) {
                                     return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
                                 }
@@ -190,15 +186,12 @@
                         const globals = w.globals;
                         const seriesNames = globals.seriesNames;
                         
-                        // Verificamos si la serie clickeada es la única que está visible actualmente
                         const isOnlyVisible = globals.hiddenSeriesIndices.length === seriesNames.length - 1 && 
                                             !globals.hiddenSeriesIndices.includes(seriesIndex);
 
                         if (isOnlyVisible) {
-                            // Si ya estaba aislada, mostramos TODAS de nuevo
                             seriesNames.forEach(name => chartContext.showSeries(name));
                         } else {
-                            // Si no, aislamos la que se presionó
                             seriesNames.forEach((name, idx) => {
                                 if (idx === seriesIndex) {
                                     chartContext.showSeries(name);
@@ -207,12 +200,10 @@
                                 }
                             });
                         }
-                        // evitar comportamiento nativo de apexcharts
                         return false; 
                     }
                 }
             },
-            // CSS DE LAS BARRAS
             colors: ['#D97706', '#8B5CF6'],
             plotOptions: { 
                 bar: { 
@@ -221,16 +212,14 @@
                     dataLabels: { position: 'center' } 
                 } 
             },
-            // MUETRA NUMEROS DENTRO DE CADA BARRA
             dataLabels: { 
                 enabled: true, 
                 style: { fontSize: '12px', fontWeight: 800, colors: ['#fff'] },
                 formatter: val => val > 0 ? val : ''
             },
-         // MUESRA MENSAJE NO HAY DATOS
          noData: {
                 text: 'Cargando datos...', 
-                align: 'center',        // Añade esto
+                align: 'center',        
                 verticalAlign: 'middle',
                 style: {
                     color: '#64748b',
@@ -273,7 +262,6 @@
             chartEstados.updateOptions({ series: event.detail.series, labels: event.detail.labels, colors: event.detail.colors });
         });
 
-        // escuchar evento para actualizar grafica de zonas
        window.addEventListener('updateChartZonas', event => {
 
         
@@ -286,7 +274,6 @@
     const tieneDatos = totalVisitas > 0;
 
     if (!tieneDatos) {
-        // Si no hay datos, limpiamos las series y mostramos el mensaje personalizado
         chartZonas.updateOptions({
             series: [],
             xaxis: { categories: [] },

@@ -28,7 +28,8 @@ class Solicitud extends Model
         'observaciones',
         'zona_id',
         'estado_id',
-        'razon'
+        'razon',
+        'tramite_id'
     ];
 
     // una solicitud pertenece a una zona
@@ -76,5 +77,11 @@ class Solicitud extends Model
    {
     return $this->hasMany(Bitacora::class);
    }
+
+   public function tramite()
+   {
+    return $this->belongsTo(Tramite::class);
+   }
+   
 
 }
