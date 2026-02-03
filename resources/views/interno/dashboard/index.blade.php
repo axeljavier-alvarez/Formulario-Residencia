@@ -127,20 +127,22 @@
                 itemMargin: { vertical: 4 },
              
                 formatter: function(seriesName, opts) {
-                    
-                    const color = opts.w.config.colors[opts.seriesIndex];
-                    
-                    const val = opts.w.config.series[opts.seriesIndex];
-                    return `
-                        <div style="display: flex; align-items: center; min-width: 140px; justify-content: space-between;">
-                            <div style="display: flex; align-items: center;">
-                                <div style="width: 12px; height: 12px; background-color: ${color}; border-radius: 50%; margin-right: 10px; flex-shrink: 0;"></div>
-                                <span style="color: #475569; font-weight: 700; font-size: 14px;">${seriesName}</span>
-                            </div>
-                            <span style="color: ${color}; font-weight: 800; font-size: 14px; margin-left: 8px;">${val}</span>
+                const val = opts.w.config.series[opts.seriesIndex];
+                const total = opts.w.config.series.reduce((a, b) => a + b, 0);
+                const percent = total ? ((val / total) * 100).toFixed(1) : 0;
+
+                const color = opts.w.config.colors[opts.seriesIndex];
+                
+                return `
+                    <div style="display: flex; align-items: center; min-width: 140px; justify-content: space-between;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 12px; height: 12px; background-color: ${color}; border-radius: 50%; margin-right: 10px; flex-shrink: 0;"></div>
+                            <span style="color: #475569; font-weight: 700; font-size: 14px;">${seriesName}</span>
                         </div>
-                    `;
-                }
+                        <span style="color: ${color}; font-weight: 800; font-size: 14px; margin-left: 8px;">${percent}%</span>
+                    </div>
+                `;
+            }
             },
             plotOptions: {
                 pie: {

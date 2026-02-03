@@ -9,7 +9,6 @@
    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
    @foreach($estadosTarjetones as $estado)
        @php
-           // Definimos colores según el nombre del ESTADO (Pendiente, Autorizado, etc.)
            $color = match($estado->nombre) {
                 'Pendiente'      => '#FACC15',
                     'Analisis'       => '#06B6D4', 
