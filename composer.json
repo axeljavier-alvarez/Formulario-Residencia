@@ -9,15 +9,17 @@
     ],
     "license": "MIT",
     "require": {
-    "php": "^8.2",
-    "blade-ui-kit/blade-heroicons": "^2.6",
-    "laravel/framework": "^12.0",
-    "laravel/jetstream": "^5.4",
-    "laravel/sanctum": "^4.0",
-    "laravel/tinker": "^2.10.1",
-    "livewire/livewire": "^3.6.4",
-    "rappasoft/laravel-livewire-tables": "*"
-        },
+        "php": "^8.2",
+        "blade-ui-kit/blade-heroicons": "^2.6",
+        "laravel/framework": "^12.0",
+        "laravel/jetstream": "^5.4",
+        "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^2.10.1",
+        "livewire/livewire": "^3.6.4",
+        "phpoffice/phpword": "^1.4",
+        "rappasoft/laravel-livewire-tables": "*",
+        "tecnickcom/tcpdf": "^6.10"
+    },
 
     "require-dev": {
         "fakerphp/faker": "^1.23",
