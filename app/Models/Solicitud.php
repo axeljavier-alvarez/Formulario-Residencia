@@ -31,6 +31,9 @@ class Solicitud extends Model
         'razon',
         'tramite_id'
     ];
+    
+    // En app/Models/Solicitud.php
+
 
     // una solicitud pertenece a una zona
     public function zona()

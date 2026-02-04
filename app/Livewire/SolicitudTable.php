@@ -5,8 +5,10 @@ namespace App\Livewire;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Solicitud;
+use App\Models\Estado;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Attributes\On;
 
 class SolicitudTable extends DataTableComponent
 {
@@ -28,6 +30,9 @@ class SolicitudTable extends DataTableComponent
      public function configure(): void
     {
        $this->setPrimaryKey('id');
+
+       // para agregar validacion de botones
+       $this->setAdditionalSelects(['solicitudes.estado_id']);
 
     // Diseño de la tabla con espacio entre filas
     $this->setTableAttributes(['class' => 'border-separate border-spacing-y-3 px-4']);
@@ -138,14 +143,14 @@ class SolicitudTable extends DataTableComponent
     ->format(function($value) {
 
         $color = match (trim($value)) {
-            'Pendiente'        => '#FACC15',
-            'Visita asignada'  => '#D97706',
-            'Visita realizada' => '#8B5CF6',
-            'Por autorizar'    => '#3B82F6',
-            'Por emitir'       => '#06B6D4',
-            'Completado'       => '#22C55E',
-            'Cancelado'        => '#EF4444',
-            default            => '#6B7280',
+                'Pendiente'     => '#FACC15',
+                'Analisis'      => '#06B6D4', 
+                'Por autorizar' => '#3B82F6', 
+                'Emitido'       => '#A8A29E', 
+                'Autorizado'    => '#22C55E', 
+                'Previo'        => '#F97316',
+                'Rechazado'     => '#EF4444',
+                default         => '#6B7280',
         };
 
         $bgColor = $color . '26';
@@ -171,34 +176,65 @@ class SolicitudTable extends DataTableComponent
     ->html(),
 
 
-        Column::make("Acción")
-            ->label(fn($row) => "
-                <button wire:click='verDetalle({$row->id})'
-                        class='inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-sm'>
-                    <span>Ver Detalles</span>
+
+    Column::make("Acción")
+
+    ->label(function($row) {
+
+
+        $estado = trim($row->estado?->nombre ?? '');
+
+        if($estado === 'Pendiente'){
+            $textoBoton = "Analizar Expediente";
+$clasesBoton = "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-600 hover:text-white shadow-emerald-100";            $metodoClick = "abrirExpediente({$row->id})";
+        } else {
+            $textoBoton = "Continuar revisión";
+            $clasesBoton = "bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-600 hover:text-white";
+            $metodoClick = "verDetalle({$row->id})";
+        }
+
+        
+
+            return "
+
+                <button wire:click='{$metodoClick}'
+
+                        class='inline-flex items-center px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300 shadow-sm {$clasesBoton}'>
+
+                    <span>{$textoBoton}</span>
                     <svg class='w-4 h-4 ml-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+
                         <path d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' stroke-width='2'/>
+
                         <path d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' stroke-width='2'/>
+
                     </svg>
+
                 </button>
-            ")->html(),
+
+            ";
+
+    })->html(),
+
     ];
-}
 
-    /*
+    }
 
-    item = {
-  id: 12,
-  evento: "Cambio de estado",
-  descripcion: "Aprobado",
-  created_at: "2026-01-08T14:32:10.000000Z",
-  fecha_formateada: "08 enero 2026 14:32",
-  user: {
-    name: "Juan Pérez"
-  }
-}
+//         Column::make("Acción")
+//             ->label(fn($row) => "
+//                 <button wire:click='verDetalle({$row->id})'
+//                         class='inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-sm'>
+//                     <span>Ver Detalles</span>
+//                     <svg class='w-4 h-4 ml-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+//                         <path d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' stroke-width='2'/>
+//                         <path d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' stroke-width='2'/>
+//                     </svg>
+//                 </button>
+//             ")->html(),
+//     ];
+// }
 
-*/
+  
 
     // ABRIR MODAL
     public function verDetalle($id)
@@ -300,6 +336,49 @@ class SolicitudTable extends DataTableComponent
 
 
     }
+
+
+    // modal para abrir
+  public function abrirExpediente($id)
+{
+    $solicitud = Solicitud::with(['estado', 'requisitosTramites.tramite'])->find($id);
+    if (!$solicitud) return;
+
+    if ($solicitud->estado?->nombre !== 'Pendiente') {
+        $this->verDetalle($id);
+        return;
+    }
+
+    // Importante: El nombre del parámetro debe ser 'solicitud' 
+    // para que Alpine lo lea como $event.detail.solicitud
+    $this->dispatch('abrir-modal-expediente', solicitud: $solicitud->toArray());
+}
+// Esta es la función que realmente hace el update (se llama desde el botón "Confirmar" del modal)
+#[On('ejecutar-confirmar-apertura')] // <--- Esta línea es la clave
+public function confirmarApertura($id)
+{
+    // Livewire 3 pasa los parámetros de eventos como un array si vienen de Alpine
+    // Si recibes un error de "missing parameter", usa: public function confirmarApertura($id = null)
+    if (is_array($id)) { $id = $id['id']; }
+
+    $estadoRevision = Estado::where('nombre', 'Analisis')->first(); 
+    
+    $solicitud = Solicitud::find($id);
+    if ($solicitud && $estadoRevision) {
+        $solicitud->update([
+            'estado_id' => $estadoRevision->id
+        ]);
+        
+        // Refrescar la tabla (método nativo de Rappasoft)
+        $this->dispatch('refreshDatatable');
+        
+        // Cerrar el modal de confirmación en Alpine
+        $this->dispatch('close-confirm'); 
+
+        // Abrir el detalle automáticamente
+        $this->verDetalle($id);
+    }
+}
 
 
 

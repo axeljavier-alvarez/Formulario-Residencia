@@ -53,8 +53,10 @@ class SolicitudObserver
             
 
                 $nombreEstadoNuevo === 'Cancelado' => 'La solicitud se canceló.',
+                $nombreEstadoNuevo === 'Analisis' => 'La solicitud y los documentos estan siendo analizadados',
                 $nombreEstadoNuevo === 'Visita asignada'  => 'La solicitud fue asignada a visita de campo.',
                 $nombreEstadoNuevo === 'Visita realizada' => 'El visitador de campo no ingreso observaciones',
+                
                 $nombreEstadoNuevo === 'Por emitir'       => 'La solicitud fue aceptada y está lista para ser emitida',
                 $nombreEstadoNuevo === 'Emitido'       => 'La solicitud fue emitida y puede ser enviada para autorizarla',
                 $nombreEstadoNuevo === 'Por autorizar' => 'La solicitud está pendiente de autorizar',
