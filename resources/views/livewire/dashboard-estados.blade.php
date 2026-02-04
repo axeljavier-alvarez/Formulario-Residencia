@@ -1,7 +1,9 @@
 <div wire:poll.1s>
 
     <div class="text-center mb-8 -mt-6">
-    <h2 class="text-4xl md:text-5xl font-black tracking-tighter uppercase italic leading-tight">
+    <h2 class="font-inter text-4xl md:text-5xl font-extrabold tracking-tight uppercase leading-tight">
+
+
         <span class="inline-block px-1 bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-500">
             Estados de las
         </span>

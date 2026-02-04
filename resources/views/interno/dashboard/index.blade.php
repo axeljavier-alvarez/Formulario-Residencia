@@ -96,7 +96,48 @@
         const optionsEstados = {
 
 
-        
+            tooltip: {
+                enabled: false,
+            },
+
+        responsive: [
+    {
+        breakpoint: 640, 
+        options: {
+            chart: {
+                height: 450 
+            },
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+                itemMargin: {
+                    horizontal: 5,
+                    vertical: 10
+                }
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '65%' 
+                    }
+                }
+            }
+        }
+    }, 
+    {
+        breakpoint: 2000, 
+        options: {
+            chart: {
+                height: 380
+            },
+            legend: {
+                position: 'right',
+                horizontalAlign: 'left'
+            }
+        }
+    }
+],
+
             
             chart: {
                 type: 'donut',
@@ -223,6 +264,9 @@
                 }
             }
 
+
+            
+
            
         };
 
@@ -232,6 +276,14 @@
 
         // 2. grafica de barras
         const optionsZonas = {
+
+           
+
+            tooltip: {
+                enabled: false,
+            },
+
+            
             chart: { 
 
                 // grafica de barras apilada
@@ -292,28 +344,31 @@
             series: [],
             xaxis: { categories: [], labels: { style: { colors: '#64748b', fontWeight: 500 } } },
             grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
-            // dibujar la leyenda
+            // dibujar la leyenda con iconos para las visitas
             legend: {
                 show: true,
                 position: 'top',
                 horizontalAlign: 'right',
                 useHTML: true,
-                // dar nombre a las series
+                width: undefined,
+                markers: { width: 0, height: 0, display: 'none' }, 
                 formatter: function(seriesName, opts) {
-                    // color leyenda con el de barra
                     const color = opts.w.config.colors[opts.seriesIndex];
-                    // total no cambia cuando hago click sobre el estado
-                    const dataOriginal = opts.w.config.series[opts.seriesIndex].data;
-                    const total = dataOriginal.reduce((a, b) => a + (Number(b) || 0), 0);
+                    const data = opts.w.config.series[opts.seriesIndex].data;
+                    const total = data.reduce((a, b) => a + (Number(b) || 0), 0);
+                    
+                    const icon = seriesName.toLowerCase().includes('asignada') 
+                        ? 'fas fa-calendar-alt' 
+                        : 'fas fa-check-double';
                     
                     return `
-                        <div style="display: flex; align-items: center; background: white; padding: 4px 15px; border-radius: 20px; border: 2px solid ${color}44; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                            <div style="width: 10px; height: 10px; background-color: ${color}; border-radius: 3px; margin-right: 8px;"></div>
-                            <span style="color: ${color}; font-weight: 700; font-size: 13px;">${seriesName}:</span>
-                            <span style="color: ${color}; font-weight: 800; font-size: 14px; margin-left: 6px;">${total}</span>
+                        <div style="display: flex; align-items: center; background: white; padding: 4px 12px; border-radius: 20px; border: 1px solid ${color}44; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-left: 8px;">
+                            <i class="${icon}" style="color: ${color}; margin-right: 8px; font-size: 14px;"></i>
+                            <span style="color: #475569; font-weight: 600; font-size: 13px; margin-right: 5px;">${seriesName}:</span>
+                            <span style="color: #1e293b; font-weight: 800; font-size: 14px;">${total}</span>
                         </div>`;
                 }
-            }
+            },
         };
         const chartZonas = new ApexCharts(document.querySelector("#chartZonas"), optionsZonas);
         chartZonas.render();
