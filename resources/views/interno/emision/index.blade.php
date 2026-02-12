@@ -38,6 +38,19 @@ x-on:constancia-generada.window="
     solicitud = $event.detail.solicitud;
     constanciaGenerada = true;
     constanciaFile = solicitud.constancia_path ?? null;
+
+    if(constanciaFile) {
+        // Creamos un elemento 'a' invisible
+        const link = document.createElement('a');
+        link.href = '/storage/' + constanciaFile;
+        
+        // El atributo 'download' fuerza la descarga
+        link.download = solicitud.no_solicitud + '-constancia.pdf';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 "
 
   @open-modal-detalle.window="
@@ -386,10 +399,11 @@ x-on:constancia-generada.window="
                             <template x-if="constanciaFile">
                                 <a
                                     :href="`/storage/${constanciaFile}`"
-                                    target="_blank"
+                                    download
                                     class="inline-flex items-center gap-2 text-emerald-700 font-bold text-sm hover:underline"
                                 >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ 
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 16v-4m0 0V8m0 4h4m-4 0H8m8 4H8a2 2 0 01-2-2V6a2 2 0 012-2h5l5 5v7a2 2 0 01-2 2z"/>
                                     </svg>

@@ -13,6 +13,10 @@ use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use TCPDF; // Para el PDF
+use PhpOffice\PhpWord\Settings;
+use PhpOffice\PhpWord\IOFactory;
+use Illuminate\Support\Facades\Log;
 
 class EmisionConstanciasTable extends DataTableComponent
 {
@@ -354,11 +358,10 @@ public function emitirConstancia()
     if (!$this->solicitudIdSeleccionada) return;
 
     $solicitud = Solicitud::with(['zona'])->findOrFail($this->solicitudIdSeleccionada);
-
     $estadoEmitido = Estado::where('nombre', 'Emitido')->first();
     if (!$estadoEmitido) return;
 
-    // === Generar archivo ===
+    // === Configuración de Rutas ===
     $templatePath = resource_path('word/constancia_residencia.docx');
     $outputDir = storage_path('app/public/constancias');
 
@@ -366,20 +369,45 @@ public function emitirConstancia()
         mkdir($outputDir, 0755, true);
     }
 
-    $fileName = $solicitud->no_solicitud . '-constancia-' . Str::random(15) . '.docx';
-    $outputPath = $outputDir . '/' . $fileName;
+    // Nombre final en PDF
+    $fileNamePdf = $solicitud->no_solicitud . '-constancia-' . Str::random(15) . '.pdf';
+    $outputPathPdf = $outputDir . '/' . $fileNamePdf;
+    
+    // Ruta temporal para el Word (necesario para la conversión)
+    $tempWordPath = storage_path('app/temp_word_' . Str::random(10) . '.docx');
 
-    $template = new TemplateProcessor($templatePath);
-    $template->setValue('nombre', $solicitud->nombres . ' ' . $solicitud->apellidos);
-    $template->setValue('cui', $solicitud->cui ?? 'N/A');
-    $template->setValue('domicilio', $solicitud->domicilio ?? 'N/A');
-    $template->setValue('fecha', now()->format('d/m/Y'));
-    $template->saveAs($outputPath);
+    try {
+        // 1. Procesar Plantilla Word
+        $template = new TemplateProcessor($templatePath);
+        $template->setValue('nombre', $solicitud->nombres . ' ' . $solicitud->apellidos);
+        $template->setValue('cui', $solicitud->cui ?? 'N/A');
+        $template->setValue('domicilio', $solicitud->domicilio ?? 'N/A');
+        $template->setValue('fecha', now()->format('d/m/Y'));
+        $template->saveAs($tempWordPath);
 
-    // === Guardar documento ===
+        // 2. Configurar Renderizador PDF (TCPDF)
+        Settings::setPdfRendererName(Settings::PDF_RENDERER_TCPDF);
+        Settings::setPdfRendererPath(base_path('vendor/tecnickcom/tcpdf'));
+
+        // 3. Convertir de Word a PDF
+        $phpWord = IOFactory::load($tempWordPath);
+        $pdfWriter = IOFactory::createWriter($phpWord, 'PDF');
+        $pdfWriter->save($outputPathPdf);
+
+        // 4. Limpiar archivo temporal Word
+        if (file_exists($tempWordPath)) {
+            unlink($tempWordPath);
+        }
+
+    } catch (\Exception $e) {
+        Log::error("Error generando PDF: " . $e->getMessage());
+        return;
+    }
+
+    // === Guardar registro del documento en la BD ===
     $solicitud->detalles()->create([
         'tipo' => 'constancia',
-        'path' => 'constancias/' . $fileName,
+        'path' => 'constancias/' . $fileNamePdf, // Guardamos el path del PDF
         'user_id' => Auth::id(),
     ]);
 
@@ -388,14 +416,8 @@ public function emitirConstancia()
         'estado_id' => $estadoEmitido->id
     ]);
 
-    // === Recargar relaciones actualizadas ===
-    $solicitud->load([
-        'estado',
-        'bitacoras.user',
-        'detalles'
-    ]);
+    $solicitud->load(['estado', 'bitacoras.user', 'detalles']);
 
-    // === Calcular constancia_generada y constancia_path para Alpine ===
     $constancia = $solicitud->detalles()
         ->where('tipo', 'constancia')
         ->latest()
@@ -409,9 +431,9 @@ public function emitirConstancia()
 
     // === Enviar a Alpine ===
     $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
-
-    // === Refrescar la tabla automáticamente ===
     $this->dispatch('$refresh');
+
+    // return Storage::disk('public')->download('constancias/' . $fileNamePdf);
 }
 
 }
