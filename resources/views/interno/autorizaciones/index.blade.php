@@ -189,17 +189,23 @@
                         No autorizar
                     </button>
 
-                     <button
+                     
+                    <button
                         type="button"
                         @click="openPorEmitir = true"
                         class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl
-                            bg-[#06B6D4] hover:bg-[#0891B2]
+                            bg-[#22C55E] hover:bg-[#16a34a]
                             px-10 py-3 text-sm font-bold text-white
-                            shadow-lg shadow-cyan-200
+                            shadow-lg shadow-green-200
                             transition-all transform active:scale-95">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        
                         Autorizar Solicitud
                     </button>
+
                 </div>
             </div>
         </div>
@@ -208,7 +214,8 @@
 
 
    <!-- MODAL DE COMPLETAR LA SOLICITUD -->
-   <div x-show="openPorEmitir"
+   
+  <div x-show="openPorEmitir"
      x-cloak
      class="fixed inset-0 z-[100] flex items-center justify-center p-4">
 
@@ -222,23 +229,23 @@
          x-transition:enter-end="opacity-100 scale-100"
          class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative overflow-hidden">
 
-        <div class="h-2 w-full" style="background-color:#06B6D4;"></div>
+        <div class="h-2 w-full" style="background-color:#22C55E;"></div>
 
         <div class="p-6">
             <div class="flex items-start justify-between">
                 <div class="flex items-center gap-3">
                    <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background-color:#CFFAFE;">
-                        <svg class="h-6 w-6" style="color:#25CCFF" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        style="background-color:#DCFCE7;">
+                        <svg class="h-6 w-6" style="color:#22C55E" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-gray-900">
                             Autorizar Solicitud
                         </h3>
-                        <p class="text-sm text-gray-500 leading-tight">Acción para proceder a emitir</p>
+                        <p class="text-sm text-gray-500 leading-tight">Validación final de firmas</p>
                     </div>
                 </div>
 
@@ -251,19 +258,22 @@
             </div>
 
             <div class="mt-5">
-                <p class="text-gray-700 text-base">
-                    ¿Está seguro que desea autorizar la solicitud <span class="font-bold text-gray-900" x-text="solicitud.no_solicitud"></span>?
+                <p class="text-gray-700 text-base leading-relaxed">
+                    ¿Confirmas que la solicitud 
+                    <span class="font-bold text-[#22C55E]" x-text="'#' + solicitud.no_solicitud"></span> 
+                    cuenta con el **documento y expediente debidamente firmados**?
                 </p>
-                <div class="mt-3 bg-blue-50 border-l-4 border-blue-400 p-3">
+                
+                <div class="mt-4 bg-green-50 border-l-4 border-[#22C55E] p-4 rounded-r-lg">
                     <div class="flex">
                         <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm text-blue-700">
-                                Una vez autorizada, el estado cambiará a <strong>"Por emitir"</strong> y el trámite podrá finalizarse.
+                            <p class="text-xs text-green-800 leading-snug">
+                                Al confirmar, el estado cambiará a <strong>"Autorizado"</strong>. Esta acción certifica que el proceso de firmas ha concluido y la solicitud está lista para su emisión final.
                             </p>
                         </div>
                     </div>
@@ -273,17 +283,18 @@
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
                 <button @click="openPorEmitir = false"
                         class="px-5 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all order-2 sm:order-1">
-                    No, cancelar
+                    Cancelar
                 </button>
 
-                <button @click="Livewire.dispatch('peticionPorEmitir', { id: solicitud.id });"
-                        class="px-5 py-2.5 text-sm font-bold text-white bg-[#06B6D4] hover:bg-[#0891B2] rounded-xl shadow-lg shadow-cyan-200 transition-all transform active:scale-95 order-1 sm:order-2">
-                    Sí, cambiar a por emitir
+                <button @click="Livewire.dispatch('peticionPorEmitir', { id: solicitud.id }); openPorEmitir = false;"
+                        class="px-6 py-2.5 text-sm font-bold text-white bg-[#22C55E] hover:bg-[#16a34a] rounded-xl shadow-lg shadow-green-200 transition-all transform active:scale-95 order-1 sm:order-2">
+                    Confirmar Autorización
                 </button>
             </div>
         </div>
     </div>
 </div>
+
 
 
 

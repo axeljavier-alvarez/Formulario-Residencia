@@ -144,6 +144,8 @@ class SolicitudTable extends DataTableComponent
 
         $color = match (trim($value)) {
                 'Pendiente'     => '#FACC15',
+                'Visita asignada'  => '#D97706',
+                        'Visita realizada' => '#8B5CF6',
                 'Analisis'      => '#06B6D4', 
                 'Por autorizar' => '#3B82F6', 
                 'Emitido'       => '#A8A29E', 
@@ -186,7 +188,8 @@ class SolicitudTable extends DataTableComponent
 
         if($estado === 'Pendiente'){
             $textoBoton = "Analizar Expediente";
-$clasesBoton = "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-600 hover:text-white shadow-emerald-100";            $metodoClick = "abrirExpediente({$row->id})";
+$clasesBoton = "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-600 hover:text-white shadow-emerald-100";            
+$metodoClick = "abrirExpediente({$row->id})";
         } else {
             $textoBoton = "Continuar revisión";
             $clasesBoton = "bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-600 hover:text-white";
@@ -348,17 +351,12 @@ $clasesBoton = "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:b
         $this->verDetalle($id);
         return;
     }
-
-    // Importante: El nombre del parámetro debe ser 'solicitud' 
-    // para que Alpine lo lea como $event.detail.solicitud
     $this->dispatch('abrir-modal-expediente', solicitud: $solicitud->toArray());
 }
 // Esta es la función que realmente hace el update (se llama desde el botón "Confirmar" del modal)
-#[On('ejecutar-confirmar-apertura')] // <--- Esta línea es la clave
+#[On('ejecutar-confirmar-apertura')] 
 public function confirmarApertura($id)
 {
-    // Livewire 3 pasa los parámetros de eventos como un array si vienen de Alpine
-    // Si recibes un error de "missing parameter", usa: public function confirmarApertura($id = null)
     if (is_array($id)) { $id = $id['id']; }
 
     $estadoRevision = Estado::where('nombre', 'Analisis')->first(); 
@@ -369,13 +367,10 @@ public function confirmarApertura($id)
             'estado_id' => $estadoRevision->id
         ]);
         
-        // Refrescar la tabla (método nativo de Rappasoft)
         $this->dispatch('refreshDatatable');
         
-        // Cerrar el modal de confirmación en Alpine
         $this->dispatch('close-confirm'); 
 
-        // Abrir el detalle automáticamente
         $this->verDetalle($id);
     }
 }

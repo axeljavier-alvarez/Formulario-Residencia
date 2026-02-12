@@ -290,7 +290,7 @@ x-on:constancia-generada.window="
 
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-100">
                     <button type="button" 
-                    x-show="solicitud.estado?.nombre === 'Por emitir'"
+                    x-show="solicitud.estado?.nombre === 'Por autorizar'"
                             class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white px-8 py-3 text-sm font-bold text-red-600 border-2 border-red-100 hover:bg-red-50 hover:border-red-200 transition-all shadow-sm">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         No autorizar
@@ -324,7 +324,7 @@ x-on:constancia-generada.window="
                    <button
                     type="button"
                     @click="openEmitir = true"
-                    x-show="solicitud.estado?.nombre === 'Por emitir'"
+                    x-show="solicitud.estado?.nombre === 'Por autorizar'"
                     class="w-full md:w-auto inline-flex items-center justify-center
                         rounded-xl px-6 py-3.5 text-sm font-black
                         border transition-all transform active:scale-95 group
@@ -347,7 +347,7 @@ x-on:constancia-generada.window="
 
 
                                         
-                        <button
+                        {{-- <button
                         x-show="constanciaGenerada"
                         @click="openPorAutorizar = true"
                         x-show="solicitud.estado?.nombre === 'Emitido'"
@@ -355,7 +355,7 @@ x-on:constancia-generada.window="
                             bg-blue-600 px-10 py-3.5 text-sm font-black text-white
                             shadow-xl hover:bg-blue-700 transition-all">
                         Autorizar Solicitud
-                    </button>
+                        </button> --}}
                 </div>
 
 
@@ -412,21 +412,18 @@ x-on:constancia-generada.window="
 </div>
 
 
-   <!-- MODAL DE EMITIR LA SOLICITUD -->
-  
+{{--   
    <div 
   x-show="openPorAutorizar"
   x-on:solicitud-autorizada.window="openPorAutorizar = false"
   x-cloak
   class="fixed inset-0 z-[100] flex items-center justify-center p-4">
 
-  <!-- Overlay -->
   <div 
     class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm"
     @click="openPorAutorizar = false">
   </div>
 
-  <!-- Modal -->
   <div 
     x-show="openPorAutorizar"
     x-transition:enter="transition ease-out duration-300"
@@ -434,11 +431,9 @@ x-on:constancia-generada.window="
     x-transition:enter-end="opacity-100 scale-100"
     class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative overflow-hidden">
 
-    <!-- Barra superior -->
     <div class="h-2 bg-[#3E88FF] w-full"></div>
 
     <div class="p-6">
-      <!-- Header -->
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-3">
           <div class="flex-shrink-0 w-10 h-10 bg-[#3E88FF]/10 rounded-full flex items-center justify-center">
@@ -448,7 +443,6 @@ x-on:constancia-generada.window="
                 viewBox="0 0 24 24"
                 stroke="currentColor">
 
-            <!-- Sobre -->
             <path stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
@@ -458,7 +452,6 @@ x-on:constancia-generada.window="
                     stroke-width="2"
                     d="M4 6l8 6 8-6" />
 
-            <!-- Flecha enviar (ajustada) -->
             <path stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
@@ -485,7 +478,6 @@ x-on:constancia-generada.window="
         </button>
       </div>
 
-      <!-- Contenido -->
       <div class="mt-5">
         <p class="text-gray-700 text-base">
           ¿Está seguro que desea enviar para autorizar la solicitud no.
@@ -495,12 +487,7 @@ x-on:constancia-generada.window="
         <div class="mt-3 bg-blue-50 border-l-4 border-[#3E88FF] p-3">
           <div class="flex">
             <div class="flex-shrink-0">
-              {{-- <svg class="h-5 w-5 text-[#3E88FF]" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clip-rule="evenodd" />
-              </svg> --}}
-             
+     
               
 
             </div>
@@ -514,7 +501,6 @@ x-on:constancia-generada.window="
         </div>
       </div>
 
-      <!-- Acciones -->
       <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
         <button
           @click="openPorAutorizar = false"
@@ -534,7 +520,7 @@ x-on:constancia-generada.window="
       </div>
     </div>
   </div>
-</div>
+</div> --}}
 
   
 <!-- nuevo modal -->

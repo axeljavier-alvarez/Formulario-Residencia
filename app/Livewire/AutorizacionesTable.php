@@ -20,7 +20,7 @@ class AutorizacionesTable extends DataTableComponent
         return Solicitud::query()
             ->with(['estado', 'requisitosTramites.tramite'])
             ->whereHas('estado', function ($query) {
-                $query->whereIn('nombre', ['Por autorizar']);
+                $query->whereIn('nombre', ['Emitido', 'Autorizado']);
             })
             ->orderByDesc('id');
     }

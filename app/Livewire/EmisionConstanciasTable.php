@@ -27,7 +27,7 @@ protected $model = Solicitud::class;
             return Solicitud::query()
                 ->with(['estado', 'requisitosTramites.tramite'])
                 ->whereHas('estado', function($query){
-                    $query->whereIn('nombre', ['Por emitir',  'Emitido']);
+                    $query->whereIn('nombre', ['Por autorizar',  'Emitido']);
                 })
                 ->orderByDesc('id');
         }
@@ -140,16 +140,19 @@ protected $model = Solicitud::class;
                     Column::make("Estado", "estado.nombre")
             ->format(function($value) {
                 
-                $color = match (trim($value)) {
-                    'Pendiente'        => '#FACC15',
-                    'Visita asignada'  => '#D97706',
-                    'Visita realizada' => '#8B5CF6',
-                    'Por autorizar'    => '#3B82F6',
-                    'Por emitir'       => '#06B6D4',
-                    'Completado'       => '#22C55E',
-                    'Cancelado'        => '#EF4444',
-                    default            => '#6B7280', 
+                 $color = match (trim($value)) {
+                        'Pendiente'     => '#FACC15',
+                         'Visita asignada'  => '#D97706',
+                        'Visita realizada' => '#8B5CF6',
+                        'Analisis'      => '#06B6D4', 
+                        'Por autorizar' => '#3B82F6', 
+                        'Emitido'       => '#A8A29E', 
+                        'Autorizado'    => '#22C55E', 
+                        'Previo'        => '#F97316',
+                        'Rechazado'     => '#EF4444',
+                        default         => '#6B7280',
                 };
+
 
                 $bgColor = $color . '26'; 
 
@@ -260,24 +263,24 @@ protected $model = Solicitud::class;
 
 
     // emitir constancia
-    #[On('constanciaAutorizar')]
-    public function constanciaAutorizar($id)
-    {
-        $estadoPorAutorizar = Estado::where('nombre', 'Por autorizar')->first();
+    // #[On('constanciaAutorizar')]
+    // public function constanciaAutorizar($id)
+    // {
+    //     $estadoPorAutorizar = Estado::where('nombre', 'Por autorizar')->first();
 
-        if(!$estadoPorAutorizar) return;
+    //     if(!$estadoPorAutorizar) return;
 
-        $solicitud = Solicitud::find($id);
+    //     $solicitud = Solicitud::find($id);
 
-        if($solicitud){
-            $solicitud->update([
-                'estado_id' => $estadoPorAutorizar->id
-            ]);
+    //     if($solicitud){
+    //         $solicitud->update([
+    //             'estado_id' => $estadoPorAutorizar->id
+    //         ]);
 
-            $this->dispatch('solicitud-por-autorizar');
+    //         $this->dispatch('solicitud-por-autorizar');
 
-        }
-    }
+    //     }
+    // }
 
   
 

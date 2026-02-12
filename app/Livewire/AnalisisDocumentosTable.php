@@ -30,7 +30,7 @@ class AnalisisDocumentosTable extends DataTableComponent
         return Solicitud::query()
             ->with(['estado', 'requisitosTramites.tramite'])
             ->whereHas('estado', function ($query) {
-                $query->whereIn('nombre', ['Pendiente', 'Visita asignada', 'Visita realizada']);
+                $query->whereIn('nombre', ['Pendiente', 'Analisis', 'Visita asignada', 'Visita realizada']);
             })
             ->orderByDesc('id');
     }
@@ -41,6 +41,8 @@ class AnalisisDocumentosTable extends DataTableComponent
      public function configure(): void
     {
        $this->setPrimaryKey('id');
+
+              $this->setAdditionalSelects(['solicitudes.estado_id']);
 
     // Diseño de la tabla con espacio entre filas
     $this->setTableAttributes(['class' => 'border-separate border-spacing-y-3 px-4']);
@@ -149,15 +151,18 @@ class AnalisisDocumentosTable extends DataTableComponent
                     Column::make("Estado", "estado.nombre")
             ->format(function($value) {
 
+                
                 $color = match (trim($value)) {
-                    'Pendiente'        => '#FACC15',
-                    'Visita asignada'  => '#D97706',
-                    'Visita realizada' => '#8B5CF6',
-                    'Por autorizar'    => '#3B82F6',
-                    'Por emitir'       => '#06B6D4',
-                    'Completado'       => '#22C55E',
-                    'Cancelado'        => '#EF4444',
-                    default            => '#6B7280',
+                        'Pendiente'     => '#FACC15',
+                         'Visita asignada'  => '#D97706',
+                        'Visita realizada' => '#8B5CF6',
+                        'Analisis'      => '#06B6D4', 
+                        'Por autorizar' => '#3B82F6', 
+                        'Emitido'       => '#A8A29E', 
+                        'Autorizado'    => '#22C55E', 
+                        'Previo'        => '#F97316',
+                        'Rechazado'     => '#EF4444',
+                        default         => '#6B7280',
                 };
 
                 $bgColor = $color . '26';
@@ -182,20 +187,35 @@ class AnalisisDocumentosTable extends DataTableComponent
             })
             ->html(),
 
-                Column::make("Acción")
-                    ->label(fn($row) => "
-                        <button wire:click='verSolicitud({$row->id})'
-                                class='inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-sm'>
-                            <span>Ver Solicitud</span>
-                            <svg class='w-4 h-4 ml-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' stroke-width='2'/>
-                                <path d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' stroke-width='2'/>
-                            </svg>
-                        </button>
-                ")->html(),
+                
+          Column::make("Acción")
+    ->label(function($row) {
+        // Obtenemos el nombre tal cual viene de la DB y quitamos espacios accidentales
+        $estadoActual = trim($row->estado->nombre ?? '');
 
+        // Comparación directa: Si el nombre es exactamente 'Pendiente'
+        if ($estadoActual === 'Pendiente') {
+            $textoBoton = "Analizar Expediente";
+            $clasesBoton = "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-600 hover:text-white shadow-emerald-100";            
+            $metodoClick = "abrirExpediente({$row->id})";
+        } else {
+            // Para cualquier otro estado (Analisis, Visita asignada, etc.)
+            $textoBoton = "Continuar revisión";
+            $clasesBoton = "bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-600 hover:text-white";
+            $metodoClick = "verSolicitud({$row->id})";
+        }
 
-
+        return "
+            <button wire:click='{$metodoClick}'
+                    class='inline-flex items-center px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300 shadow-sm {$clasesBoton}'>
+                <span>{$textoBoton}</span>
+                <svg class='w-4 h-4 ml-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' stroke-width='2'/>
+                    <path d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' stroke-width='2'/>
+                </svg>
+            </button>
+        ";
+    })->html(),
             ];
         }
 
@@ -345,23 +365,25 @@ public function rechazarSolicitud(int $id, string $descripcion)
 
 
 
+
+
     // peticion en proceso
-    #[On('peticionPorEmitir')]
+    #[On('peticionPorAutorizar')]
 
-    public function solicitudPorEmitir($id)
+    public function solicitudPorAutorizar($id)
     {
-        $estadoPorEmitir = Estado::where('nombre', 'Por emitir')->first();
+        $estadoPorAutorizar = Estado::where('nombre', 'Por autorizar')->first();
 
-        if(!$estadoPorEmitir) return;
+        if(!$estadoPorAutorizar) return;
 
         $solicitud = Solicitud::find($id);
 
         if($solicitud){
             $solicitud->update([
-                'estado_id' =>  $estadoPorEmitir->id
+                'estado_id' =>  $estadoPorAutorizar->id
             ]);
 
-            $this->dispatch('solicitud-por-emitir');
+            $this->dispatch('solicitud-por-autorizar');
                 /*
             $this->dispatch('refreshDatatable');
             $this->dispatch('refreshComponent'); */
@@ -383,6 +405,44 @@ public function rechazarSolicitud(int $id, string $descripcion)
             ]);
 
             $this->dispatch('solicitud-visita-campo');
+        }
+    }
+
+
+    // abrir expediente
+     public function abrirExpediente($id)
+    {
+        $solicitud = Solicitud::with(['estado', 'requisitosTramites.tramite'])->find($id);
+        if (!$solicitud) return;
+
+        if ($solicitud->estado?->nombre !== 'Pendiente') {
+            $this->verSolicitud($id);
+            return;
+        }
+
+        
+        $this->dispatch('abrir-modal-expediente', solicitud: $solicitud->toArray());
+    }
+
+    // confirmar apertura
+    #[On('ejecutar-confirmar-apertura')]
+    public function confirmarApertura($id)
+    {
+        if(is_array($id)) { $id = $id['id'];}
+
+        $estadoRevision = Estado::where('nombre', 'Analisis')->first();
+        $solicitud = Solicitud::find($id);
+
+        if($solicitud && $estadoRevision){
+            $solicitud->update([
+                'estado_id' => $estadoRevision->id
+            ]);
+
+             $this->dispatch('refreshDatatable');
+            
+            $this->dispatch('close-confirm'); 
+
+            $this->verSolicitud($id);
         }
     }
 

@@ -176,14 +176,16 @@ class VisitaCampoTable extends DataTableComponent
             ->format(function($value) {
                 
                 $color = match (trim($value)) {
-                    'Pendiente'        => '#FACC15',
-                    'Visita asignada'  => '#D97706',
-                    'Visita realizada' => '#8B5CF6',
-                    'Por autorizar'    => '#3B82F6',
-                    'Por emitir'       => '#06B6D4',
-                    'Completado'       => '#22C55E',
-                    'Cancelado'        => '#EF4444',
-                    default            => '#6B7280', 
+                       'Pendiente'     => '#FACC15',
+                         'Visita asignada'  => '#D97706',
+                        'Visita realizada' => '#8B5CF6',
+                        'Analisis'      => '#06B6D4', 
+                        'Por autorizar' => '#3B82F6', 
+                        'Emitido'       => '#A8A29E', 
+                        'Autorizado'    => '#22C55E', 
+                        'Previo'        => '#F97316',
+                        'Rechazado'     => '#EF4444',
+                        default         => '#6B7280',
                 };
 
                 $bgColor = $color . '26'; 
