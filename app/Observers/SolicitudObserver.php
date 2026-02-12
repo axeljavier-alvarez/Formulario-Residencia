@@ -60,9 +60,9 @@ class SolicitudObserver
                 $nombreEstadoNuevo === 'Visita realizada' => 'El visitador de campo no ingreso observaciones',
                 
                 $nombreEstadoNuevo === 'Por emitir'       => 'La solicitud fue aceptada y está lista para ser emitida',
-                $nombreEstadoNuevo === 'Emitido'       => 'La solicitud fue emitida y puede ser enviada para autorizarla',
+                $nombreEstadoNuevo === 'Emitido'       => 'La solicitud fue emitida y enviada a firma',
                 // $nombreEstadoNuevo === 'Por autorizar' => 'La solicitud está pendiente de autorizar',
-                $nombreEstadoNuevo === 'Completado' => 'La solicitud fue emitida y completada',
+                $nombreEstadoNuevo === 'Autorizado' => 'La solicitud autorizada y firmada',
                 default            => 'Cambio de estado.',
             };
 

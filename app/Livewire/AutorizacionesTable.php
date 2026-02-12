@@ -135,16 +135,18 @@ class AutorizacionesTable extends DataTableComponent
             Column::make("Estado", "estado.nombre")
     ->format(function($value) {
 
-        $color = match (trim($value)) {
-            'Pendiente'        => '#FACC15',
-            'Visita asignada'  => '#D97706',
-            'Visita realizada' => '#8B5CF6',
-            'Por autorizar'    => '#3B82F6',
-            'Por emitir'       => '#06B6D4',
-            'Completado'       => '#22C55E',
-            'Cancelado'        => '#EF4444',
-            default            => '#6B7280',
-        };
+         $color = match (trim($value)) {
+                        'Pendiente'     => '#FACC15',
+                         'Visita asignada'  => '#D97706',
+                        'Visita realizada' => '#8B5CF6',
+                        'Analisis'      => '#06B6D4', 
+                        'Por autorizar' => '#3B82F6', 
+                        'Emitido'       => '#A8A29E', 
+                        'Autorizado'    => '#22C55E', 
+                        'Previo'        => '#F97316',
+                        'Rechazado'     => '#EF4444',
+                        default         => '#6B7280',
+                };
 
         $bgColor = $color . '26';
 
@@ -234,21 +236,21 @@ class AutorizacionesTable extends DataTableComponent
     }
 
     // peticion por emitir
-    #[On('peticionPorEmitir')]
-    public function peticionPorEmitir($id)
+    #[On('peticionAutorizada')]
+    public function peticionAutorizada($id)
     {
-        $estadoPorEmitir = Estado::where('nombre', 'Por emitir')->first();
+        $estadoPorAutorizar = Estado::where('nombre', 'Autorizado')->first();
 
-        if(!$estadoPorEmitir) return;
+        if(!$estadoPorAutorizar) return;
 
         $solicitud = Solicitud::find($id);
 
         if($solicitud){
             $solicitud->update([
-                'estado_id' => $estadoPorEmitir->id
+                'estado_id' => $estadoPorAutorizar->id
             ]);
 
-            $this->dispatch('solicitud-por-emitir');
+            $this->dispatch('solicitud-autorizada');
 
         }
     }
