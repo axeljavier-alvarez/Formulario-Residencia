@@ -22,6 +22,9 @@
     constanciaGenerada: false,
     constanciaFile: null,
     openEmitir: false,
+    hasTipo(tipo) {
+            return this.solicitud?.detalles?.some(d => d.tipo === tipo);
+        }
 }"
 
 x-on:constancia-generada.window="
@@ -52,6 +55,7 @@ x-on:constancia-generada.window="
         document.body.removeChild(link);
     }
 "
+
 
   @open-modal-detalle.window="
     open = true;
@@ -421,33 +425,69 @@ x-on:constancia-generada.window="
                 </div>
 
                 
+                
+      
+    
+       <div x-show="open" class="mt-6 w-full space-y-6">
+        <template x-if="solicitud">
+            <div>
                 <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-    <h4 class="text-lg font-bold text-gray-800 border-b border-emerald-200 pb-2 mb-4">
-        Documentos del trámite
-    </h4>
+                    <h4 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Documentos y Requisitos
+                    </h4>
 
-    <div class="flex flex-col md:flex-row justify-between gap-4">
-        
-        <div class="flex-1 p-3 bg-white rounded-lg shadow-sm border border-emerald-100">
-            <h2 class="font-semibold text-emerald-800 text-center md:text-left">
-                Documentos de la solicitud
-            </h2>
-        </div>
+                    <div class="space-y-3">
+                        <template x-for="detalle in solicitud.detalles" :key="detalle.id">
+                            <div x-show="detalle.tipo === 'normal' || detalle.tipo === 'carga'" 
+                                 class="flex justify-between items-center text-sm border bg-white p-3 rounded-lg shadow-sm hover:border-emerald-400 transition-colors">
+                                
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-gray-700" x-text="detalle.requisito_tramite?.requisito?.nombre || 'Documento'"></span>
+                                    <span class="text-[10px] uppercase text-gray-400 font-semibold" x-text="detalle.tipo"></span>
+                                </div>
+                                
+                                <a :href="'/storage/' + detalle.path" target="_blank" 
+                                   class="inline-flex items-center px-3 py-1 bg-emerald-600 text-white rounded-md text-xs font-bold hover:bg-emerald-700">
+                                    Ver Archivo
+                                </a>
+                            </div>
+                        </template>
+                    </div>
+                </div>
 
-        <div class="flex-1 p-3 bg-white rounded-lg shadow-sm border border-emerald-100">
-            <h2 class="font-semibold text-emerald-800 text-center md:text-left">
-                Documentos de visita de campo
-            </h2>
-        </div> 
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-4">
+                    <h4 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Evidencias de Visita de Campo
+                    </h4>
 
-    </div>
-</div>
+                    <template x-if="hasTipo('foto_visita')">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <template x-for="detalle in solicitud.detalles" :key="detalle.id">
+                                <div x-show="detalle.tipo === 'foto_visita'" class="group relative">
+                                    <img :src="'/storage/' + detalle.path" 
+                                         class="w-full h-32 object-cover rounded-lg border-2 border-white shadow-md">
+                                    <a :href="'/storage/' + detalle.path" target="_blank" 
+                                       class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg text-white text-xs font-bold">
+                                        Ampliar Foto
+                                    </a>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
 
+                    <template x-if="!hasTipo('foto_visita')">
+                        <div class="flex flex-col items-center justify-center py-6 text-blue-400">
+                            <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                            <p class="text-sm font-medium">No se realizó visita de campo / No hay fotos</p>
+                        </div>
+                    </template>
                 </div>
             </div>
-        </div>
+        </template>
     </div>
-</div>
+    
 
 
 {{--   

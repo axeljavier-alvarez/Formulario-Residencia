@@ -22,7 +22,7 @@ class EmisionConstanciasTable extends DataTableComponent
 {
     
 public $solicitudIdSeleccionada;
-
+public $solicitud = null;
 
 protected $model = Solicitud::class;
 
@@ -202,68 +202,56 @@ protected $model = Solicitud::class;
 
      // ABRIR MODAL
     public function verDetalle($id)
-    {
-
+{
     $this->solicitudIdSeleccionada = $id;
 
-        //  $solicitud = Solicitud::find($id);
+    $this->solicitud = Solicitud::with([
+        'estado',
+        'zona',
+        'requisitosTramites.tramite',
+        'bitacoras.user',
+        'detalles.requisitoTramite.requisito'
+    ])->find($id);
 
+    if ($this->solicitud) {
+        // 1. Formatear fechas de la solicitud
+        $this->solicitud->fecha_registro_traducida = $this->solicitud->created_at
+            ? Carbon::parse($this->solicitud->created_at)->translatedFormat('d F Y H:i') 
+            : 'N/A';
 
+        // 2. Formatear fechas de bitácoras
+        $this->solicitud->bitacoras->each(function ($item) {
+            $item->fecha_formateada = Carbon::parse($item->created_at)->translatedFormat('d F Y H:i');
+        });
 
-        // limitar registros bitacora 'bitacoras' => fn ($q) => $q->latest()->limit(10)
-        // objeto estado en array
-        $solicitud = Solicitud::with([
-            'estado',
-            'zona',
-            // 'dependientes',
-            // 'detalleSolicitud.dependiente',
-            'requisitosTramites.tramite',
-            'bitacoras.user'
-            ])->find($id);
+        // 3. Lógica de la constancia
+        $constancia = $this->solicitud->detalles()
+            ->where('tipo', 'constancia')
+            ->latest()
+            ->first();
 
-           // traduciendo la fecha de created_at
+        $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
+        
+        // Asignamos los valores para que viajen en el JSON
+        $this->solicitud->constancia_generada = $constanciaGenerada;
+        $this->solicitud->constancia_path = $constanciaGenerada ? $constancia->path : null;
 
+        /**
+         * CAMBIO CLAVE:
+         * Convertimos a array DESPUÉS de haber asignado las propiedades manuales.
+         * Pasamos el array dentro de un objeto llamado 'solicitud' para que coincida con
+         * $event.detail.solicitud en Alpine.
+         */
+        $datosParaEvento = $this->solicitud->toArray();
+        
+        // Forzamos la inclusión de los atributos dinámicos que agregamos arriba
+        $datosParaEvento['fecha_registro_traducida'] = $this->solicitud->fecha_registro_traducida;
+        $datosParaEvento['constancia_generada'] = $constanciaGenerada;
+        $datosParaEvento['constancia_path'] = $this->solicitud->constancia_path;
 
-
-        if($solicitud){
-
-            // traduciendo fecha de la solicitud
-            $solicitud->fecha_registro_traducida = $solicitud->created_at
-            ? Carbon::parse($solicitud->created_at)
-            ->translatedFormat('d F Y H:i') : 'N/A';
-            // traduciendo fecha de la bitacora
-             $solicitud->bitacoras->each(function ($item) {
-                $item->fecha_formateada = Carbon::parse($item->created_at)
-                    ->translatedFormat('d F Y H:i');
-
-
-                    // no mostrar  solicitudes con cancelado
-
-                    // if(str_contains($item->evento, 'Cancelado')){
-                    //     $item->user = null;
-                    // }
-            });
-
-
-           
-            $constancia = $solicitud->detalles()
-                ->where('tipo', 'constancia')
-                ->latest()
-                ->first();
-
-            // Verificar que el archivo exista en storage
-            $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
-
-            $solicitud->constancia_generada = $constanciaGenerada;
-            $solicitud->constancia_path = $constanciaGenerada ? $constancia->path : null;
-
-
-            $this->dispatch('open-modal-detalle', solicitud: $solicitud->toArray());
-        }
-
-
-
+        $this->dispatch('open-modal-detalle', solicitud: $datosParaEvento);
     }
+}
 
 
     // emitir constancia
@@ -356,15 +344,17 @@ public function emitirConstancia()
 {
     if(!$this->solicitudIdSeleccionada) return;
 
-    $solicitud = Solicitud::with(['zona'])->findOrFail($this->solicitudIdSeleccionada);
+   $this->solicitud = Solicitud::with(['zona'])->findOrFail($this->solicitudIdSeleccionada);
     $estadoEmitido = Estado::where('nombre', 'Emitido')->first();
 
     if(!$estadoEmitido) return;
 
     $templatePath = resource_path('word/constancia_residencia.docx');
 
-    $outputDir = storage_path('app/public/constancias');
+    // $outputDir = storage_path('app/public/constancias');
 
+    $outputDir = storage_path('app/public/constancias');
+    
     // true or false 
     if(!is_dir($outputDir)){
         // ruta, permisos, recursivo
@@ -372,16 +362,16 @@ public function emitirConstancia()
         mkdir($outputDir, 0755, true);
     }
 
-    $fileNamePdf = $solicitud->no_solicitud . '-constancia-' . Str::random(15) . '.pdf';
+    $fileNamePdf = $this->solicitud->no_solicitud . '-constancia-' . Str::random(15) . '.pdf';
     $outputPathPdf = $outputDir . '/' . $fileNamePdf;
 
     // archivo temporal word
      $tempWordPath = storage_path('app/temp_word_' . Str::random(10) . '.docx');
      try {
         $template = new TemplateProcessor($templatePath);
-        $template->setValue('nombre', $solicitud->nombres . ' ' . $solicitud->apellidos);
-        $template->setValue('cui', $solicitud->cui ?? 'N/A');
-        $template->setValue('domicilio', $solicitud->domicilio ?? 'N/A');
+        $template->setValue('nombre', $this->solicitud->nombres . ' ' . $this->solicitud->apellidos);
+        $template->setValue('cui', $this->solicitud->cui ?? 'N/A');
+        $template->setValue('domicilio', $this->solicitud->domicilio ?? 'N/A');
         $template->setValue('fecha', now()->format('d/m/Y'));
         $template->saveAs($tempWordPath);
 
@@ -403,22 +393,27 @@ public function emitirConstancia()
      } 
 
      // guardar registro en bd
-     $solicitud->detalles()->create([
+    $this->solicitud->detalles()->create([
         'tipo' => 'constancia',
         'path' => 'constancias/' . $fileNamePdf, 
         'user_id' => Auth::id(),
      ]);
 
      // actualizar el estado automaticamente
-     $solicitud->update([
+    $this->solicitud->update([
         'estado_id' => $estadoEmitido->id
      ]);
 
      // rellenar solicitud con info de otras tablas, load despues porque tengo datos
-     $solicitud->load(['estado',  'bitacoras.user', 'detalles']);
+     $this->solicitud->load([
+        'estado', 
+        'bitacoras.user', 
+        'detalles',
+        'detalles.requisitoTramite.requisito'
+        ]);
 
      // avisar para mostrar boton de descarga
-     $constancia = $solicitud->detalles()
+     $constancia = $this->solicitud->detalles()
      ->where('tipo', 'constancia')
      ->latest()
      ->first();
@@ -428,7 +423,7 @@ public function emitirConstancia()
 
 
      
-     $solicitudArray = $solicitud->toArray();
+     $solicitudArray = $this->solicitud->toArray();
      // mostrar u ocultar botones
      $solicitudArray['constancia_generada'] = $constanciaGenerada;
      // operador ternario si existe guarda la ruta sino null
