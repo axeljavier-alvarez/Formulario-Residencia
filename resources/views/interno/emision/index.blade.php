@@ -419,6 +419,30 @@ x-on:constancia-generada.window="
 
                     </div>
                 </div>
+
+                
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+    <h4 class="text-lg font-bold text-gray-800 border-b border-emerald-200 pb-2 mb-4">
+        Documentos del trámite
+    </h4>
+
+    <div class="flex flex-col md:flex-row justify-between gap-4">
+        
+        <div class="flex-1 p-3 bg-white rounded-lg shadow-sm border border-emerald-100">
+            <h2 class="font-semibold text-emerald-800 text-center md:text-left">
+                Documentos de la solicitud
+            </h2>
+        </div>
+
+        <div class="flex-1 p-3 bg-white rounded-lg shadow-sm border border-emerald-100">
+            <h2 class="font-semibold text-emerald-800 text-center md:text-left">
+                Documentos de visita de campo
+            </h2>
+        </div> 
+
+    </div>
+</div>
+
                 </div>
             </div>
         </div>

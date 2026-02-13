@@ -351,33 +351,33 @@ protected $model = Solicitud::class;
 // }
 
 
-
 #[On('emitir-constancia')]
 public function emitirConstancia()
 {
-    if (!$this->solicitudIdSeleccionada) return;
+    if(!$this->solicitudIdSeleccionada) return;
 
     $solicitud = Solicitud::with(['zona'])->findOrFail($this->solicitudIdSeleccionada);
     $estadoEmitido = Estado::where('nombre', 'Emitido')->first();
-    if (!$estadoEmitido) return;
 
-    // === Configuración de Rutas ===
+    if(!$estadoEmitido) return;
+
     $templatePath = resource_path('word/constancia_residencia.docx');
+
     $outputDir = storage_path('app/public/constancias');
 
-    if (!is_dir($outputDir)) {
+    // true or false 
+    if(!is_dir($outputDir)){
+        // ruta, permisos, recursivo
+        // lectura, escritura y ejecucion
         mkdir($outputDir, 0755, true);
     }
 
-    // Nombre final en PDF
     $fileNamePdf = $solicitud->no_solicitud . '-constancia-' . Str::random(15) . '.pdf';
     $outputPathPdf = $outputDir . '/' . $fileNamePdf;
-    
-    // Ruta temporal para el Word (necesario para la conversión)
-    $tempWordPath = storage_path('app/temp_word_' . Str::random(10) . '.docx');
 
-    try {
-        // 1. Procesar Plantilla Word
+    // archivo temporal word
+     $tempWordPath = storage_path('app/temp_word_' . Str::random(10) . '.docx');
+     try {
         $template = new TemplateProcessor($templatePath);
         $template->setValue('nombre', $solicitud->nombres . ' ' . $solicitud->apellidos);
         $template->setValue('cui', $solicitud->cui ?? 'N/A');
@@ -385,55 +385,68 @@ public function emitirConstancia()
         $template->setValue('fecha', now()->format('d/m/Y'));
         $template->saveAs($tempWordPath);
 
-        // 2. Configurar Renderizador PDF (TCPDF)
+        // 2. Configurar Renderizador PDF(TCPDF)
         Settings::setPdfRendererName(Settings::PDF_RENDERER_TCPDF);
         Settings::setPdfRendererPath(base_path('vendor/tecnickcom/tcpdf'));
 
-        // 3. Convertir de Word a PDF
+        // Convertir de word a pdf
         $phpWord = IOFactory::load($tempWordPath);
         $pdfWriter = IOFactory::createWriter($phpWord, 'PDF');
         $pdfWriter->save($outputPathPdf);
 
-        // 4. Limpiar archivo temporal Word
-        if (file_exists($tempWordPath)) {
+        if (file_exists($tempWordPath)){
             unlink($tempWordPath);
         }
-
-    } catch (\Exception $e) {
+     } catch (\Exception $e){
         Log::error("Error generando PDF: " . $e->getMessage());
         return;
-    }
+     } 
 
-    // === Guardar registro del documento en la BD ===
-    $solicitud->detalles()->create([
+     // guardar registro en bd
+     $solicitud->detalles()->create([
         'tipo' => 'constancia',
-        'path' => 'constancias/' . $fileNamePdf, // Guardamos el path del PDF
+        'path' => 'constancias/' . $fileNamePdf, 
         'user_id' => Auth::id(),
-    ]);
+     ]);
 
-    // === Cambiar estado ===
-    $solicitud->update([
+     // actualizar el estado automaticamente
+     $solicitud->update([
         'estado_id' => $estadoEmitido->id
-    ]);
+     ]);
 
-    $solicitud->load(['estado', 'bitacoras.user', 'detalles']);
+     // rellenar solicitud con info de otras tablas, load despues porque tengo datos
+     $solicitud->load(['estado',  'bitacoras.user', 'detalles']);
 
-    $constancia = $solicitud->detalles()
-        ->where('tipo', 'constancia')
-        ->latest()
-        ->first();
+     // avisar para mostrar boton de descarga
+     $constancia = $solicitud->detalles()
+     ->where('tipo', 'constancia')
+     ->latest()
+     ->first();
 
-    $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
+     // true trie debe existir la constancia y que el archivo ya este en la carpeta
+     $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
 
-    $solicitudArray = $solicitud->toArray();
-    $solicitudArray['constancia_generada'] = $constanciaGenerada;
-    $solicitudArray['constancia_path'] = $constanciaGenerada ? $constancia->path : null;
 
-    // === Enviar a Alpine ===
-    $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
-    $this->dispatch('$refresh');
+     
+     $solicitudArray = $solicitud->toArray();
+     // mostrar u ocultar botones
+     $solicitudArray['constancia_generada'] = $constanciaGenerada;
+     // operador ternario si existe guarda la ruta sino null
+     $solicitudArray['constancia_path'] = $constanciaGenerada ? $constancia->path : null;
+     // aviso a alpine constancia emitida
+     $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
+     // el user vera cambios de inmediato
+     $this->dispatch('$refresh');
 
-    // return Storage::disk('public')->download('constancias/' . $fileNamePdf);
+
 }
+
+
+//     $solicitudArray['constancia_generada'] = $constanciaGenerada;
+//     $solicitudArray['constancia_path'] = $constanciaGenerada ? $constancia->path : null;
+//     $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
+//     $this->dispatch('$refresh');
+//     // return Storage::disk('public')->download('constancias/' . $fileNamePdf);
+// }
 
 }
