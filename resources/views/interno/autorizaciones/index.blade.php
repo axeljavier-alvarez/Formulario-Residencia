@@ -184,6 +184,7 @@
 
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-100">
                     <button type="button"
+                    x-show="solicitud.estado?.nombre === 'Emitido'"
                             class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white px-8 py-3 text-sm font-bold text-red-600 border-2 border-red-100 hover:bg-red-50 hover:border-red-200 transition-all shadow-sm">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         No autorizar
@@ -192,6 +193,7 @@
                      
                     <button
                         type="button"
+                        x-show="solicitud.estado?.nombre === 'Emitido'""
                         @click="openPorAutorizar = true"
                         class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl
                             bg-[#22C55E] hover:bg-[#16a34a]
