@@ -434,7 +434,7 @@ x-on:constancia-generada.window="
                 <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
                     <h4 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
                         <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Documentos y Requisitos
+                        Documentos 
                     </h4>
 
                     <div class="space-y-3">
@@ -455,6 +455,31 @@ x-on:constancia-generada.window="
                         </template>
                     </div>
                 </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-4">
+                    <h4 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Archivos de dependientes
+                    </h4>
+
+                      <div class="space-y-3">
+                        <template x-for="detalle in solicitud.detalles" :key="detalle.id">
+                            <div x-show="detalle.tipo === 'carga'" 
+                                 class="flex justify-between items-center text-sm border bg-white p-3 rounded-lg shadow-sm hover:border-emerald-400 transition-colors">
+                                
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-gray-700" x-text="detalle.requisito_tramite?.requisito?.nombre || 'Documento'"></span>
+                                    <span class="text-[10px] uppercase text-gray-400 font-semibold" x-text="detalle.tipo"></span>
+                                </div>
+                                
+                                <a :href="'/storage/' + detalle.path" target="_blank" 
+                                   class="inline-flex items-center px-3 py-1 bg-emerald-600 text-white rounded-md text-xs font-bold hover:bg-emerald-700">
+                                    Ver Archivo
+                                </a>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                
 
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-4">
                     <h4 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
