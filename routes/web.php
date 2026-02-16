@@ -35,6 +35,7 @@ Route::get('consulta', [SolicitudController::class, 'consultarSolicitudes'])
 
 
 
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

@@ -349,7 +349,7 @@ public function emitirConstancia()
 
     if(!$estadoEmitido) return;
 
-    $templatePath = resource_path('word/constancia_residencia.docx');
+    $templatePath = resource_path('word/magisterio_con_cargas.docx');
 
     // $outputDir = storage_path('app/public/constancias');
 
@@ -369,10 +369,47 @@ public function emitirConstancia()
      $tempWordPath = storage_path('app/temp_word_' . Str::random(10) . '.docx');
      try {
         $template = new TemplateProcessor($templatePath);
-        $template->setValue('nombre', $this->solicitud->nombres . ' ' . $this->solicitud->apellidos);
-        $template->setValue('cui', $this->solicitud->cui ?? 'N/A');
+
+        // obtener la fecha del dia de hoy
+        $fechaHoy = now();
+
+        // dia en numero
+        $dia = $fechaHoy->format('d'); 
+
+
+        $meses = [
+            1 => 'enero',
+            2 => 'febrero',
+            3 => 'marzo',
+            4 => 'abril',
+            5 => 'mayo',
+            6 => 'junio',
+            7 => 'julio',
+            8 => 'agosto',
+            9 => 'septiembre',
+            10 => 'octubre',
+            11 => 'noviembre',
+            12 => 'diciembre',
+        ];
+
+        $mes = $meses[(int)$fechaHoy->format('m')];
+
+        $template->setValue('nombre', strtoupper($this->solicitud->nombres . ' ' . $this->solicitud->apellidos));
+        $template->setValue('cui', strtoupper($this->solicitud->cui ?? 'N/A'));
         $template->setValue('domicilio', $this->solicitud->domicilio ?? 'N/A');
+        $template->setValue('correlativo', $this->solicitud->no_solicitud ?? 'N/A');
+        $template->setValue('razon', strtoupper($this->solicitud->razon ?? 'N/A'));
+
+        $template->setValue('fecha', $fechaHoy);
         $template->setValue('fecha', now()->format('d/m/Y'));
+        $template->setValue('tramite', strtoupper($this->solicitud->tramite->nombre ?? 'N/A'));
+        $template->setValue('zona', strtoupper($this->solicitud->zona->nombre ?? 'N/A'));
+
+        $template->setValue('DIA', $dia);
+
+        $template->setValue('MES', $mes);
+
+        // $template->setValue('tramite', $this->solicitud->tramite->nombre ?? 'N/A');
         $template->saveAs($tempWordPath);
 
         // 2. Configurar Renderizador PDF(TCPDF)
@@ -381,6 +418,9 @@ public function emitirConstancia()
 
         // Convertir de word a pdf
         $phpWord = IOFactory::load($tempWordPath);
+
+        // CONFIGURACION DEL TAMAÑO DEL PDF
+        
         $pdfWriter = IOFactory::createWriter($phpWord, 'PDF');
         $pdfWriter->save($outputPathPdf);
 
