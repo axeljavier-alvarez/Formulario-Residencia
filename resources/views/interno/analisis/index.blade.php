@@ -9,6 +9,7 @@
 
 ]">
 
+
     @livewire('analisis-documentos-table')
 
 <!-- CREACION DEL modal -->

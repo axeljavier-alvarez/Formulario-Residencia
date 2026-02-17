@@ -33,6 +33,9 @@
 
         <!-- Styles -->
         @livewireStyles
+
+
+        
 </head>
 
 <body

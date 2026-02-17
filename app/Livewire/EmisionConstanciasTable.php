@@ -344,54 +344,51 @@ public function emitirConstancia()
 {
     if(!$this->solicitudIdSeleccionada) return;
 
-   $this->solicitud = Solicitud::with(['zona'])->findOrFail($this->solicitudIdSeleccionada);
+    $this->solicitud = Solicitud::with(['zona', 'tramite', 'detalles'])->findOrFail($this->solicitudIdSeleccionada);
     $estadoEmitido = Estado::where('nombre', 'Emitido')->first();
-
     if(!$estadoEmitido) return;
 
-    $templatePath = resource_path('word/magisterio_con_cargas.docx');
+    // -------------------------------
+    // ELEGIR TEMPLATE SEGÚN TRAMITE
+    // -------------------------------
+    $slug = $this->solicitud->tramite->slug ?? '';
+    $hasCarga = $this->solicitud->detalles()
+                    ->where('tipo', 'like', '%carga%')
+                    ->exists();
 
-    // $outputDir = storage_path('app/public/constancias');
+    if($slug === 'magisterio') {
+        $templateFile = $hasCarga 
+                        ? 'magisterio_con_cargas.docx' 
+                        : 'magisterio_sin_cargas.docx';
+    } else {
+        $templateFile = 'solicitudes_varias.docx';
+    }
 
+    $templatePath = resource_path('word/' . $templateFile);
+
+    // -------------------------------
+    // DIRECTORIO DE SALIDA
+    // -------------------------------
     $outputDir = storage_path('app/public/constancias');
-    
-    // true or false 
     if(!is_dir($outputDir)){
-        // ruta, permisos, recursivo
-        // lectura, escritura y ejecucion
         mkdir($outputDir, 0755, true);
     }
 
     $fileNamePdf = $this->solicitud->no_solicitud . '-constancia-' . Str::random(15) . '.pdf';
     $outputPathPdf = $outputDir . '/' . $fileNamePdf;
 
-    // archivo temporal word
-     $tempWordPath = storage_path('app/temp_word_' . Str::random(10) . '.docx');
-     try {
+    $tempWordPath = storage_path('app/temp_word_' . Str::random(10) . '.docx');
+
+    try {
         $template = new TemplateProcessor($templatePath);
 
-        // obtener la fecha del dia de hoy
         $fechaHoy = now();
-
-        // dia en numero
-        $dia = $fechaHoy->format('d'); 
-
-
+        $dia = $fechaHoy->format('d');
         $meses = [
-            1 => 'enero',
-            2 => 'febrero',
-            3 => 'marzo',
-            4 => 'abril',
-            5 => 'mayo',
-            6 => 'junio',
-            7 => 'julio',
-            8 => 'agosto',
-            9 => 'septiembre',
-            10 => 'octubre',
-            11 => 'noviembre',
-            12 => 'diciembre',
+            1 => 'enero',2 => 'febrero',3 => 'marzo',4 => 'abril',
+            5 => 'mayo',6 => 'junio',7 => 'julio',8 => 'agosto',
+            9 => 'septiembre',10 => 'octubre',11 => 'noviembre',12 => 'diciembre'
         ];
-
         $mes = $meses[(int)$fechaHoy->format('m')];
 
         $template->setValue('nombre', strtoupper($this->solicitud->nombres . ' ' . $this->solicitud->apellidos));
@@ -399,82 +396,55 @@ public function emitirConstancia()
         $template->setValue('domicilio', $this->solicitud->domicilio ?? 'N/A');
         $template->setValue('correlativo', $this->solicitud->no_solicitud ?? 'N/A');
         $template->setValue('razon', strtoupper($this->solicitud->razon ?? 'N/A'));
-
-        $template->setValue('fecha', $fechaHoy);
         $template->setValue('fecha', now()->format('d/m/Y'));
         $template->setValue('tramite', strtoupper($this->solicitud->tramite->nombre ?? 'N/A'));
         $template->setValue('zona', strtoupper($this->solicitud->zona->nombre ?? 'N/A'));
-
         $template->setValue('DIA', $dia);
-
         $template->setValue('MES', $mes);
 
-        // $template->setValue('tramite', $this->solicitud->tramite->nombre ?? 'N/A');
         $template->saveAs($tempWordPath);
 
-        // 2. Configurar Renderizador PDF(TCPDF)
+        // Convertir a PDF
         Settings::setPdfRendererName(Settings::PDF_RENDERER_TCPDF);
         Settings::setPdfRendererPath(base_path('vendor/tecnickcom/tcpdf'));
 
-        // Convertir de word a pdf
         $phpWord = IOFactory::load($tempWordPath);
-
-        // CONFIGURACION DEL TAMAÑO DEL PDF
-        
         $pdfWriter = IOFactory::createWriter($phpWord, 'PDF');
         $pdfWriter->save($outputPathPdf);
 
         if (file_exists($tempWordPath)){
             unlink($tempWordPath);
         }
-     } catch (\Exception $e){
+
+    } catch (\Exception $e) {
         Log::error("Error generando PDF: " . $e->getMessage());
         return;
-     } 
+    }
 
-     // guardar registro en bd
+    // Guardar en BD y actualizar estado
     $this->solicitud->detalles()->create([
         'tipo' => 'constancia',
         'path' => 'constancias/' . $fileNamePdf, 
         'user_id' => Auth::id(),
-     ]);
+    ]);
 
-     // actualizar el estado automaticamente
-    $this->solicitud->update([
-        'estado_id' => $estadoEmitido->id
-     ]);
+    $this->solicitud->update(['estado_id' => $estadoEmitido->id]);
 
-     // rellenar solicitud con info de otras tablas, load despues porque tengo datos
-     $this->solicitud->load([
-        'estado', 
-        'bitacoras.user', 
-        'detalles',
-        'detalles.requisitoTramite.requisito'
-        ]);
+    $this->solicitud->load([
+        'estado', 'bitacoras.user', 'detalles', 'detalles.requisitoTramite.requisito'
+    ]);
 
-     // avisar para mostrar boton de descarga
-     $constancia = $this->solicitud->detalles()
-     ->where('tipo', 'constancia')
-     ->latest()
-     ->first();
+    $constancia = $this->solicitud->detalles()->where('tipo', 'constancia')->latest()->first();
+    $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
 
-     // true trie debe existir la constancia y que el archivo ya este en la carpeta
-     $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
+    $solicitudArray = $this->solicitud->toArray();
+    $solicitudArray['constancia_generada'] = $constanciaGenerada;
+    $solicitudArray['constancia_path'] = $constanciaGenerada ? $constancia->path : null;
 
-
-     
-     $solicitudArray = $this->solicitud->toArray();
-     // mostrar u ocultar botones
-     $solicitudArray['constancia_generada'] = $constanciaGenerada;
-     // operador ternario si existe guarda la ruta sino null
-     $solicitudArray['constancia_path'] = $constanciaGenerada ? $constancia->path : null;
-     // aviso a alpine constancia emitida
-     $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
-     // el user vera cambios de inmediato
-     $this->dispatch('$refresh');
-
-
+    $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
+    $this->dispatch('$refresh');
 }
+
 
 
 //     $solicitudArray['constancia_generada'] = $constanciaGenerada;

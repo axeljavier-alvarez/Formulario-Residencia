@@ -9,6 +9,8 @@
 ]">
 
 
+
+
 @livewire('emision-constancias-table')
 
 
@@ -286,7 +288,7 @@ x-on:constancia-generada.window="
                             </template>
                         </div>
 
-                        <div class="bg-gray-900 rounded-2xl p-4 shadow-inner">
+                        {{-- <div class="bg-gray-900 rounded-2xl p-4 shadow-inner">
                             <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Personas Dependientes</h4>
                             <div class="flex flex-wrap gap-2">
                                 <template x-if="solicitud.dependientes && solicitud.dependientes.length > 0">
@@ -301,7 +303,7 @@ x-on:constancia-generada.window="
                                     <span class="text-xs text-gray-500 italic">No registra dependientes</span>
                                 </template>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 

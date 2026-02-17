@@ -36,18 +36,30 @@ class AnalisisDocumentosTable extends DataTableComponent
     }
 
 
-
+    // personalizar buscaddor
 
      public function configure(): void
     {
        $this->setPrimaryKey('id');
 
-              $this->setAdditionalSelects(['solicitudes.estado_id']);
+
+       $this->setSearchFieldAttributes([
+        'class' => 'rounded-xl border-slate-300 bg-white px-10 py-2.5 text-sm focus:border-blue-600 focus:ring-4 focus:ring-blue-100 shadow-sm transition-all w-full md:w-[450px]',
+        'placeholder' => 'Escriba nombre, DPI o número de expediente...',
+    ]);
+
+       
+              $this->setAdditionalSelects([
+                'solicitudes.estado_id',
+                'solicitudes.nombres', 
+                'solicitudes.apellidos', 
+                'solicitudes.cui',
+                ]);
 
     // Diseño de la tabla con espacio entre filas
     $this->setTableAttributes(['class' => 'border-separate border-spacing-y-3 px-4']);
 
-    // Títulos de la tabla (Encabezados) - ¡AHORA MÁS COLORIDOS!
+    // Títulos de la tabla (Encabezados)
     $this->setThAttributes(fn() => [
 
         'class' => 'bg-blue-600 text-white uppercase text-xs tracking-widest py-4 px-4 font-black border-none first:rounded-l-lg last:rounded-r-lg shadow-sm'
@@ -93,20 +105,48 @@ class AnalisisDocumentosTable extends DataTableComponent
                         </div>
                     ")->html(),
 
-                Column::make("Solicitante / Trámite", "nombres")
-                    ->searchable()
-                    ->format(function($value, $row) {
-                        $tramite = $row->requisitosTramites->first()?->tramite?->nombre ?? 'Trámite General';
-                        return "
-                            <div class='flex flex-col'>
-                                <span class='font-bold text-slate-800 text-sm'>{$row->nombres} {$row->apellidos}</span>
-                                <div class='flex items-center gap-1 mt-1'>
-                                    <span class='w-2 h-2 rounded-full bg-indigo-400'></span>
-                                    <span class='text-[11px] font-bold text-indigo-600 uppercase'>{$tramite}</span>
-                                </div>
-                            </div>
-                        ";
-                    })->html(),
+               Column::make("Solicitante / Trámite", "nombres")
+    ->searchable(function(Builder $query, $searchTerm) {
+        // Dividimos la búsqueda por espacios (por si escriben "Juan Perez")
+        $words = explode(' ', $searchTerm);
+        
+        $query->where(function($q) use ($words, $searchTerm) {
+            foreach ($words as $word) {
+                $q->where(function($inner) use ($word) {
+                    $inner->where('solicitudes.nombres', 'like', '%' . $word . '%')
+                          ->orWhere('solicitudes.apellidos', 'like', '%' . $word . '%')
+                          ->orWhere('solicitudes.cui', 'like', '%' . $word . '%');
+                });
+            }
+        });
+    })
+    ->format(function($value, $row) {
+        // Usamos los datos del objeto $row directamente
+        $nombres = $row->nombres ?? '';
+        $apellidos = $row->apellidos ?? '';
+        $cui = $row->cui ?? 'N/A';
+        $tramite = $row->requisitosTramites->first()?->tramite?->nombre ?? 'Trámite General';
+        
+        return "
+            <div class='flex flex-col gap-0.5'>
+                <div class='font-black text-slate-800 text-sm uppercase leading-tight'>
+                    {$nombres} {$apellidos}
+                </div>
+                <div class='flex items-center gap-1.5'>
+                    <span class='text-[10px] font-bold text-slate-400 uppercase tracking-widest'>DPI:</span>
+                    <span class='text-[11px] font-mono font-bold text-[#2563EB] bg-blue-50 px-1.5 rounded'>
+                        {$cui}
+                    </span>
+                </div>
+                <div class='flex items-center gap-1 mt-1'>
+                    <span class='w-1.5 h-1.5 rounded-full bg-indigo-500'></span>
+                    <span class='text-[10px] font-black text-indigo-600 uppercase tracking-tight'>
+                        {$tramite}
+                    </span>
+                </div>
+            </div>
+        ";
+    })->html(),
 
                 Column::make("Información de Contacto", "email")
                     ->searchable()
