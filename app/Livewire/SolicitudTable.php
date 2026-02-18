@@ -31,6 +31,12 @@ class SolicitudTable extends DataTableComponent
     {
        $this->setPrimaryKey('id');
 
+
+        $this->setSearchFieldAttributes([
+        'class' => 'rounded-xl border-slate-300 bg-white px-10 py-2.5 text-sm focus:border-blue-600 focus:ring-4 focus:ring-blue-100 shadow-sm transition-all w-full md:w-[450px]',
+        'placeholder' => 'Escriba nombre, DPI o número de expediente...',
+    ]);
+    
        // para agregar validacion de botones
        $this->setAdditionalSelects([
         'solicitudes.estado_id',
