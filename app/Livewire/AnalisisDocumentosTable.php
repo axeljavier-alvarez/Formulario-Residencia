@@ -106,47 +106,55 @@ class AnalisisDocumentosTable extends DataTableComponent
                     ")->html(),
 
                Column::make("Solicitante / Trámite", "nombres")
-    ->searchable(function(Builder $query, $searchTerm) {
-        // Dividimos la búsqueda por espacios (por si escriben "Juan Perez")
-        $words = explode(' ', $searchTerm);
-        
-        $query->where(function($q) use ($words, $searchTerm) {
-            foreach ($words as $word) {
-                $q->where(function($inner) use ($word) {
-                    $inner->where('solicitudes.nombres', 'like', '%' . $word . '%')
-                          ->orWhere('solicitudes.apellidos', 'like', '%' . $word . '%')
-                          ->orWhere('solicitudes.cui', 'like', '%' . $word . '%');
-                });
-            }
-        });
-    })
-    ->format(function($value, $row) {
-        // Usamos los datos del objeto $row directamente
-        $nombres = $row->nombres ?? '';
-        $apellidos = $row->apellidos ?? '';
-        $cui = $row->cui ?? 'N/A';
-        $tramite = $row->requisitosTramites->first()?->tramite?->nombre ?? 'Trámite General';
-        
-        return "
-            <div class='flex flex-col gap-0.5'>
-                <div class='font-black text-slate-800 text-sm uppercase leading-tight'>
-                    {$nombres} {$apellidos}
-                </div>
-                <div class='flex items-center gap-1.5'>
-                    <span class='text-[10px] font-bold text-slate-400 uppercase tracking-widest'>DPI:</span>
-                    <span class='text-[11px] font-mono font-bold text-[#2563EB] bg-blue-50 px-1.5 rounded'>
-                        {$cui}
-                    </span>
-                </div>
-                <div class='flex items-center gap-1 mt-1'>
-                    <span class='w-1.5 h-1.5 rounded-full bg-indigo-500'></span>
-                    <span class='text-[10px] font-black text-indigo-600 uppercase tracking-tight'>
-                        {$tramite}
-                    </span>
-                </div>
-            </div>
-        ";
-    })->html(),
+                    ->searchable(function(Builder $query, $searchTerm) {
+                        $words = explode(' ', $searchTerm);
+                        
+                    $query->where(function($q) use ($words, $searchTerm) {
+                        // palabras por separado
+                            foreach ($words as $word) {
+                                $q->where(function($inner) use ($word) {
+                                    $inner->where('solicitudes.nombres', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.apellidos', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.cui', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.no_solicitud', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.email', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.telefono', 'like', '%' . $word . '%');
+                                });
+                            }
+
+                            // busqueda completa del termino
+                            $q->orWhere('solicitudes.no_solicitud', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('solicitudes.email', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('solicitudes.telefono', 'like', '%' . $searchTerm . '%');
+                        });
+                    })
+            ->format(function($value, $row) {
+                // Usamos los datos del objeto $row directamente
+                $nombres = $row->nombres ?? '';
+                $apellidos = $row->apellidos ?? '';
+                $cui = $row->cui ?? 'N/A';
+                $tramite = $row->requisitosTramites->first()?->tramite?->nombre ?? 'Trámite General';
+                
+                return "
+                    <div class='flex flex-col gap-0.5'>
+                        <div class='font-black text-slate-800 text-sm uppercase leading-tight'>
+                            {$nombres} {$apellidos}
+                        </div>
+                        <div class='flex items-center gap-1.5'>
+                            <span class='text-[10px] font-bold text-slate-400 uppercase tracking-widest'>DPI:</span>
+                            <span class='text-[11px] font-mono font-bold text-[#2563EB] bg-blue-50 px-1.5 rounded'>
+                                {$cui}
+                            </span>
+                        </div>
+                        <div class='flex items-center gap-1 mt-1'>
+                            <span class='w-1.5 h-1.5 rounded-full bg-indigo-500'></span>
+                            <span class='text-[10px] font-black text-indigo-600 uppercase tracking-tight'>
+                                {$tramite}
+                            </span>
+                        </div>
+                    </div>
+                ";
+            })->html(),
 
                 Column::make("Información de Contacto", "email")
                     ->searchable()
@@ -190,8 +198,6 @@ class AnalisisDocumentosTable extends DataTableComponent
 
                     Column::make("Estado", "estado.nombre")
             ->format(function($value) {
-
-                
                 $color = match (trim($value)) {
                         'Pendiente'     => '#FACC15',
                          'Visita asignada'  => '#D97706',

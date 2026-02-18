@@ -32,7 +32,12 @@ class SolicitudTable extends DataTableComponent
        $this->setPrimaryKey('id');
 
        // para agregar validacion de botones
-       $this->setAdditionalSelects(['solicitudes.estado_id']);
+       $this->setAdditionalSelects([
+        'solicitudes.estado_id',
+        'solicitudes.nombres',
+        'solicitudes.apellidos',
+        'solicitudes.cui'
+        ]);
 
     // Diseño de la tabla con espacio entre filas
     $this->setTableAttributes(['class' => 'border-separate border-spacing-y-3 px-4']);
@@ -85,17 +90,56 @@ class SolicitudTable extends DataTableComponent
             ")->html(),
 
         Column::make("Solicitante / Trámite", "nombres")
-            ->searchable()
-            ->format(function($value, $row) {
+            ->searchable(function(Builder $query, $searchTerm){
+                $words = explode(' ', $searchTerm);
+
+                $query->where(function($q) use($words, $searchTerm){
+                    foreach($words as $word){
+                        $q->where(function($inner) use ($word){
+                            $inner->where('solicitudes.nombres', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.apellidos', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.cui', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.no_solicitud', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.email', 'like', '%' . $word . '%')
+                                        ->orWhere('solicitudes.telefono', 'like', '%' . $word . '%');
+                        });
+                    }
+
+                     $q->orWhere('solicitudes.no_solicitud', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('solicitudes.email', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('solicitudes.telefono', 'like', '%' . $searchTerm . '%');
+                            
+                });
+            })
+            ->format(function($value, $row){
+                $nombres = $row->nombres ?? '';
+                $apellidos = $row->apellidos ?? '';
+                $cui = $row->cui ?? 'N/A';
                 $tramite = $row->requisitosTramites->first()?->tramite?->nombre ?? 'Trámite General';
+                
                 return "
-                    <div class='flex flex-col'>
-                        <span class='font-bold text-slate-800 text-sm'>{$row->nombres} {$row->apellidos}</span>
-                        <div class='flex items-center gap-1 mt-1'>
-                            <span class='w-2 h-2 rounded-full bg-indigo-400'></span>
-                            <span class='text-[11px] font-bold text-indigo-600 uppercase'>{$tramite}</span>
-                        </div>
-                    </div>
+                <div class='flex flex-col gap-0.5'>
+                <div class='font-black text-slate-800 text-sm uppercase leading-tight'>
+                {$nombres} {$apellidos}
+                </div>
+
+                <div class='flex items-center gap-1.5'>
+                <span class='text-[10px] font-bold text-slate-400 uppercase tracking-widest'>DPI:
+                <span class='text-[11px] font-mono font-bold text-[#2563EB] bg-blue-50 px-1.5 rounded'>
+                     {$cui}
+                </span>                
+                </div> 
+
+                <div class='flex items-center gap-1 mt-1'>
+                <span class='w-1.5 h-1.5 rounded-full bg-indigo-500'>
+                </span>
+                <span class='text-[10px] font-black text-indigo-600 uppercase
+                tracking-tight'>
+                {$tramite}
+                </span>
+                </div>
+
+                </div> 
                 ";
             })->html(),
 

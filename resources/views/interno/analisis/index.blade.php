@@ -172,7 +172,6 @@
     </div>
 
     <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-4 relative">
-
       <!-- ENCABEZADO DEL MODAL -->
       <div class="flex items-center justify-between border-b pb-2 mb-3">
         <h3 class="font-bold text-lg text-gray-800" x-text="documentoActual?.nombre">
