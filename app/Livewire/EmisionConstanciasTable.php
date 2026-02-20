@@ -253,6 +253,7 @@ protected $model = Solicitud::class;
     $this->solicitud = Solicitud::with([
         'estado',
         'zona',
+        // dependientes
         'requisitosTramites.tramite',
         'bitacoras.user',
         'detalles.requisitoTramite.requisito'

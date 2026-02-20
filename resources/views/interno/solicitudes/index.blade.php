@@ -2,77 +2,6 @@
     ['name' => 'Dashboard', 'url' => route('interno.dashboard.index')],
     ['name' => 'Consulta de solicitudes']
 ]">
-{{-- 
-<div class="mb-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100" x-data="{ openColumns: false }">
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div class="flex-shrink-0">
-            <h2 class="text-xl font-black text-gray-800 tracking-tight">Gestión de Expedientes</h2>
-            <p class="text-xs text-blue-500 font-bold uppercase tracking-widest mt-0.5">Panel de Control Interno</p>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-4 flex-grow justify-end">
-            <div class="relative w-full max-w-md">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
-                <input 
-                    type="text" 
-                    placeholder="Buscar por nombre, DPI o expediente..." 
-                    @input.debounce.400ms="$dispatch('custom-search', { term: $event.target.value })"
-                    class="block w-full pl-11 pr-4 py-2.5 bg-gray-50 border-none text-sm font-semibold text-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-sm italic"
-                >
-            </div>
-
-            <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
-                <span class="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Estado:</span>
-                <select 
-                    @change="$dispatch('filter-estado', { estado: $event.target.value })"
-                    class="bg-transparent border-none text-xs font-bold text-gray-700 focus:ring-0 cursor-pointer p-0 pr-6"
-                >
-                    <option value="">TODOS</option>
-                    <option value="Pendiente">PENDIENTE</option>
-                    <option value="Analisis">ANÁLISIS</option>
-                    <option value="Autorizado">AUTORIZADO</option>
-                    <option value="Rechazado">RECHAZADO</option>
-                </select>
-            </div>
-
-            <div class="relative">
-                <button 
-                    @click="openColumns = !openColumns"
-                    class="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-black text-gray-600 hover:bg-gray-50 transition-all shadow-sm"
-                >
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7" />
-                    </svg>
-                    COLUMNAS
-                </button>
-
-                <div 
-                    x-show="openColumns" 
-                    @click.away="openColumns = false"
-                    x-transition
-                    class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 p-4"
-                >
-                    <h4 class="text-[10px] font-black text-gray-400 uppercase mb-3">Visibilidad</h4>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" checked @change="$dispatch('toggle-column', { column: 'email' })" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 border-gray-300">
-                            <span class="text-xs font-bold text-gray-600 group-hover:text-blue-600">Contacto</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" checked @change="$dispatch('toggle-column', { column: 'created_at' })" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 border-gray-300">
-                            <span class="text-xs font-bold text-gray-600 group-hover:text-blue-600">Fecha Registro</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> --}}
-
 
     @livewire('solicitud-table')
 
@@ -85,6 +14,85 @@
     @abrir-modal-expediente.window="openAbrirExpediente = true; solicitud = $event.detail.solicitud"
     @close-confirm.window="openAbrirExpediente = false"
     x-cloak>
+
+        
+
+
+    
+    <div x-show="openAbrirExpediente"
+     x-cloak
+     class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+
+    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm"
+         @click="openAbrirExpediente = false">
+    </div>
+
+    <div x-show="openAbrirExpediente"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative overflow-hidden">
+
+        <div class="h-2 w-full" style="background-color: #E6990C;"></div>
+
+        <div class="p-6 bg-white">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="relative flex items-center justify-center w-12 h-12">
+                        <div class="absolute inset-0 rounded-full opacity-20 animate-pulse" style="background-color: #E6990C;"></div>
+                        <div class="relative w-10 h-10 rounded-full flex items-center justify-center shadow-lg shadow-[#E6990C]/30" style="background-color: #E6990C;">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Análisis no iniciado</h3>
+                        <p class="text-xs font-black uppercase tracking-widest" style="color: #E6990C;">Estado: Pendiente</p>
+                    </div>
+                </div>
+
+                <button @click="openAbrirExpediente = false"
+                        class="text-gray-400 hover:text-gray-600 transition-colors p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mt-5">
+                <p class="text-gray-600 text-base leading-relaxed">
+                    El expediente <span class="font-bold text-gray-900" x-text="'#' + solicitud.no_solicitud"></span> no se ha abierto.
+                </p>
+
+                <div class="mt-4 border-l-4 p-4 rounded-r-xl shadow-sm border-[#E6990C]" style="background-color: #FFFFFF; border-style: solid;">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5" style="color: #E6990C;" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-gray-700 leading-snug">
+                                El analista responsable <strong>no ha abierto todavía el expediente</strong>.                                            
+                                Podrá visualizar el detalle completo en cuanto el expediente sea abierto formalmente.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center mt-8">
+                <button @click="openAbrirExpediente = false"
+                        class="w-full px-6 py-3 text-sm font-bold text-white rounded-xl shadow-lg shadow-[#E6990C]/30 transition-all transform active:scale-95 hover:brightness-110"
+                        style="background-color: #E6990C;">
+                    Entendido, cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
         <div x-show="open" 
              class="fixed inset-0 z-50 overflow-y-auto" 
@@ -123,49 +131,10 @@
                     </div>
 
                     <div class="p-6">
-
-
-                            <!-- alerta -->
-                <div 
-                    x-data="{ visible: true }" 
-                    @mostrar-alerta-analisis.window="visible = true; setTimeout(() => visible = false, 5000)"
-                    x-show="visible"
-                    x-transition:enter="transition ease-out duration-500"
-                    x-transition:enter-start="opacity-0 -translate-y-4 scale-95"
-                    x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                    x-transition:leave="transition ease-in duration-300"
-                    x-transition:leave-end="opacity-0 scale-90"
-                    class="mb-8 relative overflow-hidden w-full"
-                >
-                    <div class="flex items-center p-4 rounded-2xl border border-[#BEE7F0] shadow-sm relative z-10" style="background-color: #DAF4F9;">
-                        <div class="flex-shrink-0 w-10 h-10 bg-white/60 rounded-xl flex items-center justify-center shadow-sm text-[#2D8BA3]">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-
-                        <div class="ml-4">
-                            <h4 class="text-[10px] font-black text-[#2D8BA3] uppercase tracking-[0.1em] leading-none mb-1">Actualización de flujo</h4>
-                            <p class="text-sm font-bold text-[#1A5E6E]">
-                                El expediente ahora está <span class="px-2 py-0.5 bg-[#2D8BA3] text-white rounded-md text-[11px] font-black">EN ANÁLISIS</span>
-                            </p>
-                        </div>
-
-                        <button @click="visible = false" class="ml-auto text-[#2D8BA3]/50 hover:text-[#2D8BA3]">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/></svg>
-                        </button>
-                    </div>
-                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/40 rounded-full blur-2xl"></div>
-                </div>
-
-    
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <div class="space-y-6">
-                              
-
-                               <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
                                     <span class="text-blue-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></span>
-
                                     <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">Información del Solicitante</h4>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -181,28 +150,26 @@
                                         <label class="block text-[10px] uppercase font-bold text-gray-400">Teléfono</label>
                                         <p class="text-gray-900" x-text="solicitud.telefono"></p>
                                     </div>
-
-                                    <div class="sm:col-span-2 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                                     <div class="sm:col-span-2 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
                                         <label class="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Domicilio / Zona</label>
                                         <p class="text-gray-900 text-sm">
                                             <span x-text="solicitud.domicilio"></span> - <span class="font-bold text-blue-600" x-text="(solicitud.zona?.nombre || '')"></span>
                                         </p>
                                     </div>
-
                                 </div>
 
-                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100">
-                                    <span class="text-xs font-bold text-blue-700 uppercase">Tipo de Trámite</span>
-                                    <span class="px-3 py-1 bg-blue-600 text-white text-[10px] font-black rounded-full shadow-sm uppercase" x-text="solicitud.requisitos_tramites?.[0]?.tramite?.nombre || 'General'"></span>
+
+                                  <div class="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                                    <span class="text-xs font-bold text-blue-700 uppercase tracking-tight">Tipo de Trámite</span>
+                                    <span class="px-3 py-1 bg-blue-600 text-white text-[10px] font-black rounded-lg shadow-sm uppercase" x-text="solicitud.requisitos_tramites?.[0]?.tramite?.nombre || 'General'"></span>
                                 </div>
-                        
+
                             </div>
 
                             <div class="space-y-6">
                                 <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
                                     <span class="text-green-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
-                                    <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">Historial de Movimientos</h4>
-
+                                    <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">Historial</h4>
                                 </div>
                                 <div class="max-h-[300px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
                                     <template x-if="solicitud.bitacoras && solicitud.bitacoras.length > 0">
@@ -250,7 +217,7 @@
                                         </template>
                                     </div>
                                 </div>
-
+                                
                             </div>
                         </div>
 
