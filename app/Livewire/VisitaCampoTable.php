@@ -83,14 +83,13 @@ class VisitaCampoTable extends DataTableComponent
     // Diseño de la tabla con espacio entre filas
     $this->setTableAttributes(['class' => 'border-separate border-spacing-y-3 px-4']);
 
-    // Títulos de la tabla (Encabezados) - ¡AHORA MÁS COLORIDOS!
+    // Títulos de la tabla (Encabezados) 
     $this->setThAttributes(fn() => [
       
         'class' => 'bg-blue-600 text-white uppercase text-xs tracking-widest py-4 px-4 font-black border-none first:rounded-l-lg last:rounded-r-lg shadow-sm'
     ]);
-
-
     $this->setTdAttributes(function(Column $column){
+        
         return [
             'class' => match($column->getTitle()){
                 'Estado' => 'text-center align-middle',

@@ -2,6 +2,77 @@
     ['name' => 'Dashboard', 'url' => route('interno.dashboard.index')],
     ['name' => 'Consulta de solicitudes']
 ]">
+{{-- 
+<div class="mb-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100" x-data="{ openColumns: false }">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="flex-shrink-0">
+            <h2 class="text-xl font-black text-gray-800 tracking-tight">Gestión de Expedientes</h2>
+            <p class="text-xs text-blue-500 font-bold uppercase tracking-widest mt-0.5">Panel de Control Interno</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-4 flex-grow justify-end">
+            <div class="relative w-full max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input 
+                    type="text" 
+                    placeholder="Buscar por nombre, DPI o expediente..." 
+                    @input.debounce.400ms="$dispatch('custom-search', { term: $event.target.value })"
+                    class="block w-full pl-11 pr-4 py-2.5 bg-gray-50 border-none text-sm font-semibold text-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-sm italic"
+                >
+            </div>
+
+            <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
+                <span class="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Estado:</span>
+                <select 
+                    @change="$dispatch('filter-estado', { estado: $event.target.value })"
+                    class="bg-transparent border-none text-xs font-bold text-gray-700 focus:ring-0 cursor-pointer p-0 pr-6"
+                >
+                    <option value="">TODOS</option>
+                    <option value="Pendiente">PENDIENTE</option>
+                    <option value="Analisis">ANÁLISIS</option>
+                    <option value="Autorizado">AUTORIZADO</option>
+                    <option value="Rechazado">RECHAZADO</option>
+                </select>
+            </div>
+
+            <div class="relative">
+                <button 
+                    @click="openColumns = !openColumns"
+                    class="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-black text-gray-600 hover:bg-gray-50 transition-all shadow-sm"
+                >
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7" />
+                    </svg>
+                    COLUMNAS
+                </button>
+
+                <div 
+                    x-show="openColumns" 
+                    @click.away="openColumns = false"
+                    x-transition
+                    class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 p-4"
+                >
+                    <h4 class="text-[10px] font-black text-gray-400 uppercase mb-3">Visibilidad</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" checked @change="$dispatch('toggle-column', { column: 'email' })" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 border-gray-300">
+                            <span class="text-xs font-bold text-gray-600 group-hover:text-blue-600">Contacto</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" checked @change="$dispatch('toggle-column', { column: 'created_at' })" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 border-gray-300">
+                            <span class="text-xs font-bold text-gray-600 group-hover:text-blue-600">Fecha Registro</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> --}}
+
 
     @livewire('solicitud-table')
 
@@ -101,13 +172,28 @@
                                         <label class="block text-[10px] uppercase font-bold text-gray-400">Teléfono</label>
                                         <p class="text-gray-900" x-text="solicitud.telefono"></p>
                                     </div>
+
+                                    <div class="sm:col-span-2 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                                        <label class="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Domicilio / Zona</label>
+                                        <p class="text-gray-900 text-sm">
+                                            <span x-text="solicitud.domicilio"></span> - <span class="font-bold text-blue-600" x-text="(solicitud.zona?.nombre || '')"></span>
+                                        </p>
+                                    </div>
+
                                 </div>
+
+                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                    <span class="text-xs font-bold text-blue-700 uppercase">Tipo de Trámite</span>
+                                    <span class="px-3 py-1 bg-blue-600 text-white text-[10px] font-black rounded-full shadow-sm uppercase" x-text="solicitud.requisitos_tramites?.[0]?.tramite?.nombre || 'General'"></span>
+                                </div>
+                        
                             </div>
 
                             <div class="space-y-6">
                                 <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
                                     <span class="text-green-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
-                                    <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">Historial</h4>
+                                    <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">Historial de Movimientos</h4>
+
                                 </div>
                                 <div class="max-h-[300px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
                                     <template x-if="solicitud.bitacoras && solicitud.bitacoras.length > 0">
@@ -130,6 +216,32 @@
                                         </div>
                                     </template>
                                 </div>
+
+
+                                <div class="bg-gray-900 rounded-2xl p-4 shadow-2xl border border-gray-800">
+                                    <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
+                                        Personas Dependientes
+                                    </h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <template x-if="solicitud.documentos && solicitud.documentos.find(d => d.tipo === 'carga')">
+                                            <div class="flex flex-wrap gap-2">
+                                                <template x-for="dep in solicitud.documentos.find(d => d.tipo === 'carga').dependientes" :key="dep.id">
+                                                    <button @click="documentoActual = dep; openDocumento = true;"
+                                                        class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 hover:text-green-400 text-xs border border-gray-700 hover:border-green-500/40 transition-all cursor-pointer">
+                                                        <span x-text="dep.nombre"></span>
+                                                    </button>
+                                                </template>
+                                                <template x-if="solicitud.documentos.find(d => d.tipo === 'carga').dependientes.length === 0">
+                                                    <span class="text-[11px] text-orange-400/80 italic flex items-center gap-1.5">
+                                                        <i class="fas fa-info-circle"></i> No se ingresaron dependientes
+                                                    </span>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 

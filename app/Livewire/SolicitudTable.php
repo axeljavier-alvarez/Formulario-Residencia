@@ -9,11 +9,30 @@ use App\Models\Estado;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\On;
+use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 
 class SolicitudTable extends DataTableComponent
 {
     protected $model = Solicitud::class;
 
+
+    public function filters(): array
+{
+    return [
+        SelectFilter::make('Estado de Solicitud', 'estado_id')
+            ->options(
+                Estado::query()
+                    ->orderBy('nombre')
+                    ->get()
+                    ->keyBy('id')
+                    ->map(fn($estado) => $estado->nombre)
+                    ->toArray()
+            )
+            ->filter(function(Builder $builder, string $value) {
+                $builder->where('solicitudes.estado_id', $value);
+            }),
+    ];
+}
 
 
 
