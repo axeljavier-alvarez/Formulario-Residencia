@@ -456,41 +456,41 @@ public function rechazarSolicitud(int $id, string $descripcion)
 
 
     // abrir expediente
-     public function abrirExpediente($id)
-    {
-        $solicitud = Solicitud::with(['estado', 'requisitosTramites.tramite'])->find($id);
-        if (!$solicitud) return;
+    //  public function abrirExpediente($id)
+    // {
+    //     $solicitud = Solicitud::with(['estado', 'requisitosTramites.tramite'])->find($id);
+    //     if (!$solicitud) return;
 
-        if ($solicitud->estado?->nombre !== 'Pendiente') {
-            $this->verSolicitud($id);
-            return;
-        }
+    //     if ($solicitud->estado?->nombre !== 'Pendiente') {
+    //         $this->verSolicitud($id);
+    //         return;
+    //     }
 
         
-        $this->dispatch('abrir-modal-expediente', solicitud: $solicitud->toArray());
-    }
+    //     $this->dispatch('abrir-modal-expediente', solicitud: $solicitud->toArray());
+    // }
 
-    // confirmar apertura
-    #[On('ejecutar-confirmar-apertura')]
-    public function confirmarApertura($id)
-    {
-        if(is_array($id)) { $id = $id['id'];}
+        // modal para abrir
+  public function abrirExpediente($id)
+{
+    $solicitud = Solicitud::find($id);
+    if(!$solicitud) return;
 
-        $estadoRevision = Estado::where('nombre', 'Analisis')->first();
-        $solicitud = Solicitud::find($id);
+    if($solicitud->estado?->nombre === 'Pendiente'){
+        $estadoAnalisis = Estado::where('nombre', 'Analisis')->first();
 
-        if($solicitud && $estadoRevision){
-            $solicitud->update([
-                'estado_id' => $estadoRevision->id
-            ]);
-
-             $this->dispatch('refreshDatatable');
-            
-            $this->dispatch('close-confirm'); 
-
-            $this->verSolicitud($id);
+        if($estadoAnalisis){
+            $solicitud->update(['estado_id' => $estadoAnalisis->id]);
+            $this->dispatch('mostrar-alerta-analisis');
         }
     }
+
+    $this->verSolicitud($id);
+  
+}
+
+
+
 
 
 

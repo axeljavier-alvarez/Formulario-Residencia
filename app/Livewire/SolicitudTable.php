@@ -413,36 +413,32 @@ $metodoClick = "abrirExpediente({$row->id})";
     // modal para abrir
   public function abrirExpediente($id)
 {
-    $solicitud = Solicitud::with(['estado', 'requisitosTramites.tramite'])->find($id);
-    if (!$solicitud) return;
-
-    if ($solicitud->estado?->nombre !== 'Pendiente') {
-        $this->verDetalle($id);
-        return;
-    }
-    $this->dispatch('abrir-modal-expediente', solicitud: $solicitud->toArray());
-}
-// Esta es la función que realmente hace el update (se llama desde el botón "Confirmar" del modal)
-#[On('ejecutar-confirmar-apertura')] 
-public function confirmarApertura($id)
-{
-    if (is_array($id)) { $id = $id['id']; }
-
-    $estadoRevision = Estado::where('nombre', 'Analisis')->first(); 
-    
     $solicitud = Solicitud::find($id);
-    if ($solicitud && $estadoRevision) {
-        $solicitud->update([
-            'estado_id' => $estadoRevision->id
-        ]);
-        
-        $this->dispatch('refreshDatatable');
-        
-        $this->dispatch('close-confirm'); 
+    if(!$solicitud) return;
 
-        $this->verDetalle($id);
+    if($solicitud->estado?->nombre === 'Pendiente'){
+        $estadoAnalisis = Estado::where('nombre', 'Analisis')->first();
+
+        if($estadoAnalisis){
+            $solicitud->update(['estado_id' => $estadoAnalisis->id]);
+            $this->dispatch('mostrar-alerta-analisis');
+        }
     }
+
+    $this->verDetalle($id);
+    // // cambiar en bitacora
+    // $solicitud = Solicitud::with(['estado', 'requisitosTramites.tramite'])->find($id);
+    // if (!$solicitud) return;
+
+    // if ($solicitud->estado?->nombre !== 'Pendiente') {
+    //     $this->verDetalle($id);
+    //     return;
+    // }
+    // $this->dispatch('abrir-modal-expediente', solicitud: $solicitud->toArray());
 }
+
+
+
 
 
 
