@@ -182,10 +182,6 @@ x-on:constancia-generada.window="
                     Confirmar rechazo
                 </button>
             </div>
-
-
-
-
         </div>
     </div>
 </div>
@@ -415,7 +411,7 @@ x-on:constancia-generada.window="
                                     </template>
                                 </template>
                                 <template x-if="!solicitud.dependientes || solicitud.dependientes.length === 0">
-     <span class="text-[11px] text-orange-400/80 italic flex items-center gap-1.5">
+                                <span class="text-[11px] text-orange-400/80 italic flex items-center gap-1.5">
                                                         <i class="fas fa-info-circle"></i> No se ingresaron dependientes
                                                     </span>                                
                                                 </template>

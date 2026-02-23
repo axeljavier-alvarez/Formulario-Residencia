@@ -254,18 +254,20 @@ $this->setSearchPlaceholder('Buscar');
         $solicitud = Solicitud::with([
             'estado',
             'zona',
+            'detalles.dependiente',
             // 'dependientes',
             // 'detalleSolicitud.dependiente',
             'requisitosTramites.tramite',
             'bitacoras.user'
             ])->find($id);
 
+        
+
            // traduciendo la fecha de created_at
 
 
 
-        if($solicitud){
-
+        if($solicitud){        
             // traduciendo fecha de la solicitud
             $solicitud->fecha_registro_traducida = $solicitud->created_at
             ? Carbon::parse($solicitud->created_at)
@@ -275,15 +277,27 @@ $this->setSearchPlaceholder('Buscar');
                 $item->fecha_formateada = Carbon::parse($item->created_at)
                     ->translatedFormat('d F Y H:i');
 
+            });    
+            
+            
 
-                    // no mostrar  solicitudes con cancelado
+            $dependientesList = $solicitud->detalles
+            ->filter(fn($detalle) => $detalle->dependiente != null)
+            ->map(function ($detalle){
+                return [
+                    'id' => $detalle->dependiente->id,
+                    'nombres' => $detalle->dependiente->nombres,
+                    'apellidos' => $detalle->dependiente->apellidos
+                ];
+            })
+            ->values();
 
-                    // if(str_contains($item->evento, 'Cancelado')){
-                    //     $item->user = null;
-                    // }
-            });
+            $datosParaModal = $solicitud->toArray();
+            $datosParaModal['fecha_registro_traducida'] = $solicitud->fecha_registro_traducida;
+            $datosParaModal['dependientes'] = $dependientesList->toArray();
 
-            $this->dispatch('open-modal-detalle', solicitud: $solicitud->toArray());
+
+            $this->dispatch('open-modal-detalle', solicitud: $datosParaModal);
         }
 
 
@@ -309,6 +323,37 @@ $this->setSearchPlaceholder('Buscar');
 
         }
     }
+
+
+
+
+     #[On('peticionRechazar')]
+    public function rechazarSolicitud(int $id, string $descripcion)
+    {
+        // validar observaciones
+        if (blank($descripcion)) {
+            $this->dispatch('error-rechazo', mensaje: 'Debe ingresar una observación');
+            return;
+        }
+
+        // obtener estado "Cancelado"
+        $estadoCancelado = Estado::where('nombre', 'Rechazado')->first();
+        if (!$estadoCancelado) return;
+
+        // obtener la solicitud
+        $solicitud = Solicitud::find($id);
+        if (!$solicitud) return;
+        $solicitud->observacion_bitacora =
+        trim(strip_tags($descripcion));
+
+        $solicitud->estado_id = $estadoCancelado->id;
+        $solicitud->save(['only', ['estado_id']]);
+
+        // enviar evento al frontend
+        $this->dispatch('rechazo-exitoso');
+    }
+
+
 
 
 

@@ -92,12 +92,9 @@
         </div>
     </div>
 </div>
-
-
         <div x-show="open" 
              class="fixed inset-0 z-50 overflow-y-auto" 
-             role="dialog" aria-modal="true">
-            
+             role="dialog" aria-modal="true">     
             <div x-show="open"
                  x-transition:enter="ease-out duration-300"
                  x-transition:enter-start="opacity-0"
@@ -129,7 +126,6 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
-
                     <div class="p-6">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <div class="space-y-6">
@@ -181,7 +177,8 @@
                                                         <span class="text-xs font-bold text-gray-900 uppercase" x-text="item.evento"></span>
                                                         <span class="text-[10px] text-gray-400" x-text="item.fecha_formateada"></span>
                                                     </div>
-                                                    <p class="text-xs text-gray-600 italic" x-text="item.descripcion"></p>
+                                                     <p class="text-xs text-gray-600 italic" x-text="item.descripcion"></p>
+                                                     <p class="text-[10px] mt-2 font-bold text-blue-500 uppercase tracking-tighter" x-text="'Por: ' + (item.user?.name || 'Sistema')"></p>                                                   
                                                 </div>
                                             </div>
                                         </template>
@@ -192,8 +189,6 @@
                                         </div>
                                     </template>
                                 </div>
-
-
                                 <div class="bg-gray-900 rounded-2xl p-4 shadow-2xl border border-gray-800">
                                     <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
@@ -216,11 +211,9 @@
                                             </div>
                                         </template>
                                     </div>
-                                </div>
-                                
+                                </div>                                
                             </div>
                         </div>
-
                         <div class="mt-10 flex justify-end pt-6 border-t border-gray-100">
                             <button @click="open = false" class="inline-flex items-center bg-green-600 px-10 py-3 text-sm font-bold text-white rounded-xl shadow-lg hover:bg-green-700 transition-all transform active:scale-95">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>

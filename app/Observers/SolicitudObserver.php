@@ -53,12 +53,18 @@ class SolicitudObserver
             $nombreEstadoNuevo === 'Por autorizar'
             && $nombreEstadoAnterior === 'Visita realizada'
             => 'Documentación revisada y visita de campo aprobada',
-                $nombreEstadoNuevo === 'Rechazado' => 'La solicitud se canceló.',
+
+
+            $nombreEstadoNuevo === 'Rechazado'
+            && $nombreEstadoAnterior === 'Visita realizada'
+            => 'Solicitud rechazada y no emitida',
+
+                $nombreEstadoNuevo === 'Rechazado' => 'La solicitud se rechazo.',
                 $nombreEstadoNuevo === 'Analisis' => 'La solicitud y los documentos estan siendo analizadados',
                 $nombreEstadoNuevo === 'Visita asignada'  => 'La solicitud fue asignada a visita de campo.',
                 $nombreEstadoNuevo === 'Visita realizada' => 'El visitador de campo no ingreso observaciones',
                 
-                $nombreEstadoNuevo === 'Por emitir'       => 'La solicitud fue aceptada y está lista para ser emitida',
+                // $nombreEstadoNuevo === 'Por autorizar'       => 'La solicitud fue aceptada y está lista para ser emitida',
                 $nombreEstadoNuevo === 'Emitido'       => 'La solicitud fue emitida y enviada a firma',
                 // $nombreEstadoNuevo === 'Por autorizar' => 'La solicitud está pendiente de autorizar',
                 $nombreEstadoNuevo === 'Autorizado' => 'La solicitud autorizada y firmada',

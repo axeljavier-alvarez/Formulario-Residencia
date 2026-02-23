@@ -53,7 +53,9 @@
          '-translate-x-full': !open
       }"
 
-      aria-label="Sidebar">
+      aria-label="Sidebar"
+      >
+      
                <div class="h-full px-3 py-4 overflow-y-auto bg-neutral-primary-soft border-e border-default">
                 
 
