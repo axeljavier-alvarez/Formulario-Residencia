@@ -246,55 +246,72 @@ protected $model = Solicitud::class;
 
 
      // ABRIR MODAL
-    public function verDetalle($id)
+     public function verDetalle($id)
 {
+    // Usamos $this para el ID por si lo necesitas en otros métodos de Livewire
     $this->solicitudIdSeleccionada = $id;
 
-    $this->solicitud = Solicitud::with([
+    // 1. Carga de la solicitud con todas las relaciones necesarias
+    $solicitud = Solicitud::with([
         'estado',
         'zona',
-        // dependientes
+        'detalles.dependiente',
         'requisitosTramites.tramite',
+        'requisitosTramites.requisito',
         'bitacoras.user',
         'detalles.requisitoTramite.requisito'
     ])->find($id);
 
-    if ($this->solicitud) {
-        // 1. Formatear fechas de la solicitud
-        $this->solicitud->fecha_registro_traducida = $this->solicitud->created_at
-            ? Carbon::parse($this->solicitud->created_at)->translatedFormat('d F Y H:i') 
-            : 'N/A';
-
-        // 2. Formatear fechas de bitácoras
-        $this->solicitud->bitacoras->each(function ($item) {
+    if ($solicitud) {
+        // 2. Formatear fechas de bitácoras (esto modifica la colección en memoria)
+        $solicitud->bitacoras->each(function ($item) {
             $item->fecha_formateada = Carbon::parse($item->created_at)->translatedFormat('d F Y H:i');
         });
 
         // 3. Lógica de la constancia
-        $constancia = $this->solicitud->detalles()
+        $constancia = $solicitud->detalles
             ->where('tipo', 'constancia')
-            ->latest()
-            ->first();
+            ->first(); // Simplificado: ya está cargado en memoria por el eager loading
 
         $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
-        
-        // Asignamos los valores para que viajen en el JSON
-        $this->solicitud->constancia_generada = $constanciaGenerada;
-        $this->solicitud->constancia_path = $constanciaGenerada ? $constancia->path : null;
 
-        /**
-         * CAMBIO CLAVE:
-         * Convertimos a array DESPUÉS de haber asignado las propiedades manuales.
-         * Pasamos el array dentro de un objeto llamado 'solicitud' para que coincida con
-         * $event.detail.solicitud en Alpine.
-         */
-        $datosParaEvento = $this->solicitud->toArray();
+        // 4. Extraer Dependientes (Cargas Familiares) de forma segura
+        // Filtramos sobre la relación ya cargada para evitar más consultas
+        $rtCarga = $solicitud->requisitosTramites
+            ->where('requisito.slug', 'cargas-familiares')
+            ->first();
+
+        $dependientesArray = [];
+        if ($rtCarga) {
+            // Buscamos en los detalles de la solicitud que pertenecen a este requisito
+            $dependientesArray = $solicitud->detalles
+                ->where('requisito_tramite_id', $rtCarga->id)
+                ->map(function ($d) {
+                    if (!$d->dependiente) return null;
+                    return [
+                        'id'        => $d->dependiente->id,
+                        'nombres'   => $d->dependiente->nombres,
+                        'apellidos' => $d->dependiente->apellidos,
+                        'path'      => $d->path ?? null
+                    ];
+                })
+                ->filter()
+                ->values()
+                ->toArray();
+        }
+
+        // 5. Preparar el array final para Alpine.js
+        $datosParaEvento = $solicitud->toArray();
         
-        // Forzamos la inclusión de los atributos dinámicos que agregamos arriba
-        $datosParaEvento['fecha_registro_traducida'] = $this->solicitud->fecha_registro_traducida;
+        // Inyectamos manualmente los campos calculados
+        $datosParaEvento['fecha_registro_traducida'] = $solicitud->created_at 
+            ? Carbon::parse($solicitud->created_at)->translatedFormat('d F Y H:i') 
+            : 'N/A';
         $datosParaEvento['constancia_generada'] = $constanciaGenerada;
-        $datosParaEvento['constancia_path'] = $this->solicitud->constancia_path;
+        $datosParaEvento['constancia_path']     = $constanciaGenerada ? $constancia->path : null;
+        $datosParaEvento['dependientes']        = $dependientesArray;
 
+        // 6. Enviar al modal
         $this->dispatch('open-modal-detalle', solicitud: $datosParaEvento);
     }
 }
@@ -489,6 +506,48 @@ public function emitirConstancia()
 
     $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
     $this->dispatch('$refresh');
+}
+
+
+
+ #[On('peticionRechazar')]
+public function rechazarSolicitud(int $id, string $descripcion)
+{
+    // validar observaciones
+    if (blank($descripcion)) {
+        $this->dispatch('error-rechazo', mensaje: 'Debe ingresar una observación');
+        return;
+    }
+
+    // obtener estado "Cancelado"
+    $estadoCancelado = Estado::where('nombre', 'Rechazado')->first();
+    if (!$estadoCancelado) return;
+
+    // obtener la solicitud
+    $solicitud = Solicitud::find($id);
+    if (!$solicitud) return;
+
+    // actualizar solo el estado (no modificamos observaciones)
+    // $solicitud->update([
+    //     'estado_id' => $estadoCancelado->id,
+    // ]);
+
+    // // crear la bitácora directamente, igual que visitaRealizada
+    // Bitacora::create([
+    //     'solicitud_id' => $solicitud->id,
+    //     'user_id' => Auth::id(),
+    //     'evento' => 'CAMBIO DE ESTADO: Solicitud Rechazada',
+    //     'descripcion' => trim(strip_tags($descripcion)) ?: 'Solicitud rechazada sin motivo detallado.'
+    // ]);
+
+    $solicitud->observacion_bitacora =
+    trim(strip_tags($descripcion));
+
+    $solicitud->estado_id = $estadoCancelado->id;
+    $solicitud->save(['only', ['estado_id']]);
+
+    // enviar evento al frontend
+    $this->dispatch('rechazo-exitoso');
 }
 
 

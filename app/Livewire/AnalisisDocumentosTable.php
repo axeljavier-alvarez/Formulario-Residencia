@@ -379,7 +379,7 @@ public function rechazarSolicitud(int $id, string $descripcion)
     }
 
     // obtener estado "Cancelado"
-    $estadoCancelado = Estado::where('nombre', 'Cancelado')->first();
+    $estadoCancelado = Estado::where('nombre', 'Rechazado')->first();
     if (!$estadoCancelado) return;
 
     // obtener la solicitud

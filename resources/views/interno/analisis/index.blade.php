@@ -245,36 +245,38 @@
 
                 <!-- alerta -->
                 <div 
-        x-data="{ visible: true }" 
-        @mostrar-alerta-analisis.window="visible = true; setTimeout(() => visible = false, 5000)"
-        x-show="visible"
-        x-transition:enter="transition ease-out duration-500"
-        x-transition:enter-start="opacity-0 -translate-y-4 scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-        x-transition:leave="transition ease-in duration-300"
-        x-transition:leave-end="opacity-0 scale-90"
-        class="mb-8 relative overflow-hidden w-full"
-    >
-        <div class="flex items-center p-4 rounded-2xl border border-[#BEE7F0] shadow-sm relative z-10" style="background-color: #DAF4F9;">
-            <div class="flex-shrink-0 w-10 h-10 bg-white/60 rounded-xl flex items-center justify-center shadow-sm text-[#2D8BA3]">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </div>
+                x-data="{ visible: false }" 
+                @mostrar-alerta-analisis.window="visible = true; setTimeout(() => visible = false, 5000)"
+                x-show="visible"
+                x-transition:enter="transition ease-out duration-500"
+                x-transition:enter-start="opacity-0 -translate-y-4 scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-end="opacity-0 scale-90"
+                class="mb-8 relative overflow-hidden w-full"
+            >
+                <div class="flex items-center p-4 rounded-2xl border border-[#BEE7F0] shadow-sm relative z-10" style="background-color: #DAF4F9;">
+                    <div class="flex-shrink-0 w-10 h-10 bg-white/60 rounded-xl flex items-center justify-center shadow-sm text-[#2D8BA3]">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
 
-            <div class="ml-4">
-                <h4 class="text-[10px] font-black text-[#2D8BA3] uppercase tracking-[0.1em] leading-none mb-1">Actualización de flujo</h4>
-                <p class="text-sm font-bold text-[#1A5E6E]">
-                    El expediente ahora está <span class="px-2 py-0.5 bg-[#2D8BA3] text-white rounded-md text-[11px] font-black">EN ANÁLISIS</span>
-                </p>
-            </div>
+                    <div class="ml-4">
+                        <h4 class="text-[10px] font-black text-[#2D8BA3] uppercase tracking-[0.1em] leading-none mb-1">Actualización de flujo</h4>
+                        <p class="text-sm font-bold text-[#1A5E6E]">
+                            El expediente ahora está <span class="px-2 py-0.5 bg-[#2D8BA3] text-white rounded-md text-[11px] font-black">EN ANÁLISIS</span>
+                        </p>
+                    </div>
 
-            <button @click="visible = false" class="ml-auto text-[#2D8BA3]/50 hover:text-[#2D8BA3]">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/></svg>
-            </button>
-        </div>
-        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/40 rounded-full blur-2xl"></div>
-    </div>
+                    <button @click="visible = false" class="ml-auto text-[#2D8BA3]/50 hover:text-[#2D8BA3]">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/></svg>
+                    </button>
+                </div>
+
+
+                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/40 rounded-full blur-2xl"></div>
+            </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 

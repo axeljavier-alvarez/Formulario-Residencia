@@ -21,18 +21,31 @@
     open: false,
     openPorAutorizar: false,
     solicitud: {},
+    openRechazoEmision: false,
+    errorRechazo: null,
     constanciaGenerada: false,
     constanciaFile: null,
     openEmitir: false,
+        descripcion: '',
     hasTipo(tipo) {
             return this.solicitud?.detalles?.some(d => d.tipo === tipo);
         }
 }"
 
+
 x-on:constancia-generada.window="
     constanciaGenerada = true;
     constanciaFile = $event.detail.path;
 "
+    x-on:error-rechazo.window="
+    errorRechazo = $event.detail.mensaje
+    "
+    x-on:rechazo-exitoso.window="
+        openRechazoEmision = false;
+        open = false;
+        descripcion = '';
+        errorRechazo = null;
+    "
 
     x-on:solicitud-por-autorizar.window="
         openPorAutorizar = false;
@@ -75,6 +88,108 @@ x-on:constancia-generada.window="
 >
 
    
+
+
+<div 
+    x-show="openRechazoEmision" 
+    x-cloak 
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4"
+>
+    <div 
+        x-show="openRechazoEmision"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" 
+        @click="openRechazoEmision = false"
+    ></div>
+
+    <div 
+        x-show="openRechazoEmision"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative overflow-hidden"
+    >
+        <div class="h-2 bg-red-500 w-full"></div>
+
+        <div class="p-6">
+
+            <div class="flex items-start justify-between">
+
+                <div class="flex items-center gap-3">
+                    <div class="relative flex items-center justify-center w-12 h-12">
+                        <div class="absolute inset-0 bg-red-500 rounded-full opacity-20 animate-pulse"></div>
+                        <div class="relative w-10 h-10 bg-red-500 rounded-full flex items-center justify-center shadow-lg shadow-red-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Rechazar Solicitud</h3>
+                        <p class="text-sm text-gray-500 leading-tight">Esta acción no se puede deshacer</p>
+                    </div>
+                </div>
+
+
+                  <button @click="openRechazoEmision = false"
+                        class="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+            </div>
+
+
+
+              <div class="mt-5">
+                <p class="text-gray-700 text-base">
+                    ¿Está seguro que desea rechazar la solicitud <span class="font-bold text-[#3B82F6]" x-text="solicitud.no_solicitud"></span>?
+                </p>
+
+                <div x-show="errorRechazo" x-cloak
+                     class="mt-3 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                    <span x-text="errorRechazo"></span>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-1 ml-1">
+                        Motivo del rechazo <span class="text-red-500">*</span>
+                    </label>
+                    <textarea
+                        x-model="descripcion"
+                        rows="4"
+                        class="w-full border-gray-200 rounded-xl p-3 text-sm focus:border-red-500 focus:ring focus:ring-red-100 transition-all resize-none bg-gray-50"
+                        placeholder="Describa por qué se rechaza la solicitud...">
+                    </textarea>
+                </div>
+            </div>
+
+
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
+                <button @click="openRechazoEmision = false"
+                        class="w-full sm:w-auto px-6 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all order-2 sm:order-1">
+                    No, cancelar
+                </button>
+
+                <button @click="openRechazoEmision = null; Livewire.dispatch('peticionRechazar', { id: solicitud.id, descripcion: descripcion });"
+                        class="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-200 transition-all transform active:scale-95 order-1 sm:order-2">
+                    Confirmar rechazo
+                </button>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
+
 
 <!-- MODAL DE EMITIR CONSTANCIA -->
 
@@ -310,11 +425,16 @@ x-on:constancia-generada.window="
                 </div>
 
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-100">
-                    <button type="button" 
-                    x-show="solicitud.estado?.nombre === 'Por autorizar'"
-                            class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white px-8 py-3 text-sm font-bold text-red-600 border-2 border-red-100 hover:bg-red-50 hover:border-red-200 transition-all shadow-sm">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        No autorizar
+                  <button type="button" 
+                        @click="openRechazoEmision = true"
+                        x-show="solicitud.estado?.nombre === 'Por autorizar'"
+                        class="w-full md:w-auto inline-flex items-center justify-center rounded-xl bg-red-50 px-6 py-3.5 text-sm font-black text-red-600 border border-red-100 hover:bg-red-600 hover:text-white transition-all transform active:scale-95 group">
+                        
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        
+                        RECHAZAR
                     </button>
 {{-- 
                     <button
@@ -517,6 +637,8 @@ x-on:constancia-generada.window="
         </template>
     </div>
     
+
+   
 
 
 {{--   
