@@ -151,6 +151,11 @@
                         </div>
                     </div>
 
+
+
+                  
+
+
                     {{-- LÍNEA DE PROGRESO --}}
                     <div class="relative px-2">
                         <div class="mb-6 flex items-center gap-2">
@@ -160,12 +165,22 @@
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 relative">
                             @php
+                                $nombreEstadoActual = $solicitud->estado->nombre;                                
+                                // Lista de estados que queremos mostrar en los puntitos
                                 $estadosVisibles = $estados->filter(fn($e) => !in_array($e->nombre, ['Visita asignada', 'Visita realizada', 'Previo', 'Rechazado']))->values();
-                                $estadoActualIndex = $estadosVisibles->search(function($e) use ($solicitud) {
-                                    if (in_array($solicitud->estado->nombre, ['Visita asignada','Visita realizada'])) return $e->nombre === 'Analisis';
-                                    if (in_array($solicitud->estado->nombre, ['Previo','Rechazado'])) return $e->id === max($solicitud->estado_id - 1, 1);
-                                    return $e->id === $solicitud->estado_id;
-                                });
+                                // LÓGICA DE PROGRESO:
+                                // Si el estado es Previo o Rechazado, el índice es -1 (ningún check se marca)
+                                if (in_array($nombreEstadoActual, ['Previo', 'Rechazado'])) {
+                                    $estadoActualIndex = -1; 
+                                } else {
+                                    $estadoActualIndex = $estadosVisibles->search(function($e) use ($solicitud, $nombreEstadoActual) {
+                                        // Si está en visita, marcamos hasta 'Analisis'
+                                        if (in_array($nombreEstadoActual, ['Visita asignada', 'Visita realizada'])) {
+                                            return $e->nombre === 'Analisis';
+                                        }
+                                        return $e->id === $solicitud->estado_id;
+                                    });
+                                }
                             @endphp
 
                             @foreach($estadosVisibles as $index => $estado)
@@ -193,6 +208,7 @@
                                 </div>
                             @endforeach
                         </div>
+                        
 
                         {{-- MENSAJES ESPECIALES --}}
                         {{-- MENSAJES ESPECIALES ACTUALIZADO --}}
@@ -209,15 +225,9 @@
             'color' => 'bg-[#ECFDF5] border-green-100 text-green-800',
             'svg' => '<svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
         ],
-        'Previo', 'Rechazado' => [
-            'mensaje' => "Atención: Su solicitud requiere correcciones en los documentos.",
-            'color' => 'bg-[#FEF7DC] border-yellow-200 text-yellow-800',
-            'svg' => '<svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>'
-        ],
         default => null
     };
 @endphp
-
 @if($configEstado)
     <div class="mt-8 flex items-center gap-4 p-5 rounded-2xl border {{ $configEstado['color'] }}">
         <div class="flex-shrink-0 bg-white p-2 rounded-xl shadow-sm">
@@ -228,8 +238,72 @@
         </p>
     </div>
 @endif
-                    </div>
+  <!-- NUEVOS mensajes -->
+                    @if($solicitud->estado->nombre === 'Rechazado')
+                            @php
+                                // Buscamos el último evento de rechazo en la bitácora
+                                $bitacoraRechazo = $solicitud->bitacoras
+                                    ->where('evento', 'CAMBIO DE ESTADO: Rechazado')
+                                    ->last();
+                            @endphp
 
+                            <div class="mt-6 bg-red-50 border-l-4 border-red-500 p-5 rounded-r-2xl">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-white p-2 rounded-xl shadow">
+                                        <i class="fas fa-times-circle text-red-500 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-red-600 font-black uppercase text-sm">
+                                            Solicitud Rechazadaaaa
+                                        </h3>
+                                        
+                                        {{-- Mostramos la descripción de la bitácora si existe, si no, las observaciones de la solicitud --}}
+                                        <p class="text-red-700 text-sm mt-1">
+                                            @if($bitacoraRechazo)
+                                                <span class="font-bold">Motivo:</span> {{ $bitacoraRechazo->descripcion }}
+                                            @else
+                                                {{ $solicitud->observaciones ?? 'Su solicitud fue rechazada por el administrador.' }}
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                    @if($solicitud->estado->nombre === 'Previo')
+                        <div class="mt-6 bg-orange-50 border-l-4 border-orange-500 p-5 rounded-r-2xl">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white p-2 rounded-xl shadow">
+                                    <i class="fas fa-exclamation-triangle text-orange-500 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-orange-600 font-black uppercase text-sm">
+                                        Acción Requerida (Previo)
+                                    </h3>
+                                    <p class="text-orange-700 text-sm mt-1">
+                                        Debe corregir o subir nuevamente los siguientes documentos:
+                                    </p>
+                                    <p class="font-bold text-orange-800 mt-2 text-xs italic">
+                                        {{ $solicitud->observaciones }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($solicitud->estado->nombre === 'Previo')
+                        <div class="mt-8 p-6 bg-white border-2 border-dashed border-orange-200 rounded-3xl">
+                            <h4 class="text-gray-800 font-black flex items-center gap-2 mb-4">
+                                <i class="fas fa-cloud-upload-alt text-orange-500"></i>
+                                DOCUMENTOS A ARREGLAR
+                            </h4>
+
+                            <p class="text-xs text-gray-500 italic">
+                                Cargue los archivos solicitados por el revisor para procesar su solicitud nuevamente.
+                            </p>
+                        </div>
+                    @endif
+                    </div>
                     <button
                         @click="openModal = false; $wire.limpiarSolicitud();"
                         class="mt-10 w-full py-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-2xl transition-colors uppercase text-xs tracking-widest"

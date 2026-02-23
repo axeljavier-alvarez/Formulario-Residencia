@@ -17,6 +17,7 @@ use TCPDF; // Para el PDF
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EmisionConstanciasTable extends DataTableComponent
 {
@@ -509,46 +510,6 @@ public function emitirConstancia()
 }
 
 
-
- #[On('peticionRechazar')]
-public function rechazarSolicitud(int $id, string $descripcion)
-{
-    // validar observaciones
-    if (blank($descripcion)) {
-        $this->dispatch('error-rechazo', mensaje: 'Debe ingresar una observación');
-        return;
-    }
-
-    // obtener estado "Cancelado"
-    $estadoCancelado = Estado::where('nombre', 'Rechazado')->first();
-    if (!$estadoCancelado) return;
-
-    // obtener la solicitud
-    $solicitud = Solicitud::find($id);
-    if (!$solicitud) return;
-
-    // actualizar solo el estado (no modificamos observaciones)
-    // $solicitud->update([
-    //     'estado_id' => $estadoCancelado->id,
-    // ]);
-
-    // // crear la bitácora directamente, igual que visitaRealizada
-    // Bitacora::create([
-    //     'solicitud_id' => $solicitud->id,
-    //     'user_id' => Auth::id(),
-    //     'evento' => 'CAMBIO DE ESTADO: Solicitud Rechazada',
-    //     'descripcion' => trim(strip_tags($descripcion)) ?: 'Solicitud rechazada sin motivo detallado.'
-    // ]);
-
-    $solicitud->observacion_bitacora =
-    trim(strip_tags($descripcion));
-
-    $solicitud->estado_id = $estadoCancelado->id;
-    $solicitud->save(['only', ['estado_id']]);
-
-    // enviar evento al frontend
-    $this->dispatch('rechazo-exitoso');
-}
 
 
 
