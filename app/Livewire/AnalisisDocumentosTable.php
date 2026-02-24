@@ -14,6 +14,13 @@ use App\Models\Bitacora;
 
 class AnalisisDocumentosTable extends DataTableComponent
 {
+
+
+    // PARA EL PREVIO
+
+
+
+
     protected $model = Solicitud::class;
         public array $fotos = [];
 
@@ -386,19 +393,6 @@ public function rechazarSolicitud(int $id, string $descripcion)
     $solicitud = Solicitud::find($id);
     if (!$solicitud) return;
 
-    // actualizar solo el estado (no modificamos observaciones)
-    // $solicitud->update([
-    //     'estado_id' => $estadoCancelado->id,
-    // ]);
-
-    // // crear la bitácora directamente, igual que visitaRealizada
-    // Bitacora::create([
-    //     'solicitud_id' => $solicitud->id,
-    //     'user_id' => Auth::id(),
-    //     'evento' => 'CAMBIO DE ESTADO: Solicitud Rechazada',
-    //     'descripcion' => trim(strip_tags($descripcion)) ?: 'Solicitud rechazada sin motivo detallado.'
-    // ]);
-
     $solicitud->observacion_bitacora =
     trim(strip_tags($descripcion));
 
@@ -408,6 +402,36 @@ public function rechazarSolicitud(int $id, string $descripcion)
     // enviar evento al frontend
     $this->dispatch('rechazo-exitoso');
 }
+
+
+// MANDAR A PREVIO
+  #[On('peticionPrevio')]
+public function previoSolicitud(int $id, string $descripcion)
+{
+    // validar observaciones
+    if (blank($descripcion)) {
+        $this->dispatch('error-previo', mensaje: 'Debe ingresar una observación');
+        return;
+    }
+
+    // obtener estado "Cancelado"
+    $estadoPrevio = Estado::where('nombre', 'Previo')->first();
+    if (!$estadoPrevio) return;
+
+    // obtener la solicitud
+    $solicitud = Solicitud::find($id);
+    if (!$solicitud) return;
+
+    $solicitud->observacion_bitacora =
+    trim(strip_tags($descripcion));
+
+    $solicitud->estado_id = $estadoPrevio->id;
+    $solicitud->save(['only', ['estado_id']]);
+
+    // enviar evento al frontend
+    $this->dispatch('previo-exitoso');
+}
+
 
 
 

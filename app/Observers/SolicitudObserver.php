@@ -68,6 +68,9 @@ class SolicitudObserver
                 $nombreEstadoNuevo === 'Emitido'       => 'La solicitud fue emitida y enviada a firma',
                 // $nombreEstadoNuevo === 'Por autorizar' => 'La solicitud está pendiente de autorizar',
                 $nombreEstadoNuevo === 'Autorizado' => 'La solicitud autorizada y firmada',
+
+                 $nombreEstadoNuevo === 'Previo' => 'La solicitud se envio a previo',
+
                 default            => 'Cambio de estado.',
             };
 

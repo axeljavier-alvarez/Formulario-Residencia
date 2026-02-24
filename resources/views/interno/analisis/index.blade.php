@@ -35,6 +35,10 @@
 
     descripcion: '',
     errorRechazo: null,
+    errorPrevio: null,
+    
+     {{-- PREVIO --}}
+     openPrevio: false,
 
      {{-- codigo de cargas familiares --}}
     openCargas: false,
@@ -68,6 +72,16 @@
         errorRechazo = null;
     "
 
+    x-on:error-previo.window="
+    errorPrevio = $event.detail.mensaje
+    "
+    x-on:previo-exitoso.window="
+        openPrevio = false;
+        open = false;
+        descripcion = '';
+        errorPrevio = null;
+    "
+
     x-on:solicitud-por-autorizar.window="
         openPorAutorizar = false;
         open = false;
@@ -78,10 +92,16 @@
         open = false;
     "
 
+
+
+
+
     @open-modal-solicitud.window="
     open = true;
     solicitud = $event.detail.solicitud
     "
+
+    
 
 
     {{-- x-show="open" --}}
@@ -100,38 +120,87 @@
     aria-modal="true" --}}
 >
 
+<!-- MODAL PREVIO -->
+<div x-show="openPrevio" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="openPrevio = false"></div>
 
+    <div x-show="openPrevio"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative overflow-hidden">
 
-<!-- MODAL PARA ABRIR FOTO EN GRANDE -->
-    <div
-    x-show="openPreview"
-    x-cloak
-    @click="openPreview = false"
-    class="fixed inset-0 z-[200] flex items-center justify-center
-    bg-black bg-opacity-90 backdrop-blur-sm"
-    @keydown.escape.window="openPreview = false"
-    >
-    <button @click="openPreview = false" class="absolute top-5
-    right-5 text-white hover:text-red-400 transition-colors">
-        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-    </button>
+        <div class="h-2 bg-[#F46241] w-full"></div>
 
-    <img :src="imgSource"
-     class="max-w-[95vw] max-h-[95vh] w-auto h-auto object-contain rounded-lg shadow-2xl"
->
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="relative flex items-center justify-center w-12 h-12">
+                        <div class="absolute inset-0 bg-[#F46241] rounded-full opacity-20 animate-pulse"></div>
+                        <div class="relative w-10 h-10 bg-[#F46241] rounded-full flex items-center justify-center shadow-lg shadow-[#F46241]/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Enviar a Previo</h3>
+                        <p class="text-sm text-gray-500 leading-tight">Preparar solicitud para revisión</p>
+                    </div>
+                </div>
+
+                <button @click="openPrevio = false"
+                        class="text-gray-400 hover:text-[#F46241] hover:bg-[#F46241]/10 rounded-full transition-all p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mt-5">
+                <p class="text-gray-700 text-base">
+                    ¿Desea enviar la solicitud <span class="font-bold text-[#F46241]" x-text="solicitud.no_solicitud"></span> a previo?
+                </p>
+
+                <div x-show="errorPrevio" x-cloak
+                     class="mt-3 p-3 bg-orange-50 border border-[#F46241]/20 text-[#F46241] text-sm rounded-lg flex items-center gap-2">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                    <span x-text="errorPrevio"></span>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-1 ml-1">
+                        Descripción de envío <span class="text-[#F46241]">*</span>
+                    </label>
+                    <textarea
+                        x-model="descripcion"
+                        rows="4"
+                        class="w-full border-gray-200 rounded-xl p-3 text-sm focus:border-[#F46241] focus:ring focus:ring-[#F46241]/20 transition-all resize-none bg-gray-50"
+                        placeholder="Escriba la descripción del previo...">
+                    </textarea>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
+                <button @click="openPrevio = false"
+                        class="w-full sm:w-auto px-6 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all order-2 sm:order-1">
+                    Cancelar
+                </button>
+
+                <button @click="errorPrevio = null; Livewire.dispatch('peticionPrevio', { id: solicitud.id, descripcion: descripcion });"
+                        class="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-white bg-[#F46241] hover:bg-[#d95336] rounded-xl shadow-lg shadow-[#F46241]/20 transition-all transform active:scale-95 order-1 sm:order-2">
+                    Confirmar envío a previo
+                </button>
+            </div>
+        </div>
     </div>
-
-
-<div x-show="open"
-     x-transition:enter="ease-out duration-300"
-     x-transition:enter-start="opacity-0"
-     x-transition:enter-end="opacity-100"
-     class="fixed inset-0 bg-gray-900/35 backdrop-blur-sm transition-opacity z-50"
-     @click="open = true">
-
 </div>
+
+
+
+
 
 <!-- MODAL PARA ABRIR DOCUMENTO -->
 <div x-show="openDocumento" x-cloak class="fixed inset-0 z-[999] flex items-center justify-center">
@@ -616,6 +685,23 @@
 
                                 INSPECCIÓN DE CAMPO
                             </button>
+
+                            <button type="button"
+                                @click="openPrevio = true"
+                                x-show="solicitud.estado?.nombre === 'Analisis'"
+                                class="w-full md:w-auto inline-flex items-center justify-center rounded-xl
+                                    bg-orange-50 px-6 py-3.5 text-sm font-black text-orange-600
+                                    border border-orange-200 hover:bg-orange-500 hover:text-white
+                                    transition-all transform active:scale-95">
+
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.7-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
+                                </svg>
+
+                                ENVIAR A PREVIO
+                            </button>
+
 
                             <button
                                 type="button"
