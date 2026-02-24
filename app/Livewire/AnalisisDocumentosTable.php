@@ -405,33 +405,51 @@ public function rechazarSolicitud(int $id, string $descripcion)
 
 
 // MANDAR A PREVIO
-  #[On('peticionPrevio')]
-public function previoSolicitud(int $id, string $descripcion)
+#[On('peticionPrevio')]
+public function previoSolicitud($id, $descripcion, $documentos = [])
 {
-    // validar observaciones
+    // 1. Validar observaciones
     if (blank($descripcion)) {
         $this->dispatch('error-previo', mensaje: 'Debe ingresar una observación');
         return;
     }
 
-    // obtener estado "Cancelado"
+    // 2. Obtener estado "Previo"
     $estadoPrevio = Estado::where('nombre', 'Previo')->first();
     if (!$estadoPrevio) return;
 
-    // obtener la solicitud
+    // 3. Obtener la solicitud
     $solicitud = Solicitud::find($id);
     if (!$solicitud) return;
 
-    $solicitud->observacion_bitacora =
-    trim(strip_tags($descripcion));
+    // 4. Formatear la descripción para la Bitácora
+    // Creamos un texto que incluya los documentos seleccionados
+    $listaDocs = !empty($documentos) 
+        ? "\n\nDocumentos a corregir: " . implode(', ', $documentos) 
+        : "";
+    
+    $comentarioFinal = trim(strip_tags($descripcion)) . $listaDocs;
 
+    // 5. Guardar en la solicitud y cambiar estado
+    $solicitud->observacion_bitacora = $comentarioFinal;
     $solicitud->estado_id = $estadoPrevio->id;
-    $solicitud->save(['only', ['estado_id']]);
+    
+    // Si usas save(['only' => ...]) asegúrate de incluir los campos correctos
+    $solicitud->save(); 
 
-    // enviar evento al frontend
+    // OPCIONAL: Si tienes una tabla Bitacora aparte y quieres un registro detallado
+    /*
+    Bitacora::create([
+        'solicitud_id' => $id,
+        'user_id' => auth()->id(),
+        'evento' => 'Envío a Previo',
+        'descripcion' => $comentarioFinal
+    ]);
+    */
+
+    // 6. Enviar evento al frontend
     $this->dispatch('previo-exitoso');
 }
-
 
 
 

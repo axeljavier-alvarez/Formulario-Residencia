@@ -39,7 +39,7 @@
     
      {{-- PREVIO --}}
      openPrevio: false,
-
+        documentosSeleccionados: [],
      {{-- codigo de cargas familiares --}}
     openCargas: false,
     verDocumento(path, nombre = 'Documento'){
@@ -79,6 +79,7 @@
         openPrevio = false;
         open = false;
         descripcion = '';
+        documentosSeleccionados = [];
         errorPrevio = null;
     "
 
@@ -174,6 +175,23 @@
                     <label class="block text-sm font-bold text-gray-700 mb-1 ml-1">
                         Descripción de envío <span class="text-[#F46241]">*</span>
                     </label>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1">
+                            Documentos a corregir:
+                        </label>
+                        <div class="max-h-40 overflow-y-auto space-y-2 p-2 bg-gray-50 rounded-xl border border-gray-100">
+                            <template x-for="(doc, index) in (solicitud.documentos || []).filter(d => d.tipo === 'normal')" :key="index">
+                                <label class="flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-100 cursor-pointer hover:bg-orange-50 transition-colors">
+                                    <input type="checkbox" 
+                                        :value="doc.titulo" 
+                                        x-model="documentosSeleccionados"
+                                        class="rounded border-gray-300 text-[#F46241] focus:ring-[#F46241]">
+                                    <span class="text-xs font-medium text-gray-700" x-text="doc.titulo"></span>
+                                </label>
+                            </template>
+                        </div>
+                    </div>
                     <textarea
                         x-model="descripcion"
                         rows="4"
@@ -189,7 +207,11 @@
                     Cancelar
                 </button>
 
-                <button @click="errorPrevio = null; Livewire.dispatch('peticionPrevio', { id: solicitud.id, descripcion: descripcion });"
+                <button @click="errorPrevio = null; Livewire.dispatch('peticionPrevio', { 
+                    id: solicitud.id, 
+                    descripcion: descripcion,
+                    documentos: documentosSeleccionados
+                 });"
                         class="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-white bg-[#F46241] hover:bg-[#d95336] rounded-xl shadow-lg shadow-[#F46241]/20 transition-all transform active:scale-95 order-1 sm:order-2">
                     Confirmar envío a previo
                 </button>
