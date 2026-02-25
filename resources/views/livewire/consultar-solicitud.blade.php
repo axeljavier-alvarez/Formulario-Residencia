@@ -106,7 +106,7 @@
         x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100"
         x-cloak
-        class="fixed inset-0 z-50 flex items-center justify-center px-4"
+        class="fixed inset-0 z-50 flex items-start justify-center px-4 py-10 overflow-y-auto"
     >
         {{-- OVERLAY --}}
         <div
@@ -115,7 +115,7 @@
         ></div>
 
         {{-- CONTENIDO MODAL --}}
-        <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+        <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-white/20 mb-10">
             
             {{-- HEADER MODAL --}}
             <div class="bg-[#2563EB] px-8 py-6 flex justify-between items-center text-white">
@@ -291,18 +291,66 @@
                         </div>
                     @endif
 
-                    @if($solicitud->estado->nombre === 'Previo')
-                        <div class="mt-8 p-6 bg-white border-2 border-dashed border-orange-200 rounded-3xl">
-                            <h4 class="text-gray-800 font-black flex items-center gap-2 mb-4">
-                                <i class="fas fa-cloud-upload-alt text-orange-500"></i>
-                                DOCUMENTOS A ARREGLAR
-                            </h4>
 
-                            <p class="text-xs text-gray-500 italic">
-                                Cargue los archivos solicitados por el revisor para procesar su solicitud nuevamente.
+
+                    @if($solicitud->estado->nombre === 'Previo')
+    <div class="mt-8 p-6 bg-white border-2 border-dashed border-orange-200 rounded-3xl shadow-inner">
+        <div class="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @foreach($this->documentosPrevio as $index => $doc)
+                    <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 {{ isset($archivos[$index]) ? 'border-blue-500 bg-blue-50' : '' }}">
+                        <label class="block text-xs font-black text-gray-700 mb-2 uppercase">
+                            {{ $doc['nombre'] }}
+                        </label>
+
+                        <input type="file" wire:model="archivos.{{ $index }}" 
+                               class="block w-full text-[10px] text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+
+                        {{-- Mostrar indicador de que el archivo está listo para subirse --}}
+                        @if(isset($archivos[$index]))
+                            <p class="text-[9px] text-blue-600 font-bold mt-1 animate-bounce">
+                                <i class="fas fa-check"></i> Archivo listo para cargar
                             </p>
+                        @endif
+
                         </div>
-                    @endif
+                @endforeach
+            </div>
+        </div>
+
+        {{-- MENSAJES DE ESTADO --}}
+        @if (session()->has('success_upload'))
+            <div class="mt-4 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-bold text-center">
+                {{ session('success_upload') }}
+            </div>
+        @endif
+
+        @if (session()->has('error_upload'))
+            <div class="mt-4 p-4 bg-red-100 text-red-700 rounded-xl text-sm font-bold text-center">
+                {{ session('error_upload') }}
+            </div>
+        @endif
+
+        {{-- BOTÓN DE ACCIÓN --}}
+        <div class="mt-6">
+            <button 
+                wire:click="corregirPrevio"
+                wire:loading.attr="disabled"
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-sm"
+            >
+                <span wire:loading.remove wire:target="corregirPrevio">
+                    <i class="fas fa-cloud-upload-alt"></i> Cargar Documentos y Enviar
+                </span>
+                <span wire:loading wire:target="corregirPrevio">
+                    <i class="fas fa-spinner fa-spin"></i> Procesando...
+                </span>
+            </button>
+        </div>
+    </div>
+@endif
+
+
+
                     </div>
                     <button
                         @click="openModal = false; $wire.limpiarSolicitud();"
