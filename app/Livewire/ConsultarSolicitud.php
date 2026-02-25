@@ -103,11 +103,9 @@ public function corregirPrevio()
         session()->flash('error_upload', 'Debe seleccionar al menos un archivo para cargar.');
         return;
     }
-
     // OJO: Aquí llamamos al método computado correctamente
     $documentos = $this->documentosPrevio(); 
     $archivosCargadosCount = 0;
-
     foreach ($this->archivos as $index => $archivoTemp) {
         if ($archivoTemp && isset($documentos[$index])) {
             $detalle = $documentos[$index]['detalle'];
@@ -127,7 +125,6 @@ public function corregirPrevio()
             }
         }
     }
-
     // Buscamos el estado Analisis (asegúrate que se escriba exactamente así en tu DB)
     $estadoAnalisis = Estado::where('nombre', 'Analisis')->first(); 
     
@@ -146,8 +143,6 @@ public function corregirPrevio()
         session()->flash('success_upload', 'Documentos cargados exitosamente. Su solicitud ha pasado a Revisión.');
     }
 }
-
-
 
 
     public function limpiar()
