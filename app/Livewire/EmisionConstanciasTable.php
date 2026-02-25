@@ -10,15 +10,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\On;
 use App\Models\Estado;
 use PhpOffice\PhpWord\TemplateProcessor;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 use TCPDF; // Para el PDF
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\IOFactory;
-use Illuminate\Support\Facades\Log;
+// convertir a pdf
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 class EmisionConstanciasTable extends DataTableComponent
 {
     

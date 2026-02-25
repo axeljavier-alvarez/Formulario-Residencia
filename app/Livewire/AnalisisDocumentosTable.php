@@ -436,7 +436,6 @@ public function previoSolicitud($id, $descripcion, $documentos = [])
     
     // Si usas save(['only' => ...]) asegúrate de incluir los campos correctos
     $solicitud->save(); 
-
     // OPCIONAL: Si tienes una tabla Bitacora aparte y quieres un registro detallado
     /*
     Bitacora::create([

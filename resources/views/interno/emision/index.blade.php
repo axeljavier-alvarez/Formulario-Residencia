@@ -262,15 +262,15 @@ x-on:constancia-generada.window="
         Cancelar
       </button>
 
-      <button
-        @click="
-          Livewire.dispatch('emitir-constancia');
-          openEmitir = false;
-        "
-        class="px-4 py-2 text-sm font-bold text-gray-900 rounded-lg bg-[#EBD4A9]"
-      >
-        Sí, emitir
-      </button>
+     <button
+  @click="
+    Livewire.dispatch('emitir-constancia', { id: solicitud.id });
+    openEmitir = false;
+  "
+  class="px-4 py-2 text-sm font-bold text-gray-900 rounded-lg bg-[#EBD4A9]"
+>
+  Sí, emitir
+</button>
     </div>
 
   </div>

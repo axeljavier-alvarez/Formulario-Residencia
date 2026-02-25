@@ -10,7 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "barryvdh/laravel-dompdf": "*",
+        "barryvdh/laravel-dompdf": "^3.1",
         "blade-ui-kit/blade-heroicons": "^2.6",
         "dompdf/dompdf": "*",
         "laravel/framework": "^12.0",
@@ -20,6 +20,8 @@
         "livewire/livewire": "^3.6.4",
         "phpoffice/phpword": "^1.4",
         "rappasoft/laravel-livewire-tables": "*",
+        "setasign/fpdf": "*",
+        "setasign/fpdi": "*",
         "tecnickcom/tcpdf": "^6.10"
     },
 
