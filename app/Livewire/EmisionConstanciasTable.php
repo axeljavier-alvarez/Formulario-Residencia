@@ -19,6 +19,11 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+
+
+use setasign\Fpdi\Fpdi;
+
+
 class EmisionConstanciasTable extends DataTableComponent
 {
     
@@ -408,116 +413,90 @@ public function emitirConstancia()
 {
     if(!$this->solicitudIdSeleccionada) return;
 
+    // 1. Cargar solicitud inicial
     $this->solicitud = Solicitud::with(['zona', 'tramite', 'detalles'])->findOrFail($this->solicitudIdSeleccionada);
     $estadoEmitido = Estado::where('nombre', 'Emitido')->first();
     if(!$estadoEmitido) return;
 
-    // -------------------------------
-    // ELEGIR TEMPLATE SEGÚN TRAMITE
-    // -------------------------------
+    // 2. Lógica de selección de vista (Slug y Cargas)
     $slug = $this->solicitud->tramite->slug ?? '';
-    $hasCarga = $this->solicitud->detalles()
-                    ->where('tipo', 'like', '%carga%')
-                    ->exists();
+    $hasCarga = $this->solicitud->detalles()->where('tipo', 'like', '%carga%')->exists();
 
     if($slug === 'magisterio') {
-        $templateFile = $hasCarga 
-                        ? 'magisterio_con_cargas.docx' 
-                        : 'magisterio_sin_cargas.docx';
+        $view = $hasCarga ? 'pdfs.magisterio_con_cargas' : 'pdfs.magisterio_sin_cargas';
     } else {
-        $templateFile = 'solicitudes_varias.docx';
+        $view = 'pdfs.solicitudes_varias';
     }
 
-    $templatePath = resource_path('word/' . $templateFile);
-
-    // -------------------------------
-    // DIRECTORIO DE SALIDA
-    // -------------------------------
-    $outputDir = storage_path('app/public/constancias');
-    if(!is_dir($outputDir)){
-        mkdir($outputDir, 0755, true);
-    }
-
+    // 3. Preparar rutas
     $fileNamePdf = $this->solicitud->no_solicitud . '-constancia-' . Str::random(15) . '.pdf';
+    $outputDir = storage_path('app/public/constancias');
     $outputPathPdf = $outputDir . '/' . $fileNamePdf;
 
-    $tempWordPath = storage_path('app/temp_word_' . Str::random(10) . '.docx');
+    if(!is_dir($outputDir)) mkdir($outputDir, 0755, true);
 
     try {
-        $template = new TemplateProcessor($templatePath);
-
-        $fechaHoy = now();
-        $dia = $fechaHoy->format('d');
-        $meses = [
-            1 => 'enero',2 => 'febrero',3 => 'marzo',4 => 'abril',
-            5 => 'mayo',6 => 'junio',7 => 'julio',8 => 'agosto',
-            9 => 'septiembre',10 => 'octubre',11 => 'noviembre',12 => 'diciembre'
+        // 4. Generar PDF con DomPDF usando los datos de la solicitud
+        $data = [
+            'solicitud' => $this->solicitud,
+            'dia' => now()->format('d'),
+            'mes' => $this->getMesNombre(now()->format('m')),
+            'anio' => now()->format('Y'),
+            'fecha' => now()->format('d/m/Y')
         ];
-        $mes = $meses[(int)$fechaHoy->format('m')];
 
-        $template->setValue('nombre', strtoupper($this->solicitud->nombres . ' ' . $this->solicitud->apellidos));
-        $template->setValue('cui', strtoupper($this->solicitud->cui ?? 'N/A'));
-        $template->setValue('domicilio', $this->solicitud->domicilio ?? 'N/A');
-        $template->setValue('correlativo', $this->solicitud->no_solicitud ?? 'N/A');
-        $template->setValue('razon', strtoupper($this->solicitud->razon ?? 'N/A'));
-        $template->setValue('fecha', now()->format('d/m/Y'));
-        $template->setValue('tramite', strtoupper($this->solicitud->tramite->nombre ?? 'N/A'));
-        $template->setValue('zona', strtoupper($this->solicitud->zona->nombre ?? 'N/A'));
-        $template->setValue('DIA', $dia);
-        $template->setValue('MES', $mes);
-
-        $template->saveAs($tempWordPath);
-
-        // Convertir a PDF
-        Settings::setPdfRendererName(Settings::PDF_RENDERER_TCPDF);
-        Settings::setPdfRendererPath(base_path('vendor/tecnickcom/tcpdf'));
-
-        $phpWord = IOFactory::load($tempWordPath);
-        $pdfWriter = IOFactory::createWriter($phpWord, 'PDF');
-        $pdfWriter->save($outputPathPdf);
-
-        if (file_exists($tempWordPath)){
-            unlink($tempWordPath);
-        }
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, $data);
+        $pdf->setPaper('letter', 'portrait');
+        $pdf->save($outputPathPdf);
 
     } catch (\Exception $e) {
-        Log::error("Error generando PDF: " . $e->getMessage());
+        Log::error("Error DomPDF: " . $e->getMessage());
         return;
     }
 
-    // Guardar en BD y actualizar estado
+    // 5. Guardar en Base de Datos
     $this->solicitud->detalles()->create([
         'tipo' => 'constancia',
         'path' => 'constancias/' . $fileNamePdf, 
         'user_id' => Auth::id(),
     ]);
 
+    // 6. Actualizar Estado
     $this->solicitud->update(['estado_id' => $estadoEmitido->id]);
 
+    // 7. RECARGA COMPLETA (Crucial para que el modal no se rompa)
     $this->solicitud->load([
-        'estado', 'bitacoras.user', 'detalles', 'detalles.requisitoTramite.requisito'
+        'estado', 
+        'bitacoras.user', 
+        'detalles', 
+        'detalles.requisitoTramite.requisito',
+        'zona'
     ]);
 
+    // 8. Preparar el array de respuesta exactamente como lo pide tu JS
     $constancia = $this->solicitud->detalles()->where('tipo', 'constancia')->latest()->first();
-    $constanciaGenerada = $constancia && Storage::disk('public')->exists($constancia->path);
+    $constanciaGenerada = $constancia && \Illuminate\Support\Facades\Storage::disk('public')->exists($constancia->path);
 
     $solicitudArray = $this->solicitud->toArray();
     $solicitudArray['constancia_generada'] = $constanciaGenerada;
     $solicitudArray['constancia_path'] = $constanciaGenerada ? $constancia->path : null;
 
+    // 9. Despachar eventos
     $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
     $this->dispatch('$refresh');
 }
 
+// Funcion del nombre del mes
+private function getMesNombre($n) {
+    $meses = [
+        1=>'enero', 2=>'febrero', 3=>'marzo', 4=>'abril',
+        5=>'mayo', 6=>'junio', 7=>'julio', 8=>'agosto',
+        9=>'septiembre', 10=>'octubre', 11=>'noviembre', 12=>'diciembre'
+    ];
+    return $meses[(int)$n];
+}
 
 
 
-
-//     $solicitudArray['constancia_generada'] = $constanciaGenerada;
-//     $solicitudArray['constancia_path'] = $constanciaGenerada ? $constancia->path : null;
-//     $this->dispatch('constancia-emitida', solicitud: $solicitudArray);
-//     $this->dispatch('$refresh');
-//     // return Storage::disk('public')->download('constancias/' . $fileNamePdf);
-// }
 
 }

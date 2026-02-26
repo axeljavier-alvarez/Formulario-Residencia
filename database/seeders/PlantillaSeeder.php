@@ -21,13 +21,13 @@ class PlantillaSeeder extends Seeder
             Plantilla::create([
                 'tramite_id' => $magisterio->id,
                 'tipo' => 'con_carga',
-                'path' => 'word/magisterio_con_cargas.docx'
+                'path' => 'pdf/magisterio_con_cargas.pdf'
             ]);
 
             Plantilla::create([
                 'tramite_id' => $magisterio->id,
                 'tipo' => 'sin_carga',
-                'path' => 'word/magisterio_sin_cargas.docx'
+                'path' => 'pdf/magisterio_sin_cargas.pdf'
             ]);
         }
 
@@ -39,7 +39,7 @@ class PlantillaSeeder extends Seeder
             Plantilla::create([                
                 'tramite_id' => $tramite->id,
                 'tipo' => 'general',
-                'path' => 'word/solicitudes_varias.docx'
+                'path' => 'pdf/solicitudes_varias.pdf'
             ]);
         }
 

@@ -21,7 +21,6 @@
     "dependencies": {
         "@ckeditor/ckeditor5-build-classic": "^41.4.2",
         "alpinejs": "^3.15.2",
-        "apexcharts": "^5.6.0",
         "flowbite": "^4.0.1"
     }
 }
