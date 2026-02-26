@@ -9,6 +9,9 @@ WHERE id = 32; */
 /* ver los archivos por no_solicitud de dependientes 
 */
 
+
+SELECT * FROM plantillas;
+
 SELECT * FROM estados;
 SELECT * FROM dependientes;
 SELECT * FROM tramites;
@@ -147,3 +150,4 @@ ORDER BY t.id;
 DELETE FROM solicitudes_has_requisitos_tramites
 
 DELETE FROM solicitudes */
+plantillas
