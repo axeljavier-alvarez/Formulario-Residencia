@@ -15,11 +15,9 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <!-- Font awesome -->
-        <script src="https://kit.fontawesome.com/e2d71e4ca2.js" crossorigin="anonymous"></script>
+        {{-- <script src="https://kit.fontawesome.com/e2d71e4ca2.js" crossorigin="anonymous"></script> --}}
 
         <!-- ApexCharts -->
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
         <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
 
         <script>

@@ -9,6 +9,8 @@ use App\Models\Estado;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
+use App\Services\PrevioService;
+
 class ConsultarSolicitud extends Component
 {
     use WithFileUploads;
@@ -17,6 +19,7 @@ class ConsultarSolicitud extends Component
     public $solicitud;
     public $estados; // Se llenará al cargar el componente
     public $error;
+    public $archivos = []; 
 
     // Se ejecuta una sola vez al cargar la página
     public function mount()
@@ -55,41 +58,6 @@ class ConsultarSolicitud extends Component
     }
 
 
-    public $archivos = []; 
-
-#[Computed]
-public function documentosPrevio()
-{
-    if (!$this->solicitud) return [];
-
-    $documentos = [];
-    $ultimaBitacoraPrevio = $this->solicitud->bitacoras
-        ->where('evento', 'CAMBIO DE ESTADO: Previo')
-        ->last();
-
-    if (!$ultimaBitacoraPrevio) return [];
-    
-    $observacion = $ultimaBitacoraPrevio->descripcion;
-
-    foreach ($this->solicitud->requisitosTramites as $rt) {
-        $nombreRequisito = $rt->requisito->nombre;
-
-        // Cambiamos a str_contains para evitar el error previo
-        if (str_contains(mb_strtolower($observacion), mb_strtolower($nombreRequisito))) {            
-            $detalle = $this->solicitud->detalles()
-                ->where('requisito_tramite_id', $rt->id)
-                ->first();
-
-            $documentos[] = [
-                'id_relacion' => $rt->id,
-                'nombre' => $nombreRequisito,
-                'detalle' => $detalle
-            ];
-        }
-    }
-    return $documentos;
-}
-
 public function updatedArchivos()
 {
     $this->validate([
@@ -97,50 +65,47 @@ public function updatedArchivos()
     ]);
 }
 
-public function corregirPrevio()
+#[Computed]
+public function documentosPrevio()
 {
-    if (empty(array_filter($this->archivos))) {
-        session()->flash('error_upload', 'Debe seleccionar al menos un archivo para cargar.');
+    if (!$this->solicitud) {
+        return [];
+    }
+
+    $service = app(PrevioService::class);
+
+    return $service->obtenerDocumentosPrevio($this->solicitud);
+}
+
+public function corregirPrevio(PrevioService $service)
+{
+    // if(empty(array_filter($this->archivos))){
+    //     session()->flash('error_upload', 'Debe seleccionar al menos un archivo para cargar');
+    //     return;
+    // }
+
+    $documentos = $this->documentosPrevio;
+    $archivosValidos = array_filter($this->archivos);
+
+    if (count($archivosValidos) !== count($documentos)){
+        session()->flash(
+            'error_upload',
+            'Debe cargar todos los documentos solicitados'
+        );
         return;
     }
-    // OJO: Aquí llamamos al método computado correctamente
-    $documentos = $this->documentosPrevio(); 
-    $archivosCargadosCount = 0;
-    foreach ($this->archivos as $index => $archivoTemp) {
-        if ($archivoTemp && isset($documentos[$index])) {
-            $detalle = $documentos[$index]['detalle'];
 
-            $path = $archivoTemp->store('previos', 'public');
+// llamar al service una vez pasada la validación
+    $cantidad = $service->procesarCorreccion(
+        $this->solicitud,
+        $this->archivos
+    );
 
-            if ($detalle && $detalle->path && Storage::disk('public')->exists($detalle->path)) {
-                Storage::disk('public')->delete($detalle->path);
-            }
-
-            if ($detalle) {
-                $detalle->update([
-                    'path' => $path,
-                    'user_id' => null, 
-                ]);
-                $archivosCargadosCount++;
-            }
-        }
-    }
-    // Buscamos el estado Analisis (asegúrate que se escriba exactamente así en tu DB)
-    $estadoAnalisis = Estado::where('nombre', 'Analisis')->first(); 
-    
-    if ($estadoAnalisis && $archivosCargadosCount > 0) {
-        $this->solicitud->update(['estado_id' => $estadoAnalisis->id]);
-
-        Bitacora::create([
-            'solicitud_id' => $this->solicitud->id,
-            'evento' => 'CORRECCIÓN DE PREVIO',
-            'descripcion' => 'El ciudadano ha cargado ' . $archivosCargadosCount . ' documentos solicitados.',
-            'fecha' => now(),
-        ]);
-
+    // service guardo archivos resetea inputs, vuelve a consultar y muestra mensaje exito
+    if ($cantidad > 0){
         $this->reset('archivos');
-        $this->consultar(); // Recarga la solicitud para que el modal se actualice
-        session()->flash('success_upload', 'Documentos cargados exitosamente. Su solicitud ha pasado a Revisión.');
+        $this->consultar(); 
+        session()->flash('success_upload', 'Documentos cargados exitosamente');
     }
 }
 

@@ -39,7 +39,10 @@ class SolicitudObserver
             $nuevoEstado = Estado::find($solicitud->estado_id);
             $nombreEstadoNuevo  = $nuevoEstado?->nombre ?? 'DESCONOCIDO';
 
-
+            // no mostrar mensaje de analisis cuando antes fue previo 
+            if($nombreEstadoAnterior === 'Previo' && $nombreEstadoNuevo === 'Analisis'){
+                return;
+            }
 
             $comentario = $solicitud->observacion_bitacora;
 

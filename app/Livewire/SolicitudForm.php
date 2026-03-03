@@ -103,8 +103,6 @@ class SolicitudForm extends Component
     'cui',
 ];
 
-
-
     // para subir archivos
         use WithFileUploads;
 
@@ -288,51 +286,7 @@ public function updated($property)
         }
 
 
-        // GUARDAR CARGAS FAMILIARES
-// if($this->agregarCargas === 'si' && count($this->cargas) > 0){
-//     foreach($this->cargas as $index => $carga) {
-//         // validar nombres y apellidos
-//         if(empty($carga['nombres']) || empty($carga['apellidos'])){
-//             continue;
-//         }
-
-//         // codigo antiguo
-//         // $dependiente = $solicitud->dependientes()->create([
-//         //     'nombres' => $carga['nombres'],
-//         //     'apellidos'=> $carga['apellidos']
-//         // ]);
-
-//         // NUEVO PARA GUARDAR CARGAS FAMILIARES CON DETALLE_SOLICITUD
-//         if($this->agregarCargas === 'si' && count($this->cargas) > 0){
-
-//         }
-
-//         // Subir archivo de la carga si existe
-//         if(isset($carga['archivo']) && $carga['archivo']){
-//             $requisitoCarga = RequisitoTramite::where('tramite_id', $this->tramite_id)
-//                 ->whereHas('requisito', function($q){
-//                     $q->where('slug', 'cargas-familiares');
-//                 })->first();
-
-//             if($requisitoCarga){
-
-//                 // generando nombre del archivo
-//                 $extension = $carga['archivo']->getClientOriginalExtension();
-//                 $nombreArchivo = $no_solicitud  . '-' . Str::random(20) . '.' . $extension;
-//                 // $path = $carga['archivo']->store('cargas_familiares', 'public');
-
-//                 // nueva ruta
-//                 $path = $carga['archivo']->storeAs('cargas_familiares', $nombreArchivo, 'public');
-
-//                 DetalleSolicitud::create([
-//                     'path' => $path,
-//                     'solicitud_id' => $solicitud->id,
-//                     'requisito_tramite_id' => $requisitoCarga->id
-//                 ]);
-//             }
-//         }
-//     }
-// }
+  
 
        // GUARDAR CARGAS FAMILAIRES
        if($this->agregarCargas === 'si' && count($this->cargas)>0){

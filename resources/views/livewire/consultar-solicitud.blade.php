@@ -6,11 +6,9 @@
 
     {{-- CONTENEDOR PRINCIPAL --}}
     <div class="max-w-2xl mx-auto p-4 md:p-0">
-
         {{-- FORMULARIO --}}
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
             <div class="p-8 md:p-12">
-
                 {{-- TÍTULO --}}
                 <div class="text-center mb-10">
                     <h1 class="text-2xl md:text-3xl font-black text-[#2563EB] tracking-tight mb-2">
@@ -18,7 +16,6 @@
                     </h1>
                     <div class="h-1 w-20 bg-[#2563EB] mx-auto rounded-full"></div>
                 </div>
-
                 {{-- ICONO --}}
                 <div class="mb-10 relative">
                     <div class="absolute inset-0 bg-blue-50 rounded-full scale-150 blur-3xl opacity-50"></div>
@@ -28,7 +25,6 @@
                         class="w-28 md:w-36 mx-auto relative drop-shadow-xl"
                     >
                 </div>
-
                 {{-- ALERTA --}}
                 <div class="mb-8 flex items-center gap-3 bg-[#FEF7DC] border border-yellow-200 p-4 rounded-2xl text-yellow-800 text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,7 +32,6 @@
                     </svg>
                     <p class="font-medium">Debe ingresar los datos exactos que colocó en su solicitud.</p>
                 </div>
-
                 {{-- INPUTS --}}
                 <div class="space-y-6">
                     <div class="group">
@@ -293,30 +288,30 @@
 
 
 
-                    @if($solicitud->estado->nombre === 'Previo')
-    <div class="mt-8 p-6 bg-white border-2 border-dashed border-orange-200 rounded-3xl shadow-inner">
-        <div class="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($this->documentosPrevio as $index => $doc)
-                    <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 {{ isset($archivos[$index]) ? 'border-blue-500 bg-blue-50' : '' }}">
-                        <label class="block text-xs font-black text-gray-700 mb-2 uppercase">
-                            {{ $doc['nombre'] }}
-                        </label>
+                            @if($solicitud->estado->nombre === 'Previo')
+            <div class="mt-8 p-6 bg-white border-2 border-dashed border-orange-200 rounded-3xl shadow-inner">
+                <div class="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @foreach($this->documentosPrevio as $index => $doc)
+                            <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 {{ isset($archivos[$index]) ? 'border-blue-500 bg-blue-50' : '' }}">
+                                <label class="block text-xs font-black text-gray-700 mb-2 uppercase">
+                                    {{ $doc['nombre'] }}
+                                </label>
 
-                        <input type="file" wire:model="archivos.{{ $index }}" 
-                               class="block w-full text-[10px] text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                                <input type="file" wire:model="archivos.{{ $index }}" 
+                                    class="block w-full text-[10px] text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
 
-                        {{-- Mostrar indicador de que el archivo está listo para subirse --}}
-                        @if(isset($archivos[$index]))
-                            <p class="text-[9px] text-blue-600 font-bold mt-1 animate-bounce">
-                                <i class="fas fa-check"></i> Archivo listo para cargar
-                            </p>
-                        @endif
+                                {{-- Mostrar indicador de que el archivo está listo para subirse --}}
+                                @if(isset($archivos[$index]))
+                                    <p class="text-[9px] text-blue-600 font-bold mt-1 animate-bounce">
+                                        <i class="fas fa-check"></i> Archivo listo para cargar
+                                    </p>
+                                @endif
 
-                        </div>
-                @endforeach
-            </div>
-        </div>
+                                </div>
+                        @endforeach
+                    </div>
+                </div>
 
         {{-- MENSAJES DE ESTADO --}}
         @if (session()->has('success_upload'))
