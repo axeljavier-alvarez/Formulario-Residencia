@@ -26,10 +26,12 @@
     constanciaGenerada: false,
     constanciaFile: null,
     openEmitir: false,
+    showDocs: false,
         descripcion: '',
     hasTipo(tipo) {
             return this.solicitud?.detalles?.some(d => d.tipo === tipo);
         }
+    
 }"
 
 
@@ -188,95 +190,150 @@ x-on:constancia-generada.window="
 
 
 <!-- MODAL DE EMITIR CONSTANCIA -->
+<!-- MODAL EMITIR CONSTANCIA -->
+<!-- MODAL EMITIR CONSTANCIA -->
+<div x-show="openEmitir" x-cloak
+     class="fixed inset-0 z-[100] flex items-center justify-center p-4">
 
-<div
-  x-show="openEmitir"
-  x-cloak
-  class="fixed inset-0 z-[200] flex items-center justify-center"
->
-
-  <!-- Overlay -->
-  <div
-    class="fixed inset-0 bg-black bg-opacity-50"
-    @click="openEmitir = false"
-  ></div>
-
-  <!-- Modal -->
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
-
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-
-      <div class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="h-6 w-6 text-[#7A5C2E]"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M7 20h10a2 2 0 002-2V8l-6-6H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12h6m-6 4h6"/>
-        </svg>
-
-        <h3 class="text-lg font-bold text-gray-800">
-          Emitir constancia
-        </h3>
-      </div>
-
-      <!-- Cerrar -->
-      <button
-        @click="openEmitir = false"
-        type="button"
-        class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
-        aria-label="Cerrar modal"
-      >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
+    <!-- Fondo -->
+    <div x-show="openEmitir"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm"
+         @click="openEmitir = false">
     </div>
 
-    <!-- Contenido -->
-    <p class="font-bold text-gray-700 mt-3">
-      ¿Desea generar la constancia de la solicitud
-      <span class="text-gray-900" x-text="solicitud.no_solicitud"></span>?
-    </p>
+    <!-- Modal -->
+    <div x-show="openEmitir"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative overflow-hidden">
 
-    <div class="mt-4 bg-[#EBD4A9]/30 p-3 rounded-lg text-sm text-gray-800">
-      Al confirmar:
-      <ul class="list-disc ml-5 mt-1">
-        <li>Se generará la constancia</li>
-        <li>El estado cambiará a <strong>Emitido</strong></li>
-        <li>Se registrará en bitácora</li>
-      </ul>
+        <!-- Barra superior -->
+        <div class="h-2 bg-[#EBD4A9] w-full"></div>
+
+        <div class="p-6">
+
+            <!-- Header -->
+            <div class="flex items-start justify-between">
+
+                <div class="flex items-center gap-3">
+
+                    <div class="relative flex items-center justify-center w-12 h-12">
+                        <div class="absolute inset-0 bg-[#EBD4A9] rounded-full opacity-20 animate-pulse"></div>
+
+                        <div class="relative w-10 h-10 bg-[#EBD4A9] rounded-full flex items-center justify-center shadow-lg shadow-yellow-200">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="h-6 w-6 text-gray-900"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2.5"
+                                      d="M7 20h10a2 2 0 002-2V8l-6-6H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+
+                                <path stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M9 12h6m-6 4h6"/>
+                            </svg>
+                        </div>
+                    </div>
+
+
+
+
+                    
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">
+                            Emitir Constancia
+                        </h3>
+                        <p class="text-sm text-gray-500">
+                            Esta acción generará el documento oficial
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Cerrar -->
+                <button
+                    @click="openEmitir = false"
+                    class="text-gray-400 hover:text-[#EBD4A9] hover:bg-yellow-50 rounded-full transition-all p-1">
+
+                    <svg class="w-6 h-6"
+                         fill="none"
+                         stroke="currentColor"
+                         viewBox="0 0 24 24">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12">
+                        </path>
+
+                    </svg>
+                </button>
+
+            </div>
+
+            <!-- Contenido -->
+            <div class="mt-5">
+
+                <p class="text-gray-700 text-base">
+                    ¿Desea generar la constancia de la solicitud
+                    <span class="font-bold text-[#7A5C2E]"
+                          x-text="solicitud.no_solicitud">
+                    </span>?
+                </p>
+
+                <div class="mt-4 bg-[#EBD4A9]/30 border border-[#EBD4A9] p-3 rounded-xl text-sm text-gray-800">
+
+                    <p class="font-semibold mb-1">Al confirmar:</p>
+
+                    <ul class="list-disc ml-5 space-y-1">
+                        <li>Se generará la constancia</li>
+                        <li>El estado cambiará a <strong>Emitido</strong></li>
+                        <li>Se registrará en bitácora</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <!-- Botones -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
+
+                <button
+                    @click="openEmitir = false"
+                    class="w-full sm:w-auto px-6 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all">
+
+                    Cancelar
+                </button>
+
+                <button
+                    @click="
+                        Livewire.dispatch('emitir-constancia', { id: solicitud.id });
+                        openEmitir = false;
+                    "
+                    class="w-full sm:w-auto px-6 py-2.5 text-sm font-bold text-gray-900 bg-[#EBD4A9] hover:bg-[#e0c791] rounded-xl shadow-lg transition-all transform active:scale-95">
+
+                    Sí, emitir constancia
+                </button>
+
+            </div>
+
+        </div>
     </div>
-
-    <!-- Acciones -->
-    <div class="flex justify-end gap-3 mt-6">
-      <button
-        @click="openEmitir = false"
-        class="px-4 py-2 text-sm font-bold bg-gray-200 rounded-lg"
-      >
-        Cancelar
-      </button>
-
-     <button
-  @click="
-    Livewire.dispatch('emitir-constancia', { id: solicitud.id });
-    openEmitir = false;
-  "
-  class="px-4 py-2 text-sm font-bold text-gray-900 rounded-lg bg-[#EBD4A9]"
->
-  Sí, emitir
-</button>
-    </div>
-
-  </div>
 </div>
 
-      
+
+
+
+
 
 <div x-show="open" 
      x-transition:enter="ease-out duration-300" 
@@ -417,8 +474,23 @@ x-on:constancia-generada.window="
                                                 </template>
                             </div>
                         </div>
+
+
+                        
                     </div>
                 </div>
+
+
+                <div class="mt-3 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                                <label class="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">
+                                    Observaciones
+                                </label>
+
+                                <p class="text-gray-900 font-mono font-medium"
+                                x-text="solicitud.observaciones ? solicitud.observaciones : 'El solicitante no ingresó observaciones'">
+                                </p>
+                    </div>
+                    
 
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-100">
                   <button type="button" 
@@ -432,31 +504,7 @@ x-on:constancia-generada.window="
                         
                         RECHAZAR
                     </button>
-{{-- 
-                    <button
-                        x-show="!constanciaGenerada"
-                        @click="
-                            if(confirm('¿Desea generar la constancia?')){
-                                Livewire.dispatch('generar-constancia')
-                            }
-                        "
-                        class="w-full sm:w-auto rounded-xl bg-emerald-600 px-8 py-3
-                            text-sm font-black text-white shadow-lg hover:bg-emerald-700 transition-all">
-                        Generar constancia
-                    </button>
-                     --}}
 
-                   {{-- <button
-                        x-show="!constanciaGenerada"
-                        @click="
-                            if(confirm('¿Desea generar la constancia?')){
-                                Livewire.dispatch('generar-constancia')
-                            }
-                        "
-                        class="w-full sm:w-auto rounded-xl bg-emerald-600 px-8 py-3
-                            text-sm font-black text-white shadow-lg hover:bg-emerald-700 transition-all">
-                        Generar constancia
-                    </button> --}}
 
                    <button
                     type="button"
@@ -481,278 +529,246 @@ x-on:constancia-generada.window="
                     EMITIR CONSTANCIA
                 </button>
 
-
-
                                         
-                        {{-- <button
-                        x-show="constanciaGenerada"
-                        @click="openPorAutorizar = true"
-                        x-show="solicitud.estado?.nombre === 'Emitido'"
-                        class="inline-flex items-center justify-center rounded-xl
-                            bg-blue-600 px-10 py-3.5 text-sm font-black text-white
-                            shadow-xl hover:bg-blue-700 transition-all">
-                        Autorizar Solicitud
-                        </button> --}}
+              
                 </div>
 
 
                 <!-- aca mostrare los documentos de la persona -->
-
-                <div x-show="constanciaGenerada && solicitud.estado?.nombre === 'Emitido'" x-transition class="mt-6 w-full">
-
-                <div x-show="constanciaGenerada" x-transition class="mt-6 w-full">
-                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                            <div class="flex items-center gap-2 mb-4">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="w-6 h-6 text-emerald-600"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M9 12h6m-6 4h6M7 20h10a2 2 0 002-2V8l-6-6H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                </svg>
-
-                                <h4 class="text-lg font-bold text-gray-800">
-                                    Constancia generada
-                                </h4>
-                            </div>
-
-
-
-                            <template x-if="constanciaFile">
-                                <a
-                                    :href="`/storage/${constanciaFile}`"
-                                    download
-                                    class="inline-flex items-center gap-2 text-emerald-700 font-bold text-sm hover:underline"
-                                >
- 
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 16v-4m0 0V8m0 4h4m-4 0H8m8 4H8a2 2 0 01-2-2V6a2 2 0 012-2h5l5 5v7a2 2 0 01-2 2z"/>
-                                    </svg>
-                                    Ver / Descargar constancia
-                                </a>
-                            </template>
-
-                            <template x-if="!constanciaFile">
-                                <p class="text-xs text-emerald-600 italic">
-                                    Constancia generada correctamente.
-                                </p>
-                            </template>
-
+                <button 
+                x-show="solicitud.estado?.nombre === 'Emitido'"
+                x-transition
+                    @click="showDocs = !showDocs" 
+                    class="flex items-center justify-between w-full p-4 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200"
+                >
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="text-lg font-bold text-gray-800">Documentación de la solicitud</span>
                     </div>
+                    
+                    <svg 
+                        class="w-5 h-5 text-gray-500 transition-transform duration-300" 
+                        :class="showDocs ? 'rotate-180' : ''" 
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                
+
+    <div 
+        x-show="showDocs" 
+        x-collapse 
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform scale-95"
+        x-transition:enter-end="opacity-100 transform scale-100"
+        class="mt-4 space-y-6"
+    >
+        
+        <div x-show="constanciaGenerada && solicitud.estado?.nombre === 'Emitido'" class="w-full">
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                <div class="flex items-center gap-2 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M7 20h10a2 2 0 002-2V8l-6-6H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <h4 class="text-lg font-bold text-gray-800">Constancia generada</h4>
                 </div>
 
-                
-                
-      
-    
-       <div x-show="open" class="mt-6 w-full space-y-6">
+                <template x-if="constanciaFile">
+                    <a :href="`/storage/${constanciaFile}`" download class="inline-flex items-center gap-2 text-emerald-700 font-bold text-sm hover:underline">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0 0V8m0 4h4m-4 0H8m8 4H8a2 2 0 01-2-2V6a2 2 0 012-2h5l5 5v7a2 2 0 01-2 2z"/>
+                        </svg>
+                        Ver / Descargar constancia
+                    </a>
+                </template>
+                <template x-if="!constanciaFile">
+                    <p class="text-xs text-emerald-600 italic">Constancia generada correctamente.</p>
+                </template>
+            </div>
+        </div>
+
         <template x-if="solicitud">
-            <div>
+            <div class="space-y-4">
                 <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
                     <h4 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
                         <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         Documentos 
                     </h4>
-
                     <div class="space-y-3">
                         <template x-for="detalle in solicitud.detalles" :key="detalle.id">
                             <div x-show="detalle.tipo === 'normal' || detalle.tipo === 'carga'" 
                                  class="flex justify-between items-center text-sm border bg-white p-3 rounded-lg shadow-sm hover:border-emerald-400 transition-colors">
-                                
                                 <div class="flex flex-col">
                                     <span class="font-bold text-gray-700" x-text="detalle.requisito_tramite?.requisito?.nombre || 'Documento'"></span>
                                     <span class="text-[10px] uppercase text-gray-400 font-semibold" x-text="detalle.tipo"></span>
                                 </div>
-                                
-                                <a :href="'/storage/' + detalle.path" target="_blank" 
-                                   class="inline-flex items-center px-3 py-1 bg-emerald-600 text-white rounded-md text-xs font-bold hover:bg-emerald-700">
+                                <a :href="'/storage/' + detalle.path" target="_blank" class="inline-flex items-center px-3 py-1 bg-emerald-600 text-white rounded-md text-xs font-bold hover:bg-emerald-700">
                                     Ver Archivo
                                 </a>
                             </div>
                         </template>
                     </div>
                 </div>
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-4">
+
+                   <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-4">
+
                     <h4 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+
+                        </svg>
+
                         Archivos de dependientes
+
                     </h4>
 
-                      <div class="space-y-3">
-                        <template x-for="detalle in solicitud.detalles" :key="detalle.id">
-                            <div x-show="detalle.tipo === 'carga'" 
-                                 class="flex justify-between items-center text-sm border bg-white p-3 rounded-lg shadow-sm hover:border-emerald-400 transition-colors">
-                                
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-gray-700" x-text="detalle.requisito_tramite?.requisito?.nombre || 'Documento'"></span>
-                                    <span class="text-[10px] uppercase text-gray-400 font-semibold" x-text="detalle.tipo"></span>
-                                </div>
-                                
-                                <a :href="'/storage/' + detalle.path" target="_blank" 
-                                   class="inline-flex items-center px-3 py-1 bg-emerald-600 text-white rounded-md text-xs font-bold hover:bg-emerald-700">
-                                    Ver Archivo
-                                </a>
+
+
+                    <div class="space-y-3">
+
+                        <template x-if="solicitud.detalles.some(d => d.tipo === 'carga')">
+
+                            <div>
+
+                                <template x-for="detalle in solicitud.detalles" :key="detalle.id">
+
+                                    <div x-show="detalle.tipo === 'carga'" 
+
+                                        class="flex justify-between items-center text-sm border bg-white p-3 rounded-lg shadow-sm hover:border-blue-400 transition-colors mb-3 last:mb-0">
+
+                                        
+
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-gray-700"
+                                            x-text="detalle.dependiente 
+                                                    ? detalle.dependiente.nombres + ' ' + (detalle.dependiente.apellidos || '') 
+                                                    : 'Dependiente'">
+                                            </span>
+
+                                            
+
+                                            <span class="text-[10px] uppercase text-blue-500 font-semibold">Carga Familiar</span>
+
+                                        </div>
+
+                                        
+
+                                        <a :href="'/storage/' + detalle.path" target="_blank" 
+
+                                        class="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded-md text-xs font-bold hover:bg-blue-700 transition-colors">
+
+                                            Ver Archivo
+
+                                        </a>
+
+                                    </div>
+
+                                </template>
+
                             </div>
+
                         </template>
+
+
+
+                        <template x-if="!solicitud.detalles.some(d => d.tipo === 'carga')">
+
+                            <div class="flex flex-col items-center justify-center py-8 text-blue-400 border-2 border-dashed border-blue-100 rounded-lg">
+
+                                <svg class="w-12 h-12 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+
+                                </svg>
+
+                                <p class="text-sm font-medium italic">No se registraron dependientes para esta solicitud</p>
+
+                            </div>
+
+                        </template>
+
                     </div>
+
                 </div>
+
                 
 
+
+
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-4">
-                    <h4 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        Evidencias de Visita de Campo
-                    </h4>
 
-                    <template x-if="hasTipo('foto_visita')">
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <template x-for="detalle in solicitud.detalles" :key="detalle.id">
-                                <div x-show="detalle.tipo === 'foto_visita'" class="group relative">
-                                    <img :src="'/storage/' + detalle.path" 
-                                         class="w-full h-32 object-cover rounded-lg border-2 border-white shadow-md">
-                                    <a :href="'/storage/' + detalle.path" target="_blank" 
-                                       class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg text-white text-xs font-bold">
-                                        Ampliar Foto
-                                    </a>
+                                    <h4 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center gap-2">
+
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+
+                                        Evidencias de Visita de Campo
+
+                                    </h4>
+
+
+
+                                    <template x-if="hasTipo('foto_visita')">
+
+                                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+
+                                            <template x-for="detalle in solicitud.detalles" :key="detalle.id">
+
+                                                <div x-show="detalle.tipo === 'foto_visita'" class="group relative">
+
+                                                    <img :src="'/storage/' + detalle.path" 
+
+                                                        class="w-full h-32 object-cover rounded-lg border-2 border-white shadow-md">
+
+                                                    <a :href="'/storage/' + detalle.path" target="_blank" 
+
+                                                    class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg text-white text-xs font-bold">
+
+                                                        Ampliar Foto
+
+                                                    </a>
+
+                                                </div>
+
+                                            </template>
+
+                                        </div>
+
+                                    </template>
+
+
+
+                                    <template x-if="!hasTipo('foto_visita')">
+
+                                        <div class="flex flex-col items-center justify-center py-6 text-blue-400">
+
+                                            <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+
+                                            <p class="text-sm font-medium">No se realizó visita de campo / No hay fotos</p>
+
+                                        </div>
+
+                                    </template>
+
                                 </div>
-                            </template>
-                        </div>
-                    </template>
 
-                    <template x-if="!hasTipo('foto_visita')">
-                        <div class="flex flex-col items-center justify-center py-6 text-blue-400">
-                            <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                            <p class="text-sm font-medium">No se realizó visita de campo / No hay fotos</p>
-                        </div>
-                    </template>
-                </div>
+                            </div>
+
+                        </template>
+
+                    </div>
+
+
+                    
             </div>
         </template>
     </div>
-    
 
-   
-
-
-{{--   
-   <div 
-  x-show="openPorAutorizar"
-  x-on:solicitud-autorizada.window="openPorAutorizar = false"
-  x-cloak
-  class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-
-  <div 
-    class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm"
-    @click="openPorAutorizar = false">
-  </div>
-
-  <div 
-    x-show="openPorAutorizar"
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0 scale-95"
-    x-transition:enter-end="opacity-100 scale-100"
-    class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative overflow-hidden">
-
-    <div class="h-2 bg-[#3E88FF] w-full"></div>
-
-    <div class="p-6">
-      <div class="flex items-start justify-between">
-        <div class="flex items-center gap-3">
-          <div class="flex-shrink-0 w-10 h-10 bg-[#3E88FF]/10 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 text-[#3E88FF]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor">
-
-            <path stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16v10H4z" />
-            <path stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6l8 6 8-6" />
-
-            <path stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M14 14l3 2-3 2" />
-            </svg>
-            
-                        </div>
-          <div>
-            <h3 class="text-xl font-bold text-gray-900">
-              Mandar a autorizar
-            </h3>
-          </div>
-        </div>
-
-        <button
-          @click="openPorAutorizar = false"
-          class="text-gray-400 hover:text-gray-600 transition-colors p-1">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <div class="mt-5">
-        <p class="text-gray-700 text-base">
-          ¿Está seguro que desea enviar para autorizar la solicitud no.
-          <span class="font-bold text-gray-900" x-text="solicitud.no_solicitud"></span>?
-        </p>
-
-        <div class="mt-3 bg-blue-50 border-l-4 border-[#3E88FF] p-3">
-          <div class="flex">
-            <div class="flex-shrink-0">
-     
-              
-
-            </div>
-            <div class="ml-3">
-              <p class="text-sm text-blue-700">
-                Una vez enviado, el estado cambiará a
-                <strong>"Por Autorizar"</strong> y el trámite continuará
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
-        <button
-          @click="openPorAutorizar = false"
-          class="px-5 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all order-2 sm:order-1">
-          No, cancelar
-        </button>
-
-        <button
-          @click="Livewire.dispatch('constanciaAutorizar', { id: solicitud.id })"
-          class="px-5 py-2.5 text-sm font-bold text-white 
-                 bg-[#3E88FF] hover:bg-[#2F74E6]
-                 rounded-xl shadow-lg shadow-[#3E88FF]/30
-                 transition-all transform active:scale-95
-                 order-1 sm:order-2">
-          Sí, enviar
-        </button>
-      </div>
-    </div>
-  </div>
-</div> --}}
-
-  
-<!-- nuevo modal -->
-
- 
-
-   </div>
    
 
 </x-interno-layout>

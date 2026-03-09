@@ -257,8 +257,8 @@ class SolicitudTable extends DataTableComponent
         $estado = trim($row->estado?->nombre ?? '');
 
         if($estado === 'Pendiente'){
-            $textoBoton = "Analizar Expediente";
-$clasesBoton = "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-600 hover:text-white shadow-emerald-100";            
+            $textoBoton = "Continuar revisión";
+$clasesBoton = "bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-600 hover:text-white";            
 $metodoClick = "abrirExpediente({$row->id})";
         } else {
             $textoBoton = "Continuar revisión";

@@ -153,83 +153,188 @@
 >
     </div>
 
+
+
 <!-- MODAL PARA CONFIRMAR VISITA DE CAMPO -->
 <div x-show="openVisitaAsignada"
      x-cloak
-     class="fixed inset-0 z-[60] flex items-center justify-center">
+     class="fixed inset-0 z-[100] flex items-center justify-center p-4">
 
-    <div class="fixed inset-0 bg-black bg-opacity-50"
-    @click="openVisitaAsignada = false">
+    <!-- fondo -->
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm"
+         @click="openVisitaAsignada = false">
     </div>
 
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 text-green-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+    <!-- modal -->
+    <div x-show="openVisitaAsignada"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative overflow-hidden">
+
+        <!-- barra superior -->
+        <div class="h-2 w-full bg-teal-600"></div>
+
+        <div class="p-6">
+
+            <!-- encabezado -->
+            <div class="flex items-start justify-between">
+
+                <div class="flex items-center gap-3">
+
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-teal-100">
+                        <svg class="h-6 w-6 text-teal-600"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M9 12l2 2 4-4"/>
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
                         </svg>
-                    <h3 class="text-lg font-bold text-gray-800">
-                        Confirmar visita de campo
-                    </h3>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">
+                            Confirmar visita de campo
+                        </h3>
+                    </div>
+
                 </div>
 
+                <!-- cerrar -->
                 <button @click="openVisitaAsignada = false"
-                              type="button"
-                              class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors duration-200 focus:outline-none"
-                              aria-label="Cerrar modal">
-                          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
-                          </svg>
+                        class="text-gray-400 hover:text-gray-600 transition-colors p-1">
+                    <svg class="w-6 h-6"
+                         fill="none"
+                         stroke="currentColor"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                 </button>
 
-              </div>
+            </div>
 
-              <p class="font-bold text-blue-500 mt-2">
-                    ¿Está seguro que desea confirmar esta visita de campo?
-              </p>
+            <!-- mensaje -->
+            <div class="mt-5">
 
-
-
-                <div class="flex justify-end gap-3 mt-5">
-                    <button
-                    @click="openVisitaAsignada = false"
-                    class="px-4 py-2 text-sm font-bold bg-gray-200 rounded-lg">
-                    Cancelar
-                    </button>
-
-                    <button
-                    @click="
-                    Livewire.dispatch('visitaRealizada', {
-                        id: solicitud.id,
-                        observaciones: observaciones
-
-                    });
-                    " class="px-4 py-2 text-sm font-bold text-white rounded-lg
-                    bg-teal-600"
-                    >
-                    Enviar visita de campo
-                    </button>
+                <p class="text-gray-700 text-base leading-relaxed">
+                    ¿Está seguro que desea confirmar la visita de campo de la solicitud
+                    <span class="font-bold text-teal-600"
+                          x-text="'#' + solicitud.no_solicitud"></span>?
+                </p>
 
 
+
+                <!-- Avisos si falta información -->
+                <div class="mt-4 space-y-3">
+
+                    <!-- No hay observaciones -->
+                    <div x-show="!observaciones || observaciones.trim() === ''"
+                        class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-amber-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-8-4a1 1 0 00-.993.883L9 7v4a1 1 0 001.993.117L11 11V7a1 1 0 00-1-1zm0 8a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
+                                    clip-rule="evenodd"/>
+                            </svg>
+
+                            <p class="text-sm text-amber-800">
+                                No se ingresaron <strong>observaciones de la visita</strong>.
+                            </p>
+                        </div>
 
                     </div>
 
+                    <!-- No hay fotos -->
+                    <div x-show="!fotosSeleccionadas || fotosSeleccionadas.length === 0"
+                        class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-8-4a1 1 0 00-.993.883L9 7v4a1 1 0 001.993.117L11 11V7a1 1 0 00-1-1zm0 8a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
+                                    clip-rule="evenodd"/>
+                            </svg>
+
+                            <p class="text-sm text-red-800">
+                                No se agregaron <strong>fotografías de la visita</strong>.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
 
 
 
+
+
+
+
+
+
+                <!-- bloque informativo -->
+                <div class="mt-4 bg-teal-50 border-l-4 border-teal-600 p-4 rounded-r-lg">
+
+                    <div class="flex">
+
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-teal-600"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor">
+                                <path fill-rule="evenodd"
+                                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                      clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+
+                        <div class="ml-3">
+                            <p class="text-sm text-teal-800">
+                                Esta acción marcará la <strong>visita de campo como realizada</strong> dentro del sistema.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- botones -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
+
+                <button @click="openVisitaAsignada = false"
+                        class="px-5 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all order-2 sm:order-1">
+                    Cancelar
+                </button>
+
+                <button
+                    @click="
+                        Livewire.dispatch('visitaRealizada', {
+                            id: solicitud.id,
+                            observaciones: observaciones
+                        });
+                    "
+                    class="px-6 py-2.5 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-lg shadow-teal-200 transition-all transform active:scale-95 order-1 sm:order-2">
+
+                    Confirmar visita
+
+                </button>
+
+            </div>
+
+        </div>
     </div>
 </div>
-
-
-
-
 
 
 
@@ -318,6 +423,9 @@
                         </div>
                     </div>
 
+
+                    
+
                     <div class="space-y-6">
                         <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
                             <span class="text-emerald-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
@@ -372,6 +480,18 @@
                         </div>
                     </div>
                 </div>
+
+
+                  <div class="mt-3 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                                <label class="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">
+                                    Observaciones
+                                </label>
+
+                                <p class="text-gray-900 font-mono font-medium"
+                                x-text="solicitud.observaciones ? solicitud.observaciones : 'El solicitante no ingresó observaciones'">
+                                </p>
+                    </div>
+
 
 
 
@@ -806,6 +926,10 @@
       <p class="font-bold text-blue-500 mt-2">
         ¿Está seguro que desea aceptar está solicitud?
       </p>
+
+
+
+      
 
 
        <div class="flex justify-end gap-3 mt-5">

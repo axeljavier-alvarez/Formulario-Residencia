@@ -20,7 +20,7 @@ class ConsultarSolicitud extends Component
     public $estados; // Se llenará al cargar el componente
     public $error;
     public $archivos = []; 
-
+    public $inputKey = 0;
     // Se ejecuta una sola vez al cargar la página
     public function mount()
     {
@@ -55,13 +55,21 @@ class ConsultarSolicitud extends Component
             $this->error = 'Los datos ingresados no coinciden con ninguna solicitud.';
             return;
         }
+
+        // observacion para que sea visible para consultar
+        $previoService = app(PrevioService::class);
+        $this->solicitud->observacion_previo = $previoService->obtenerObservacionPrevio($this->solicitud);
     }
 
 
 public function updatedArchivos()
 {
     $this->validate([
-        'archivos.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        'archivos.*' => 'required|file|mimes:pdf,jpg,jpeg|max:2048',
+    ], [
+        'archivos.*.mimes' => 'Solo se permiten archivos PDF o JPG.',
+        'archivos.*.required' => 'Debe seleccionar un archivo.',
+        'archivos.*.max' => 'El archivo no debe pesar más de 2MB.',
     ]);
 }
 
@@ -95,6 +103,14 @@ public function corregirPrevio(PrevioService $service)
         return;
     }
 
+    $this->validate([
+        'archivos.*' => 'required|file|mimes:pdf,jpg,jpeg|max:2048',
+    ], [
+        'archivos.*.mimes' => 'Solo se permiten archivos PDF o JPG.',
+        'archivos.*.max' => 'El archivo no debe pesar más de 2MB.',
+        'archivos.*.required' => 'Debe cargar todos los documentos solicitados.',
+    ]);
+
 // llamar al service una vez pasada la validación
     $cantidad = $service->procesarCorreccion(
         $this->solicitud,
@@ -124,4 +140,13 @@ public function corregirPrevio(PrevioService $service)
     {
         return view('livewire.consultar-solicitud');
     }
+
+    // eliminar archivo
+    public function eliminarArchivo($index)
+{
+    unset($this->archivos[$index]);
+
+    // fuerza re-render del input
+    $this->inputKey++;
+}
 }

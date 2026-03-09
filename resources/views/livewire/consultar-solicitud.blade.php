@@ -94,6 +94,12 @@
         </div>
     </div>
 
+
+
+
+
+
+
     {{-- MODAL --}}
     <div
         x-show="openModal"
@@ -105,7 +111,8 @@
     >
         {{-- OVERLAY --}}
         <div
-            class="absolute inset-0 bg-slate-900/80 backdrop-blur-md"
+        
+            class="fixed inset-0 bg-black/70 backdrop-blur-sm"
             @click="openModal = false; $wire.limpiarSolicitud();"
         ></div>
 
@@ -275,12 +282,21 @@
                                     <h3 class="text-orange-600 font-black uppercase text-sm">
                                         Acción Requerida (Previo)
                                     </h3>
-                                    <p class="text-orange-700 text-sm mt-1">
-                                        Debe corregir o subir nuevamente los siguientes documentos:
-                                    </p>
-                                    <p class="font-bold text-orange-800 mt-2 text-xs italic">
-                                        {{ $solicitud->observaciones }}
-                                    </p>
+                                        <!-- Subtítulo -->
+                                        <p class="text-orange-800 font-semibold mt-2 text-sm">
+                                            Observación:
+                                        </p>
+
+                                        <!-- Observación -->
+                                        <p class="text-orange-900 text-sm mt-1 leading-relaxed">
+                                            {{ $solicitud->observacion_previo }}
+                                        </p>
+
+                                        <!-- Texto adicional -->
+                                        <p class="text-orange-700 text-sm mt-4">
+                                            Debe corregir o subir nuevamente los documentos indicados.
+                                        </p>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -298,17 +314,68 @@
                                     {{ $doc['nombre'] }}
                                 </label>
 
-                                <input type="file" wire:model="archivos.{{ $index }}" 
-                                    class="block w-full text-[10px] text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                             
+ 
+                                   <div class="space-y-2">
 
-                                {{-- Mostrar indicador de que el archivo está listo para subirse --}}
-                                @if(isset($archivos[$index]))
-                                    <p class="text-[9px] text-blue-600 font-bold mt-1 animate-bounce">
-                                        <i class="fas fa-check"></i> Archivo listo para cargar
-                                    </p>
-                                @endif
+    {{-- INPUT OCULTO --}}
+    <input 
+        type="file"
+        id="file-{{ $index }}"
+        wire:key="file-{{ $index }}-{{ $inputKey }}"
+        wire:model="archivos.{{ $index }}"
+        accept=".pdf,.jpg,.jpeg"
+        class="hidden"
+    />
 
-                                </div>
+    {{-- BOTÓN PERSONALIZADO --}}
+    @if(!isset($archivos[$index]) || $errors->has('archivos.' . $index))
+
+        <label 
+            for="file-{{ $index }}"
+            class="cursor-pointer inline-block w-full text-center bg-[#0D057F] hover:bg-[#140a9e] text-white font-semibold py-2 px-4 rounded-xl transition-all text-sm"
+        >
+            <i class="fas fa-upload mr-2"></i>
+            Subir archivo
+        </label>
+
+    @else
+
+        {{-- ARCHIVO SELECCIONADO --}}
+        <div class="flex items-center justify-between bg-blue-50 border border-blue-300 px-3 py-2 rounded-xl">
+
+            <span class="text-xs text-blue-800 truncate max-w-[75%]">
+                {{ \Illuminate\Support\Str::limit($archivos[$index]->getClientOriginalName(), 25) }}
+            </span>
+
+            <button 
+                type="button"
+                wire:click="eliminarArchivo({{ $index }})"
+                class="text-red-500 hover:text-red-700 text-sm font-bold"
+            >
+                <i class="fas fa-times"></i>
+            </button>
+
+        </div>
+
+    @endif
+
+    {{-- ERRORES --}}
+    @error('archivos.' . $index)
+        <p class="text-red-600 text-xs font-semibold">
+            @if(str_contains($message, 'max') || str_contains($message, '2048'))
+            Archivo pesado, Límite 2MB.
+            @else
+            {{ $message }}
+            @endif
+        </p>
+    @enderror
+
+</div>
+
+                                     
+
+                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -358,3 +425,4 @@
         </div>
     </div>
 </div>
+

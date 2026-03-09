@@ -208,6 +208,18 @@
                     </div>
                 </div>
 
+
+                <div class="mt-3 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                                <label class="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">
+                                    Observaciones
+                                </label>
+
+                                <p class="text-gray-900 font-mono font-medium"
+                                x-text="solicitud.observaciones ? solicitud.observaciones : 'El solicitante no ingresó observaciones'">
+                                </p>
+                    </div>
+                    
+
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-gray-100">
 
                     <button type="button"

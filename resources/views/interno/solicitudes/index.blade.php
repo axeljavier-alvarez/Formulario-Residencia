@@ -163,32 +163,35 @@
                             </div>
 
                             <div class="space-y-6">
-                                <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
-                                    <span class="text-green-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
-                                    <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">Historial</h4>
-                                </div>
-                                <div class="max-h-[300px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
-                                    <template x-if="solicitud.bitacoras && solicitud.bitacoras.length > 0">
-                                        <template x-for="item in solicitud.bitacoras" :key="item.id">
-                                            <div class="relative pl-4 border-l-2 border-blue-200 py-1">
-                                                <div class="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-blue-500 border-2 border-white"></div>
-                                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                                    <div class="flex justify-between items-start mb-1">
-                                                        <span class="text-xs font-bold text-gray-900 uppercase" x-text="item.evento"></span>
-                                                        <span class="text-[10px] text-gray-400" x-text="item.fecha_formateada"></span>
+                                
+                                 <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
+                                    <span class="text-emerald-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
+                                    <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">Historial de Movimientos</h4>
+                                    </div>
+                                    <div class="max-h-[220px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                                        <template x-if="solicitud.bitacoras && solicitud.bitacoras.length > 0">
+                                            <template x-for="item in solicitud.bitacoras" :key="item.id">
+                                                <div class="relative pl-4 border-l-2 border-blue-100 py-1">
+                                                    <div class="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-sm"></div>
+                                                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 shadow-sm">
+                                                        <div class="flex justify-between items-start mb-1">
+                                                            <span class="text-[11px] font-bold text-gray-900 uppercase" x-text="item.evento"></span>
+                                                            <span class="text-[10px] text-gray-400 font-medium" x-text="item.fecha_formateada"></span>
+                                                        </div>
+                                                        <p class="text-xs text-gray-600 italic leading-relaxed" x-text="item.descripcion"></p>
+                                                        <p class="text-[10px] mt-2 font-bold text-blue-500 uppercase tracking-tighter" x-text="'Por: ' + (item.user?.name || 'Solicitante')"></p>
                                                     </div>
-                                                     <p class="text-xs text-gray-600 italic" x-text="item.descripcion"></p>
-                                                     <p class="text-[10px] mt-2 font-bold text-blue-500 uppercase tracking-tighter" x-text="'Por: ' + (item.user?.name || 'Sistema')"></p>                                                   
                                                 </div>
+                                            </template>
+                                        </template>
+                                        <template x-if="!solicitud.bitacoras || solicitud.bitacoras.length === 0">
+                                            <div class="text-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                                                <p class="text-xs font-bold text-gray-400 uppercase tracking-tighter">Sin movimientos registrados</p>
                                             </div>
                                         </template>
-                                    </template>
-                                    <template x-if="!solicitud.bitacoras || solicitud.bitacoras.length === 0">
-                                        <div class="text-center py-10 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                                            <p class="text-xs font-bold text-gray-400">Sin movimientos</p>
-                                        </div>
-                                    </template>
-                                </div>
+                                    </div>
+
+
                                 <div class="bg-gray-900 rounded-2xl p-4 shadow-2xl border border-gray-800">
                                     <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
@@ -214,6 +217,17 @@
                                 </div>                                
                             </div>
                         </div>
+
+                        <div class="mt-3 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                                <label class="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">
+                                    Observaciones
+                                </label>
+
+                                <p class="text-gray-900 font-mono font-medium"
+                                x-text="solicitud.observaciones ? solicitud.observaciones : 'El solicitante no ingresó observaciones'">
+                                </p>
+                            </div>
+
                         <div class="mt-10 flex justify-end pt-6 border-t border-gray-100">
                             <button @click="open = false" class="inline-flex items-center bg-green-600 px-10 py-3 text-sm font-bold text-white rounded-xl shadow-lg hover:bg-green-700 transition-all transform active:scale-95">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>

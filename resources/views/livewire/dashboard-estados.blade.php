@@ -1,4 +1,4 @@
-<div wire:poll.1s>
+<div wire:poll.10s="refreshData">
 
     <div class="text-center mb-8 -mt-6">
     <h2 class="font-inter text-4xl md:text-5xl font-extrabold tracking-tight uppercase leading-tight">
@@ -58,7 +58,7 @@
             
             <div class="absolute -inset-1 bg-gradient-to-r {{ $gradient }} opacity-0 group-hover:opacity-10 transition duration-500 blur"></div>
             
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r {{ $gradient }}"></div>
+            <div class="absolute top-0 left-0 w-full h-2 bg-gquiradient-to-r {{ $gradient }}"></div>
             
             <div class="relative flex flex-col items-center">
                 <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-inner shadow-white transition-all duration-500 group-hover:scale-110" 
@@ -69,57 +69,16 @@
                 <h3 class="text-[11px] font-black text-gray-500 uppercase tracking-[0.2em] text-center mb-1">
                     {{ $estado->nombre }}
                 </h3>
-                
                 <div class="flex items-baseline gap-1">
                     <span class="text-3xl font-black text-gray-900 leading-none">
                         {{ $estado->solicitudes_count }}
                     </span>
                 </div>
-                
-                {{-- <div class="mt-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                    <span class="text-[9px] px-3 py-1 rounded-full text-white font-black uppercase tracking-tighter shadow-sm bg-gradient-to-r {{ $gradient }}">
-                        Ver solicitudes
-                    </span>
-                </div> --}}
+        
             </div>
         </div>
     @endforeach
     </div>
 
 
-
-   {{-- <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-   @foreach($estadosTarjetones as $estado)
-       @php
-           $color = match($estado->nombre) {
-                'Pendiente'      => '#FACC15',
-                    'Analisis'       => '#06B6D4', 
-                    'Por autorizar'  => '#3B82F6', 
-                    'Emitido'        => '#C2A97E', 
-                    'Autorizado'     => '#22C55E', 
-                    'Previo'         => '#F97316',
-                    'Rechazado'      => '#EF4444',
-                    default          => '#6B7280',
-           };
-
-           $icon = match($estado->nombre) {
-               'Pendiente'      => 'fa-hourglass-half',
-                    'Analisis'       => 'fa-magnifying-glass-chart',
-                    'Por autorizar'  => 'fa-user-shield',
-                    'Emitido'        => 'fa-file-export',
-                    'Autorizado'     => 'fa-circle-check',
-                    'Previo'         => 'fa-list-check',
-                    'Rechazado'      => 'fa-circle-xmark',
-                    default          => 'fa-circle-question',
-           };
-       @endphp
-
-       <div class="rounded-lg p-4 text-white flex flex-col items-center justify-center cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
-            style="background-color: {{ $color }}">
-           <i class="fas {{ $icon }} text-3xl mb-2"></i>
-           <span class="font-semibold text-lg text-center">{{ $estado->nombre }}</span>
-           <span class="text-2xl font-bold mt-1">{{ $estado->solicitudes_count }}</span>
-       </div>
-   @endforeach
-   </div> --}}
 </div>

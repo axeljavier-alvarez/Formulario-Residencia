@@ -121,6 +121,27 @@
     aria-modal="true" --}}
 >
 
+
+<!-- MODAL DE PREVIEW -->
+
+<div
+    x-show="openPreview"
+    x-cloak
+    @click="openPreview = false"
+    class="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm"
+    @keydown.escape.window="openPreview = false">
+    
+    <button @click="openPreview = false" class="absolute top-5 right-5 text-white hover:text-red-400 transition-colors">
+        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+    </button>
+
+    <img :src="imgSource" class="max-w-[95vw] max-h-[95vh] w-auto h-auto object-contain rounded-lg shadow-2xl">
+</div>
+
+
+
 <!-- MODAL PREVIO -->
 <div x-show="openPrevio" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4">
     <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="openPrevio = false"></div>
@@ -181,7 +202,12 @@
                             Documentos a corregir:
                         </label>
                         <div class="max-h-40 overflow-y-auto space-y-2 p-2 bg-gray-50 rounded-xl border border-gray-100">
-                            <template x-for="(doc, index) in (solicitud.documentos || []).filter(d => d.tipo === 'normal')" :key="index">
+
+
+                            <template 
+                            x-for="(doc, index) in (solicitud.documentos || [])
+                                .filter(d => d.tipo === 'normal' || d.tipo === 'carga')" 
+                            :key="index">
                                 <label class="flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-100 cursor-pointer hover:bg-orange-50 transition-colors">
                                     <input type="checkbox" 
                                         :value="doc.titulo" 
@@ -389,6 +415,8 @@
                                 <label class="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">DPI / CUI</label>
                                 <p class="text-gray-900 font-mono font-medium" x-text="solicitud.cui"></p>
                             </div>
+
+
                             <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100">
                                 <label class="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">Teléfono</label>
                                 <p class="text-gray-900 font-medium" x-text="solicitud.telefono"></p>
@@ -405,6 +433,8 @@
                             <span class="text-xs font-bold text-blue-700 uppercase tracking-tight">Tipo de Trámite</span>
                             <span class="px-3 py-1 bg-blue-600 text-white text-[10px] font-black rounded-lg shadow-sm uppercase" x-text="solicitud.requisitos_tramites?.[0]?.tramite?.nombre || 'General'"></span>
                         </div>
+
+                          
                     </div>
 
                     <div class="space-y-6">
@@ -412,7 +442,6 @@
                             <span class="text-emerald-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
                             <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">Historial de Movimientos</h4>
                         </div>
-
                         <div class="max-h-[220px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
                             <template x-if="solicitud.bitacoras && solicitud.bitacoras.length > 0">
                                 <template x-for="item in solicitud.bitacoras" :key="item.id">
@@ -435,62 +464,127 @@
                                 </div>
                             </template>
                         </div>
+                        
 
                         <div class="bg-gray-900 rounded-2xl p-4 shadow-2xl border border-gray-800">
-                            <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
-                                Personas Dependientes
-                            </h4>
-                            <div class="flex flex-wrap gap-2">
-                                <template x-if="solicitud.documentos && solicitud.documentos.find(d => d.tipo === 'carga')">
-                                    <div class="flex flex-wrap gap-2">
-                                        <template x-for="dep in solicitud.documentos.find(d => d.tipo === 'carga').dependientes" :key="dep.id">
-                                            <button @click="documentoActual = dep; openDocumento = true;"
-                                                class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 hover:text-green-400 text-xs border border-gray-700 hover:border-green-500/40 transition-all cursor-pointer">
-                                                <span x-text="dep.nombre"></span>
-                                            </button>
-                                        </template>
-                                        <template x-if="solicitud.documentos.find(d => d.tipo === 'carga').dependientes.length === 0">
-                                            <span class="text-[11px] text-orange-400/80 italic flex items-center gap-1.5">
-                                                <i class="fas fa-info-circle"></i> No se ingresaron dependientes
-                                            </span>
-                                        </template>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
+                                    Personas Dependientes
+                                </h4>
 
+                                <div class="flex flex-wrap gap-2">
+                                    <template x-if="solicitud.documentos && solicitud.documentos.find(d => d.tipo === 'carga')">
+                                        <div class="flex flex-wrap gap-2">
+
+                                            <template x-for="dep in solicitud.documentos.find(d => d.tipo === 'carga').dependientes" :key="dep.id">
+
+                                                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 hover:border-green-500/40 transition-all">
+
+                                                    <!-- NOMBRE -->
+                                                    <span class="text-gray-300 text-xs" x-text="dep.nombre"></span>
+
+                                                    <!-- VER -->
+                                                    <button 
+                                                        @click="documentoActual = dep; openDocumento = true;"
+                                                        class="text-gray-400 hover:text-blue-400 transition"
+                                                        title="Ver documento">
+                                                        <i class="fas fa-eye text-[11px]"></i>
+                                                    </button>
+
+                                                    <!-- DESCARGAR -->
+                                                    <a 
+                                                        :href="'/storage/' + dep.path"
+                                                        :download="dep.nombre"
+                                                        @click.stop
+                                                        class="text-gray-400 hover:text-emerald-400 transition"
+                                                        title="Descargar documento">
+                                                        <i class="fas fa-download text-[11px]"></i>
+                                                    </a>
+
+                                                </div>
+
+                                            </template>
+
+                                            <template x-if="solicitud.documentos.find(d => d.tipo === 'carga').dependientes.length === 0">
+                                                <span class="text-[11px] text-orange-400/80 italic flex items-center gap-1.5">
+                                                    <i class="fas fa-info-circle"></i> No se ingresaron dependientes
+                                                </span>
+                                            </template>
+
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+
+
+                        
+                        
+
+                    </div>
+
+
+                    
+                </div>
+                            <div class="mt-3 bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                                <label class="block text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-1">
+                                    Observaciones
+                                </label>
+
+                                <p class="text-gray-900 font-mono font-medium"
+                                x-text="solicitud.observaciones ? solicitud.observaciones : 'El solicitante no ingresó observaciones'">
+                                </p>
+                            </div>
 
 
 
                 <!-- VER LOS DOCUMENTOS -->
-               <div class="mt-10">
-                    <div class="flex items-center gap-2 pb-2 border-b border-gray-100 mb-5">
-                        <span class="text-amber-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg></span>
-                        <h4 class="font-bold text-gray-800 uppercase text-xs tracking-widest">Documentos del Solicitante</h4>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <template x-if="solicitud.documentos && solicitud.documentos.length > 0">
-                            <template x-for="(doc, index) in solicitud.documentos" :key="index">
-                                <template x-if="doc.tipo === 'normal'">
-                                    <button @click="documentoActual = doc; openDocumento = true;"
-                                        class="group flex items-center justify-between p-3.5 bg-white border border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-lg hover:shadow-blue-50 transition-all duration-200">
-                                        <div class="flex items-center gap-3">
-                                            <div class="p-2 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                            </div>
-                                            <span class="text-xs font-bold text-gray-700 truncate max-w-[150px]" x-text="doc.titulo"></span>
-                                        </div>
-                                        <i class="fas fa-external-link-alt text-[10px] text-gray-300 group-hover:text-blue-500"></i>
-                                    </button>
-                                </template>
-                            </template>
-                        </template>
-                    </div>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <template x-if="solicitud.documentos && solicitud.documentos.length > 0">
+        <template x-for="(doc, index) in solicitud.documentos" :key="index">
+            <template x-if="doc.tipo === 'normal'">
+
+                <div class="group flex items-center justify-between p-3.5 bg-white border border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-lg hover:shadow-blue-50 transition-all duration-200">
+
+                    <!-- PARTE IZQUIERDA (VER DOCUMENTO) -->
+                    <button 
+                        @click="documentoActual = doc; openDocumento = true;"
+                        class="flex items-center gap-3 flex-1 text-left">
+
+                        <div class="p-2 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </div>
+
+                        <span class="text-xs font-bold text-gray-700 truncate max-w-[140px]" 
+                              x-text="doc.titulo"></span>
+                    </button>
+
+                    <!-- BOTON DESCARGAR -->
+                    <a 
+                        :href="'/storage/' + doc.path"
+                        :download="doc.titulo"
+                        @click.stop
+                        class="ml-2 p-2 bg-emerald-100 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition"
+                        title="Descargar documento">
+
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+
+                    </a>
+
                 </div>
+
+            </template>
+        </template>
+    </template>
+</div>
+
 
 
                 <!-- VISITA DE CAMPO RESULTADO -->

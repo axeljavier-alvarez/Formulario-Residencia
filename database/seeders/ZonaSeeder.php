@@ -29,7 +29,7 @@ class ZonaSeeder extends Seeder
             }
             
             Zona::create([
-                'nombre' => 'Zona ' . $i
+                'nombre' => $i
             ]);
         }
     }
